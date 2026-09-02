@@ -1,18 +1,18 @@
 /**
- * MiniApp table schema
+ * Historic Mini App tables retained for released database compatibility and file-reference integrity.
  *
- * Stores user's miniapp configurations and preferences
- * Supports both system default apps and user-customized apps
- *
- * `mini_app_installation` and `mini_app_grant` are its satellites (FK cascade,
- * `kind='app'` rows only) and live here, like `knowledge_item` beside `knowledge_base`.
+ * No Mini App runtime reads or writes these tables. `mini_app_installation` and
+ * `mini_app_grant` remain co-located with their parent table so Drizzle can describe
+ * existing foreign keys.
  */
 
-import type { MiniAppManifest } from '@shared/types/miniAppManifest'
 import { sql } from 'drizzle-orm'
 import { check, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 import { createUpdateTimestamps, orderKeyColumns, scopedOrderKeyIndex, uuidPrimaryKey } from './_columnHelpers'
+
+// Retained exclusively to describe already-released tables; no Mini App runtime reads these rows.
+type LegacyMiniAppManifest = Record<string, unknown>
 
 export type MiniAppStatus = 'enabled' | 'disabled' | 'pinned'
 
@@ -21,12 +21,8 @@ export type MiniAppRegion = 'CN' | 'Global'
 export type MiniAppKind = 'site' | 'app'
 
 /**
- * MiniApp table — single table holds preset-derived and custom miniApps,
- * following the same pattern as `user_provider` / `user_model`:
- *
- *   - `presetMiniAppId` links a row to its preset entry (NULL for custom apps).
- *   - Preset display fields (name/url/logo/...) are refreshed unconditionally
- *     by {@link MiniAppSeeder} on every boot since no UI lets users edit them.
+ * Historic Mini App rows. The fields and constraints are kept unchanged so databases
+ * created by earlier releases migrate forward without loss.
  */
 export const miniAppTable = sqliteTable(
   'mini_app',
@@ -110,13 +106,13 @@ export const miniAppInstallationTable = sqliteTable(
      */
     sourceOriginCn: text('source_origin_cn'),
 
-    manifestJson: text('manifest_json', { mode: 'json' }).$type<MiniAppManifest>().notNull(),
+    manifestJson: text('manifest_json', { mode: 'json' }).$type<LegacyMiniAppManifest>().notNull(),
     /**
      * The version replaced by the most recent update. Rollback restores the whole
      * record from these — restoring only the directory yields "files are v1, rows
      * say v2", which is harder to diagnose than a failed update.
      */
-    previousManifestJson: text('previous_manifest_json', { mode: 'json' }).$type<MiniAppManifest>(),
+    previousManifestJson: text('previous_manifest_json', { mode: 'json' }).$type<LegacyMiniAppManifest>(),
     previousContentHash: text('previous_content_hash'),
     /**
      * The grant keys actually held when the update started — NOT derivable from
