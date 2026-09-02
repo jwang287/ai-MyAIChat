@@ -1,10 +1,8 @@
 import { loggerService } from '@logger'
 import { ipcApi, useIpcOn } from '@renderer/ipc'
 import { setBackupSyncState } from '@renderer/services/BackupService'
-import { notificationService } from '@renderer/services/notification'
 import { toast } from '@renderer/services/toast'
 import { getLocalizedBackupErrorMessage } from '@renderer/utils/backup'
-import { uuid } from '@renderer/utils/uuid'
 import type { AutoBackupEvent, AutoBackupType } from '@shared/types/backup'
 import { useEffect, useEffectEvent } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,9 +32,7 @@ export function useAutoBackupEvents(): void {
         setBackupSyncState(event.type, {
           syncing: false,
           lastSyncTime: event.timestamp,
-          lastSyncError: getLocalizedBackupErrorMessage(new Error(event.errorMessage), 'message.backup.failed', {
-            tlsCertificateHint: event.type === 'webdav'
-          })
+          lastSyncError: getLocalizedBackupErrorMessage(new Error(event.errorMessage), 'message.backup.failed')
         })
       } else {
         setBackupSyncState(event.type, { syncing: false, lastSyncTime: event.timestamp, lastSyncError: null })
@@ -50,25 +46,11 @@ export function useAutoBackupEvents(): void {
       if (event.status === 'warning') {
         toast.warning(t('message.backup.cleanup_failed'))
       } else {
-        toast.error(
-          getLocalizedBackupErrorMessage(new Error(event.errorMessage), 'message.backup.failed', {
-            tlsCertificateHint: event.type === 'webdav'
-          })
-        )
+        toast.error(getLocalizedBackupErrorMessage(new Error(event.errorMessage), 'message.backup.failed'))
       }
       void ipcApi
         .request('backup.acknowledge_auto_sync_notification', { type: event.type, id: event.id })
         .catch((error) => logger.error('Failed to acknowledge automatic backup notification', error as Error))
-    } else if (event.status === 'succeeded' && (event.type === 'webdav' || event.type === 's3')) {
-      void notificationService.send({
-        id: uuid(),
-        type: 'success',
-        title: t('common.success'),
-        message: t('message.backup.success'),
-        silent: false,
-        timestamp: event.timestamp,
-        source: 'backup'
-      })
     }
   })
 

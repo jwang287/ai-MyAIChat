@@ -1,40 +1,7 @@
-/**
- * Backup storage configs (WebDAV / S3). Cross-process: the renderer manages
- * these via settings UI and the main process consumes them in the backup
- * services; both sides pass them across the IPC boundary.
- */
-
-export type WebDavConfig = {
-  webdavHost: string
-  webdavUser?: string
-  webdavPass?: string
-  webdavPath?: string
-  fileName?: string
-  maxBackups?: number
-  skipBackupFile?: boolean
-  disableStream?: boolean
-  /** Opt-in: skip ALL certificate checks for this server (self-signed/private-CA, and also expired or wrong-hostname certificates). Default (unset/false) verifies. */
-  allowSelfSignedTls?: boolean
-}
-
 export type LocalBackupConfig = {
   localBackupDir?: string
   maxBackups?: number
   skipBackupFile?: boolean
-}
-
-export type S3Config = {
-  endpoint: string
-  region: string
-  bucket: string
-  accessKeyId: string
-  secretAccessKey: string
-  root?: string
-  fileName?: string
-  skipBackupFile?: boolean
-  autoSync: boolean
-  syncInterval: number
-  maxBackups: number
 }
 
 export type BackupResult<T> = {
@@ -42,7 +9,7 @@ export type BackupResult<T> = {
   cleanupFailed: boolean
 }
 
-export const AUTO_BACKUP_TYPES = ['webdav', 's3', 'local', 'nutstore'] as const
+export const AUTO_BACKUP_TYPES = ['local'] as const
 export type AutoBackupType = (typeof AUTO_BACKUP_TYPES)[number]
 
 export type AutoBackupEventInput =
