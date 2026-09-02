@@ -713,7 +713,7 @@ export async function assertPathVersionUnchanged(
     // second and produced a same-size payload". Without `expectedContentHash`
     // there is no remaining tiebreaker — we proceed with the write but
     // warn-log so a lost-edit breadcrumb exists. Callers in collaboration
-    // contexts (multi-app, cloud-synced volumes) should pass
+    // contexts (multi-app, network-mounted volumes) should pass
     // `expectedContentHash` to close this window.
     logger.warn(
       'atomicWriteIfUnchanged: second-precision mtime ambiguity without contentHash; possible same-second concurrent overwrite',

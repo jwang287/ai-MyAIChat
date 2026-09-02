@@ -9,7 +9,7 @@
  *
  * ## Positioning
  *
- * - **Not a lifecycle service.** Business modules (e.g. a future NoteService)
+ * - **Not a lifecycle service.** Business modules
  *   instantiate their own watcher via `createDirectoryWatcher(path)` and
  *   dispose it themselves; the factory transparently forwards events into
  *   `DanglingCache`.

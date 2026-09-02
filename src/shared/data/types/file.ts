@@ -5,7 +5,7 @@
  * - **FileEntry** — the managed-file entity (this section).
  * - **FileHandle** — a call-site reference to a file, by entry-id or raw path.
  * - **FileRef** — the association linking a business entity (chat message,
- *   painting, job, translate history, provider logo, mini-app logo) to a
+ * a historic painting, job, translate history, provider logo, mini-app logo) to a
  *   `FileEntry`.
  *
  * The legacy v1 `FileMetadata` shape lives separately in `./legacyFile.ts`.
@@ -523,10 +523,8 @@ export const paintingFileRefSchema = createRefSchema(paintingRefFields)
 
 // ─── job variant ───
 //
-// Links a FileEntry to a `job` row (the generic job system). Its sole use today
-// is the async image-generation job (`imageGenerationJobHandler`): input images
-// and the edit mask are persisted as `delete_when_unreferenced` FileEntries at
-// enqueue time and referenced by id inside the job payload.
+// Links a FileEntry to a `job` row. Historical rows remain reference-counted so
+// trimming image generation cannot cause their files to be swept.
 //
 // Why a persistent ref (not just the payload id): the payload id lives in
 // `job.input` JSON, which the cleanup anti-join cannot see. Without a real ref

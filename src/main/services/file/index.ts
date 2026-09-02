@@ -20,7 +20,7 @@
  *   to the entire Main process). Modules that need raw
  *   `atomicWriteFile` / `stat` etc. import that barrel directly.
  * - `./watcher.ts` exposes `createDirectoryWatcher()` as a consumable primitive
- *   for business modules (e.g. future NoteService). Not a lifecycle service.
+ *   for business modules. Not a lifecycle service.
  * - `./danglingCache.ts` is a file-module singleton; renderer reads route
  *   through File IpcApi, while FileManager and watcher operations update it.
  *
@@ -60,7 +60,7 @@ export { createDanglingCacheImpl, danglingCache } from './danglingCache'
 // via the barrel — see file-manager-architecture.md §1.6.1 / §12.
 export type { VersionCache } from './versionCache'
 
-// Watcher primitive — business modules (future NoteService, KB watcher, etc.)
+// Watcher primitive — business modules such as the KB watcher.
 // call `createDirectoryWatcher` directly. Not a lifecycle service.
 export type {
   CreateDirectoryWatcherOptions,

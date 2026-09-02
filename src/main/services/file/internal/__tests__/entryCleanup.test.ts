@@ -324,7 +324,7 @@ describe('entryCleanup', () => {
     // Regression for the removed count-fraction abort (spec §5.3): an earlier
     // revision refused to reclaim when candidates were ≥20 and >50% of rows.
     // That false-positived on the primary legitimate case — a user deleting many
-    // chats/paintings whose attachments then genuinely should be reclaimed.
+    // chat messages or historic painting rows whose attachments should then be reclaimed.
     for (let i = 0; i < 25; i++) await seedInternal(nthId(100 + i), 'delete_when_unreferenced')
     const report = await runEntryCleanup(makeDeps())
     expect(report.outcome).toBe('completed')
