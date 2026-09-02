@@ -98,8 +98,8 @@ ORDER BY created_at
 LIMIT 100;
 ```
 
-The current registry includes chat messages, agent-session messages, paintings, jobs, translation
-history, provider logos, and mini-app logos. Do not copy that list into query code; extend
+The current registry includes chat messages, agent-session messages, jobs, translation history, and
+provider logos; it also retains historic painting and mini-app rows. Do not copy that list into query code; extend
 `persistentFileRefTablesBySourceType` and its exhaustive consumers instead.
 
 ### 5.2 Grace Window

@@ -4,7 +4,6 @@ import {
   Badge,
   Button,
   Center,
-  Combobox,
   ConfirmDialog,
   DataTable,
   DateTimePicker,
@@ -71,7 +70,6 @@ import {
   SettingTitle
 } from '@renderer/components/SettingsPrimitives'
 import { useQuery } from '@renderer/data/hooks/useDataApi'
-import { useChannels } from '@renderer/hooks/agent/useChannels'
 import {
   useAllTasks,
   useCreateTask,
@@ -87,7 +85,6 @@ import { useTheme } from '@renderer/hooks/useTheme'
 import { openRoute } from '@renderer/services/mainWindowNavigation'
 import { toast } from '@renderer/services/toast'
 import { cn } from '@renderer/utils/style'
-import type { AgentChannelEntity } from '@shared/data/api/schemas/agentChannels'
 import { AGENTS_MAX_LIMIT } from '@shared/data/api/schemas/agents'
 import { AGENT_WORKSPACE_TYPE } from '@shared/data/api/schemas/agentWorkspaces'
 import type { Trigger } from '@shared/data/api/schemas/jobs'
@@ -144,24 +141,6 @@ const TASK_PROMPT_POLISH_SYSTEM_PROMPT = [
 ].join('\n')
 
 type AgentInfo = { id: string; name: string }
-type ChannelInfo = { id: string; agentId?: string | null; name: string; isActive?: boolean; hasActiveChatIds?: boolean }
-
-function toChannelInfo(channel: AgentChannelEntity): ChannelInfo {
-  // Config keys are snake_case in the channel config schemas; only some channel
-  // types carry allowed_channel_ids, hence the narrow local view of the union.
-  const config = channel.config as { allowed_chat_ids?: string[]; allowed_channel_ids?: string[] } | undefined
-  return {
-    id: channel.id,
-    agentId: channel.agentId ?? null,
-    name: channel.name || channel.type,
-    isActive: channel.isActive,
-    hasActiveChatIds:
-      (config?.allowed_chat_ids?.length ?? 0) > 0 ||
-      (config?.allowed_channel_ids?.length ?? 0) > 0 ||
-      (channel.activeChatIds?.length ?? 0) > 0
-  }
-}
-
 export type ScheduleKind = 'hourly' | 'daily' | 'weekdays' | 'weekly' | 'interval' | 'once' | 'cron'
 export type ScheduleFormState = {
   kind: ScheduleKind
@@ -174,7 +153,6 @@ type TaskDraftSnapshot = {
   name: string
   prompt: string
   schedule: ScheduleFormState
-  channelIds: string[]
   workspaceId: string | null
   reuseSession: boolean
 }
@@ -303,7 +281,6 @@ function taskToDraftSnapshot(task: ScheduledTaskEntity): TaskDraftSnapshot {
       ...triggerToFormState(task.trigger),
       timeoutMinutes: task.timeoutMinutes > 0 ? task.timeoutMinutes.toString() : ''
     },
-    channelIds: task.channelIds ?? [],
     workspaceId: task.workspace.type === AGENT_WORKSPACE_TYPE.USER ? task.workspace.workspaceId : null,
     reuseSession: task.reuseSession
   }
@@ -311,10 +288,6 @@ function taskToDraftSnapshot(task: ScheduledTaskEntity): TaskDraftSnapshot {
 
 function scheduleInputsEqual(a: ScheduleFormState, b: ScheduleFormState): boolean {
   return a.kind === b.kind && a.value === b.value && a.weekday === b.weekday
-}
-
-function stringArraysEqual(a: string[], b: string[]): boolean {
-  return a.length === b.length && a.every((value, index) => value === b[index])
 }
 
 function triggersEqual(a: Trigger, b: Trigger): boolean {
@@ -670,55 +643,6 @@ const TaskScheduleControls: FC<{
   )
 }
 
-const TaskChannelSelector: FC<{
-  channels: ChannelInfo[]
-  channelIds: string[]
-  onChange: (value: string[]) => void
-  disabled?: boolean
-}> = ({ channels, channelIds, onChange, disabled }) => {
-  const { t } = useTranslation()
-
-  if (channels.length === 0) return null
-
-  const hasNoChatIds = channelIds.some((id) => !channels.find((channel) => channel.id === id)?.hasActiveChatIds)
-
-  return (
-    <Field>
-      <FieldLabel>{t('agent.tasks.channels.label')}</FieldLabel>
-      <Combobox
-        multiple
-        size="default"
-        width="100%"
-        value={channelIds}
-        disabled={disabled}
-        searchable={channels.length > 5}
-        onChange={(nextValue) => {
-          if (Array.isArray(nextValue)) onChange(nextValue)
-        }}
-        placeholder={t('agent.tasks.channels.placeholder')}
-        searchPlaceholder={t('agent.tasks.channels.placeholder')}
-        emptyText={t('common.no_results')}
-        options={channels.map((channel) => ({
-          value: channel.id,
-          label: channel.name,
-          isActive: channel.isActive
-        }))}
-        renderOption={(option) => (
-          <span className="flex min-w-0 items-center gap-2">
-            <span
-              aria-hidden="true"
-              className={`inline-block h-1.5 w-1.5 rounded-full ${option.isActive ? 'bg-success' : 'bg-muted-foreground'}`}
-            />
-            <span className="truncate">{option.label}</span>
-            <span className="sr-only">{t(option.isActive ? 'common.enabled' : 'common.disabled')}</span>
-          </span>
-        )}
-      />
-      {hasNoChatIds && <Alert type="warning" showIcon description={t('agent.tasks.channels.noActiveChatIds')} />}
-    </Field>
-  )
-}
-
 const TaskSessionReuseField: FC<{
   value: boolean
   onChange: (value: boolean) => void
@@ -893,22 +817,8 @@ const TaskDetail: FC<{
 }> = ({ task, agents, onBack, onUpdate, onDelete, onRun, onToggleStatus }) => {
   const { t } = useTranslation()
   const { theme } = useTheme()
-  const { channels: rawChannels } = useChannels()
   const { openConversation } = useConversationNavigation('agents')
   const isCompleted = task.status === 'completed'
-  const agentName = agents.find((agent) => agent.id === task.agentId)?.name ?? task.agentId
-  const taskChannels = useMemo(
-    () => rawChannels.map(toChannelInfo).filter((channel) => channel.agentId === task.agentId),
-    [rawChannels, task.agentId]
-  )
-  const selectedChannels = useMemo(
-    () =>
-      (task.channelIds ?? []).map(
-        (channelId) => taskChannels.find((channel) => channel.id === channelId) ?? { id: channelId, name: channelId }
-      ),
-    [task.channelIds, taskChannels]
-  )
-  const hasUndeliverableChannel = selectedChannels.some((channel) => !channel.hasActiveChatIds)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const { data: workspaces } = useQuery('/agent-workspaces')
@@ -936,7 +846,6 @@ const TaskDetail: FC<{
   }
 
   const detailItems = [
-    { label: t('agent.channels.bindAgent'), value: agentName },
     { label: t('agent.tasks.frequency.label'), value: getTriggerSummary(task.trigger, t) },
     {
       label: t('agent.tasks.timeout.label'),
@@ -967,10 +876,6 @@ const TaskDetail: FC<{
       ) : (
         t('agent.tasks.reuseSession.pending')
       )
-    },
-    {
-      label: t('agent.tasks.channels.label'),
-      value: selectedChannels.length > 0 ? selectedChannels.map((channel) => channel.name).join(', ') : t('common.none')
     },
     { label: t('agent.tasks.lastRun'), value: formatDateTime(task.lastRun) },
     { label: t('agent.tasks.nextRun'), value: formatDateTime(task.nextRun) }
@@ -1080,9 +985,6 @@ const TaskDetail: FC<{
                 </Fragment>
               ))}
             </ItemGroup>
-            {hasUndeliverableChannel && (
-              <Alert type="warning" showIcon description={t('agent.tasks.channels.noActiveChatIds')} />
-            )}
           </TabsContent>
           <TabsContent value="history">
             <SettingDivider />
@@ -1132,14 +1034,11 @@ type TaskFormDialogProps = {
 const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
   const { open, task, agents, onOpenChange } = props
   const { t } = useTranslation()
-  const { channels: rawChannels, error: channelsError, isLoading: channelsLoading } = useChannels()
-  const channelsReady = !channelsLoading && !channelsError
   const isEditing = task !== undefined
   const [agentId, setAgentId] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [prompt, setPrompt] = useState('')
   const [schedule, setSchedule] = useState<ScheduleFormState>(DEFAULT_SCHEDULE)
-  const [channelIds, setChannelIds] = useState<string[]>([])
   const [workspaceId, setWorkspaceId] = useState<string | null>(null)
   const [reuseSession, setReuseSession] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -1157,7 +1056,6 @@ const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
       setName(draft?.name ?? '')
       setPrompt(draft?.prompt ?? '')
       setSchedule(draft?.schedule ?? DEFAULT_SCHEDULE)
-      setChannelIds(draft?.channelIds ?? [])
       setWorkspaceId(draft?.workspaceId ?? null)
       setReuseSession(draft?.reuseSession ?? false)
       setSaving(false)
@@ -1166,21 +1064,6 @@ const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
     }
     wasOpenRef.current = open
   }, [agents, open, task])
-
-  const availableChannels = useMemo(
-    () => (agentId ? rawChannels.map(toChannelInfo).filter((channel) => channel.agentId === agentId) : []),
-    [agentId, rawChannels]
-  )
-
-  useEffect(() => {
-    // Never prune against an unloaded channel list: with the channels query
-    // still in flight (or failed) every draft binding would be dropped and the
-    // next save would silently clear the task's subscriptions.
-    if (!channelsReady) return
-    setChannelIds((current) =>
-      current.filter((channelId) => availableChannels.some((channel) => channel.id === channelId))
-    )
-  }, [availableChannels, channelsReady])
 
   const isSystemWorkspace = workspaceId === null
   const selectedAgent = agents.find((agent) => agent.id === agentId)
@@ -1214,7 +1097,6 @@ const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
         }
         if (workspaceId !== initialDraft.workspaceId) updates.workspace = workspace
         if (reuseSession !== initialDraft.reuseSession) updates.reuseSession = reuseSession
-        if (!stringArraysEqual(channelIds, initialDraft.channelIds)) updates.channelIds = channelIds
         if (!scheduleInputsEqual(schedule, initialDraft.schedule)) {
           const nextTrigger = preserveCompatibleTriggerMetadata(props.task.trigger, trigger)
           if (!triggersEqual(nextTrigger, props.task.trigger)) updates.trigger = nextTrigger
@@ -1228,15 +1110,14 @@ const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
           trigger,
           workspace,
           timeoutMinutes,
-          reuseSession,
-          channelIds: channelIds.length > 0 ? channelIds : undefined
+          reuseSession
         })
       }
       if (saved) onOpenChange(false)
     } finally {
       setSaving(false)
     }
-  }, [agentId, channelIds, name, onOpenChange, prompt, props, reuseSession, schedule, trigger, workspaceId])
+  }, [agentId, name, onOpenChange, prompt, props, reuseSession, schedule, trigger, workspaceId])
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !saving && onOpenChange(nextOpen)}>
@@ -1298,7 +1179,6 @@ const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
                   value={agentId}
                   onChange={(nextAgentId) => {
                     setAgentId(nextAgentId)
-                    setChannelIds([])
                   }}
                   align="start"
                   mountStrategy="lazy-keep"
@@ -1307,11 +1187,11 @@ const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
                       type="button"
                       variant="outline"
                       disabled={saving || isEditing}
-                      aria-label={t('agent.channels.bindAgent')}
+                      aria-label={t('agent.tasks.agent.label')}
                       aria-invalid={(submitted && !agentId) || undefined}
                       aria-busy={saving || undefined}>
                       <Bot size={14} />
-                      <span>{selectedAgent?.name ?? t('agent.channels.selectAgent')}</span>
+                      <span>{selectedAgent?.name ?? t('agent.tasks.agent.select')}</span>
                       <ChevronDown size={14} />
                     </Button>
                   }
@@ -1348,13 +1228,6 @@ const TaskFormDialog: FC<TaskFormDialogProps> = (props) => {
             />
 
             <TaskSessionReuseField value={reuseSession} disabled={saving} onChange={setReuseSession} />
-
-            <TaskChannelSelector
-              channels={availableChannels}
-              channelIds={channelIds}
-              disabled={saving}
-              onChange={setChannelIds}
-            />
           </FieldGroup>
         </Scrollbar>
         <DialogFooter>

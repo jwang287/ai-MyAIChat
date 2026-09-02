@@ -258,7 +258,7 @@ describe('toCreateModelDto', () => {
       presetModelId: 'bge-reranker-v2-m3',
       name: 'BGE Reranker',
       group: 'rerankers',
-      capabilities: [MODEL_CAPABILITY.RERANK, MODEL_CAPABILITY.FUNCTION_CALL, MODEL_CAPABILITY.IMAGE_GENERATION],
+      capabilities: [MODEL_CAPABILITY.RERANK, MODEL_CAPABILITY.FUNCTION_CALL],
       endpointTypes: [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS],
       supportsStreaming: true,
       isEnabled: true,

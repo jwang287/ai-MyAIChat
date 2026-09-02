@@ -7,7 +7,6 @@ import {
   DEFAULT_KNOWLEDGE_BASE_STATUS,
   KNOWLEDGE_BASE_ERROR_MISSING_EMBEDDING_MODEL,
   KNOWLEDGE_ITEM_ERROR_DIRECTORY_NOT_MIGRATED,
-  KNOWLEDGE_NOTE_CONTENT_MAX,
   type KnowledgeItemData,
   type KnowledgeItemStatus,
   KnowledgeRelativePathSchema
@@ -374,42 +373,6 @@ export const transformKnowledgeItem = (
     type = 'directory'
     data = {
       source: item.content
-    }
-  } else if (item.type === 'note') {
-    const note = deps.noteById.get(item.id)
-    const rawContent = note?.content ?? (typeof item.content === 'string' ? item.content : '')
-    // v1's note editor had no length cap, but the read path (NoteItemDataSchema.content)
-    // enforces `.max(KNOWLEDGE_NOTE_CONTENT_MAX)`; a longer note would parse-fail on read
-    // and poison the WHOLE base's item-list query. Clamp to the read-side max here, like
-    // PromptMigrator filters over-long quick phrases. Truncate (not skip) because the note's
-    // content also backstops its `source`, so dropping it would lose recoverable data.
-    const content =
-      rawContent.length > KNOWLEDGE_NOTE_CONTENT_MAX ? rawContent.slice(0, KNOWLEDGE_NOTE_CONTENT_MAX) : rawContent
-    if (content.length !== rawContent.length) {
-      onWarning?.(
-        `Knowledge note item ${item.id} content exceeded ${KNOWLEDGE_NOTE_CONTENT_MAX} characters; truncated during migration`
-      )
-    }
-    // `||`, not `??`: an empty-string sourceUrl must fall through to a
-    // recoverable non-empty content instead of short-circuiting the chain
-    // and getting the note dropped as invalid below. The fallback uses the
-    // already-clamped `content` so `source` can never exceed it either.
-    const source = note?.sourceUrl || item.sourceUrl || content
-
-    // Sibling branches all guard their source against blank values because
-    // the read path requires `source: trim().min(1)`; a note with neither
-    // sourceUrl nor content has nothing to recover — skip it.
-    if (source.trim() === '') {
-      return {
-        ok: false,
-        reason: 'invalid_note'
-      }
-    }
-
-    type = 'note'
-    data = {
-      source,
-      content
     }
   } else {
     return {

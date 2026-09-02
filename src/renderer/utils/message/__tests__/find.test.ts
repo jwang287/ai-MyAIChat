@@ -48,47 +48,6 @@ describe('message/find', () => {
 })
 
 describe('getToolCitationExport', () => {
-  it('rewrites tool-part markers and lists their sources', () => {
-    const message = createExportView([
-      {
-        type: 'tool-web_search',
-        toolCallId: 'c1',
-        state: 'output-available',
-        input: { query: 'q' },
-        output: [{ id: '3f2a1b9c-1', title: 'Example', url: 'https://example.com', content: 'snippet' }]
-      },
-      { type: 'text', text: 'Fact. [cite:3f2a1b9c-1]' }
-    ] as MessageExportView['parts'])
-
-    expect(getToolCitationExport(message, 'Fact. [cite:3f2a1b9c-1]')).toEqual({
-      content: 'Fact. [1]',
-      citation: '[1] [Example](https://example.com)'
-    })
-  })
-
-  it('uses the same message-wide sequence across multiple text parts', () => {
-    const message = createExportView([
-      {
-        type: 'tool-web_search',
-        toolCallId: 'c1',
-        state: 'output-available',
-        input: { query: 'q' },
-        output: [
-          { id: 'call-1', title: 'First', url: 'https://first.example', content: 'first' },
-          { id: 'call-2', title: 'Second', url: 'https://second.example', content: 'second' }
-        ]
-      },
-      { type: 'text', text: 'Later source first. [cite:call-2]' },
-      { type: 'text', text: 'Earlier source second. [cite:call-1]' }
-    ] as MessageExportView['parts'])
-    const content = getMainTextContent(message)
-
-    expect(getToolCitationExport(message, content)).toEqual({
-      content: 'Later source first. [1]\n\nEarlier source second. [2]',
-      citation: '[1] [Second](https://second.example)\n\n[2] [First](https://first.example)'
-    })
-  })
-
   it('lists a URL-less knowledge citation without a link', () => {
     const message = createExportView([
       {

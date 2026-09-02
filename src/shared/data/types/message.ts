@@ -279,8 +279,7 @@ interface BaseCitationReference extends BaseReference {
 }
 
 /**
- * Web search citation reference
- * Data structure compatible with WebSearchResponse from renderer
+ * Legacy URL citation reference retained for persisted message compatibility.
  */
 export interface WebCitationReference extends BaseCitationReference {
   citationType: CitationType.WEB

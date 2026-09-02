@@ -1,5 +1,5 @@
 ---
-description: Unified aiSdk ToolEntry registry — built-in web/kb tools, MCP sync, meta-tools, and deferred exposition
+description: Unified aiSdk ToolEntry registry — built-in knowledge/file tools, MCP sync, meta-tools, and deferred exposition
 sources:
   - src/main/ai/tools/adapters/aiSdk
   - src/main/ai/tools/adapters/claudeCode/agentTools.ts
@@ -38,12 +38,12 @@ unambiguous):
 
 | Source | Name pattern | Example |
 |---|---|---|
-| Built-in | fixed wire name (`<namespace>_<verb>`) | `web_search`, `kb_search` |
+| Built-in | fixed wire name (`<namespace>_<verb>`) | `kb_search`, `read_file` |
 | MCP (AI SDK) | `mcp__<server-slug>__<tool-slug>_<identity-digest>` | `mcp__gmail__sendMessage_a1b2c3d4e5f60718293a` |
 | Meta | `tool_<verb>` | `tool_search`, `tool_invoke`, `tool_inspect` (`tool_exec` is defined but not injected — see below) |
 
 The built-in wire names live in `@shared/ai/builtinTools` (single-underscore,
-e.g. `web_search`); they are not derived from a `__` segment convention like MCP.
+e.g. `kb_search`); they are not derived from a `__` segment convention like MCP.
 The AI SDK MCP digest is derived from the stable server id plus the original
 protocol tool name. The readable slugs romanize Han characters (`tiny-pinyin`)
 so CJK names still produce a meaningful segment; kana and Hangul do not
@@ -52,17 +52,15 @@ its separate runtime naming contract.
 
 ## Built-in tools
 
-`src/main/ai/tools/adapters/aiSdk/builtin/` currently registers **eleven**
+`src/main/ai/tools/adapters/aiSdk/builtin/` currently registers **eight**
 entries:
 
 | Namespace | Tools | Current gate |
 |---|---|---|
-| `web` | `web_search`, `web_fetch` | Selected client-side web routes |
 | `kb` | `kb_list`, `kb_search`, `kb_read`, `kb_manage` | At least one in-scope knowledge base |
 | `file` | `read_file` | First-party conversation attachments exist |
 | `fs` | `fs_read` | Persisted/offloaded tool output can be read back |
 | `mcp_resource` | `mcp_resource_list`, `mcp_resource_read` | An in-scope MCP resource server exists |
-| `image` | `generate_image` | Assistant opt-in plus a configured painting model |
 
 Registration happens in `builtin/registerBuiltinTools.ts` (`registerBuiltinTools`). Each
 tool's `applies` predicate gates it on the current request scope; the gate is
@@ -75,7 +73,7 @@ not limited to assistant settings.
 - `resolveAssistantMcpToolIds` — assistant's enabled MCP servers + per-tool
   disable list → set of tool ids.
 - `mcpTools.syncMcpToolsToRegistry({ selectedToolIds })` — scans active servers'
-  cache-only catalogs via `McpCatalogService.listTools`, matches full tool ids,
+  cache-only catalogs via `McpToolCacheService.listTools`, matches full tool ids,
   and registers only exact selections as `ToolEntry` objects whose
   `tool.execute` proxies through the MCP transport. The scan stops early once
   every selected id has been claimed. Ownership uses the stable
@@ -88,7 +86,7 @@ The sync is idempotent; a stale entry is overwritten on the next sync.
 
 ### Tool catalog reads never block on MCP
 
-`McpCatalogService` splits the MCP tool catalog into a **read** facade and a
+`McpToolCacheService` splits the MCP tool catalog into a **read** facade and a
 **write/refresh** path:
 
 - **`listTools(serverId)`** is cache-only — it returns the shared

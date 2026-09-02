@@ -28,7 +28,7 @@ const logger = loggerService.withContext('ipc/ai')
 /**
  * Thin adapters for the AI routes. The non-streaming model ops delegate to `AiService`;
  * the streaming-chat ops delegate to `AiStreamManager`. Business logic, provider
- * resolution, the image abort registry and the stream registry all stay in those
+ * resolution and the stream registry all stay in those
  * services — these handlers only translate the IPC call.
  *
  * Every generating call is wrapped by {@link exposeAiError}: a provider/SDK failure
@@ -42,8 +42,7 @@ async function exposeAiError<T>(route: string, op: () => Promise<T>): Promise<T>
   } catch (e) {
     // Log the FULL serialized error at the source (statusCode / responseBody / AI SDK
     // subtype). The `data` rides the IpcError for the renderer, but Electron's invoke
-    // reject keeps only `message`, and a downstream normalize (e.g. the paintings
-    // pipeline → `REMOTE_ERROR`) can collapse even that — so the only durable record of
+    // reject keeps only `message`, so the only durable record of
     // the real cause is this log. User-initiated aborts are control flow, not failures.
     if (!(e instanceof Error && e.name === 'AbortError')) {
       logger.error(`${route} failed`, serializeError(e))
@@ -158,12 +157,6 @@ export const aiHandlers: IpcHandlersFor<typeof aiRequestSchemas> = {
     exposeAiError('ai.text.generate', () => application.get('AiService').generateText(request)),
   'ai.embedding.embed_many': (request) =>
     exposeAiError('ai.embedding.embed_many', () => application.get('AiService').embedMany(request)),
-  'ai.image.generate': ({ requestId, payload }) =>
-    exposeAiError('ai.image.generate', () => application.get('AiService').runImageRequest(requestId, payload)),
-  'ai.image.abort': async ({ requestId }) => {
-    application.get('AiService').abortImage(requestId)
-  },
-
   // ── Provider model catalog & reachability probe. ──
   'ai.provider.model.list': (request) =>
     exposeAiError('ai.provider.model.list', () => application.get('AiService').listModels(request)),

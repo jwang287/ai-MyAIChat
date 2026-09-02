@@ -48,36 +48,12 @@ describe('icon catalog lazy boundary', () => {
   )
 
   it(
-    'miniAppsLogo stays catalog-free',
-    async () => {
-      const { getMiniAppsLogoRef } = await import('@renderer/components/icons/miniAppsLogo')
-      expect(getMiniAppsLogoRef('doubao')?.key).toBe('doubao')
-      expect(getMiniAppsLogoRef('github')?.key).toBe('github')
-      expect(getMiniAppsLogoRef('nousresearch')?.key).toBe('nousresearch')
-      expect(providerCatalogEvaluated).not.toHaveBeenCalled()
-      expect(providerLoadersEvaluated).not.toHaveBeenCalled()
-      expect(modelLoadersEvaluated).not.toHaveBeenCalled()
-    },
-    PROBE_TIMEOUT
-  )
-
-  it(
     'the @cherrystudio/ui/icons public entry stays catalog-free',
     async () => {
       await import('@cherrystudio/ui/icons')
       expect(providerCatalogEvaluated).not.toHaveBeenCalled()
       expect(providerLoadersEvaluated).not.toHaveBeenCalled()
       expect(modelLoadersEvaluated).not.toHaveBeenCalled()
-    },
-    PROBE_TIMEOUT
-  )
-
-  it(
-    'web search metadata stays provider-barrel-free',
-    async () => {
-      const { getWebSearchProviderIconRef } = await import('@renderer/utils/webSearchProviderMeta')
-      expect(getWebSearchProviderIconRef('exa-mcp')).toMatchObject({ kind: 'provider', key: 'exa' })
-      expect(providerBarrelEvaluated).not.toHaveBeenCalled()
     },
     PROBE_TIMEOUT
   )

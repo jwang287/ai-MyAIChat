@@ -77,7 +77,7 @@
 
 - **现象**:`resolveTools` 中 `request.mcpToolIds` 只有 **undefined** 才回落到 `resolveAssistantMcpToolIds(assistantId)`;渲染端 composer 传空数组时,助手在 DB 里绑定的 MCP 服务器完全不进请求。实测两个新话题行为不一致:重启后 renderer 首个新话题带上了助手绑定的服务器,同一 renderer 会话内再新建的话题则为空选。
 - **待确认**:新话题的 composer MCP 默认选中集是否应继承助手绑定;若是,渲染端初始化逻辑可能有状态残留问题。
-- **✅ 已修复(`9c349245e8`)+ 前提修正**:原记录的"渲染端传空数组"前提不成立——**聊天 IPC schema 根本没有 `mcpToolIds` 字段**,composer 的 MCP 选择器写的是助手级 `mcpServerIds`,聊天请求恒走 `resolveAssistantMcpToolIds` 回落。非确定性另有两源:① `McpCatalogService.listTools` cache-only——冷缓存返回 `[]` 只触发异步预热(空结果还有 5 分钟退避),重启后首个话题 vs 后续话题因此不一致;② 三层 mcpMode 缺省不一致(main `'manual'`/`'disabled'`、shared DEFAULT `'auto'`、renderer `'disabled'`)。修法:解析前对目标服务器 `await warmToolsCache(server.id)`(冷缓存不再静默空集);三层缺省统一为 shared `DEFAULT_MCP_MODE = 'manual'`。新增 resolveAssistantMcpTools 确定性测试。
+- **✅ 已修复(`9c349245e8`)+ 前提修正**:原记录的"渲染端传空数组"前提不成立——**聊天 IPC schema 根本没有 `mcpToolIds` 字段**,composer 的 MCP 选择器写的是助手级 `mcpServerIds`,聊天请求恒走 `resolveAssistantMcpToolIds` 回落。非确定性另有两源:① `McpToolCacheService.listTools` cache-only——冷缓存返回 `[]` 只触发异步预热(空结果还有 5 分钟退避),重启后首个话题 vs 后续话题因此不一致;② 三层 mcpMode 缺省不一致(main `'manual'`/`'disabled'`、shared DEFAULT `'auto'`、renderer `'disabled'`)。修法:解析前对目标服务器 `await warmToolsCache(server.id)`(冷缓存不再静默空集);三层缺省统一为 shared `DEFAULT_MCP_MODE = 'manual'`。新增 resolveAssistantMcpTools 确定性测试。
 
 ---
 

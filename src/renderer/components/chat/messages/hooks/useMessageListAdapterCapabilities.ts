@@ -30,7 +30,6 @@ interface UseMessageListAdapterCapabilitiesOptions {
  */
 export function useMessageListAdapterCapabilities({
   topicId,
-  topicName,
   messages,
   partsByMessageId,
   streamingLayers,
@@ -41,7 +40,7 @@ export function useMessageListAdapterCapabilities({
   const messageActivity = useMessageActivityState(topicId, partsByMessageId)
   const { renderConfig, updateRenderConfig } = useMessageListRenderConfig()
   const menuConfig = useMessageMenuConfig()
-  const exportActions = useMessageExportActions({ topicName })
+  const exportActions = useMessageExportActions()
   const leafCapabilities = useMessageLeafCapabilities({ partsByMessageId, streamingLayers })
   const headerCapabilities = useMessageHeaderCapabilities()
   const messageUiStateCache = useMessageUiStateCache()

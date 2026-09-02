@@ -13,7 +13,7 @@ import os from 'node:os'
 import path from 'node:path'
 
 import { loggerService } from '@logger'
-import { isMac, isWin } from '@main/core/platform'
+import { isWin } from '@main/core/platform'
 import { app } from 'electron'
 
 import { CHERRY_HOME, LOGS_DIR } from './constants'
@@ -149,13 +149,10 @@ export function buildPathRegistry() {
     ),
 
     // MCP
-    'feature.mcp': path.join(CHERRY_HOME, 'mcp'),
     'feature.mcp.oauth': path.join(CHERRY_HOME, 'config', 'mcp', 'oauth'),
     'feature.mcp.workspace': path.join(appUserDataData, 'Workspace'),
     // MCP memory server's knowledge-graph JSON for the built-in MCP server
     'feature.mcp.memory_file': path.join(CHERRY_HOME, 'config', 'memory.json'),
-    // Server catalog `@cherry/mcp-auto-install` reads when a custom registry is configured
-    'feature.mcp.registry_file': path.join(CHERRY_HOME, 'config', 'mcp-registry.json'),
 
     // Copilot token
     'feature.copilot.token_file': path.join(CHERRY_HOME, 'config', '.copilot_token'),
@@ -176,7 +173,6 @@ export function buildPathRegistry() {
     'feature.agents.skills.install.temp': path.join(appTemp, 'skill-install'),
     'feature.agents.claude.root': path.join(appUserDataData, 'Agents', '.claude'), // v1 userData/.claude is copied here during v2 migration
     'feature.agents.claude.skills': path.join(appUserDataData, 'Agents', '.claude', 'skills'), // symlinks → feature.agents.skills
-    'feature.agents.channels': path.join(appUserDataData, 'Channels'),
     // NOTE(app-managed-dirs): pi dirs are new in this PR and freely relocatable —
     // pi resume tokens persist the pi session id, never a filesystem path.
     'feature.agents.pi.root': path.join(appUserDataData, 'Agents', '.pi'), // Cherry-owned pi coding-agent home; passed explicitly as agentDir
@@ -197,24 +193,7 @@ export function buildPathRegistry() {
 
     // Files / Notes / Knowledgebase
     'feature.files.data': path.join(appUserDataData, 'Files'),
-    'feature.notes.data': path.join(appUserDataData, 'Notes'),
     'feature.knowledgebase.data': path.join(appUserDataData, 'KnowledgeBase'),
-
-    // Mini apps
-    // Installed mini app packages, one directory per appId
-    'feature.mini_app.packages': path.join(appUserDataData, 'MiniApps', 'packages'),
-    // Rollback snapshots, PARALLEL to packages/ — `.` is a legal appId character, so a
-    // snapshot held beside the install trees is also a legal appId's own directory
-    'feature.mini_app.snapshots': path.join(appUserDataData, 'MiniApps', 'snapshots'),
-    // Per-app data (saves), OUTSIDE the package tree — updates rename packages/<id> wholesale
-    'feature.mini_app.data': path.join(appUserDataData, 'MiniApps', 'data'),
-    // Publish journals, one `<appId>.json` per app
-    'feature.mini_app.publish_journal': path.join(appUserDataData, 'MiniApps', '.publish-journal'),
-    // Builtin packages ship INSIDE the app bundle, so this one is not under userData
-    'feature.mini_app.builtin': path.join(appRootResources, 'builtin-mini-apps'),
-    // Per-app activity logs, one `<appId>/activity.<day>.log` tree each — under the logs
-    // directory, NOT the app's data: "clear data" must not erase what the app did
-    'feature.mini_app.logs': path.join(LOGS_DIR, 'mini-apps'),
 
     // OCR
     'feature.ocr.tesseract': path.join(appUserData, 'tesseract'),
@@ -243,12 +222,10 @@ export function buildPathRegistry() {
     // Feature-owned temp dirs (all under app.temp)
     'feature.backup.temp': path.join(appTemp, 'backup'),
     'feature.cli.temp': path.join(appTemp, 'cli'),
-    'feature.dxt.uploads.temp': path.join(appTemp, 'dxt_uploads'),
     'feature.file_processing.temp': path.join(appTemp, 'file-processing'),
     'feature.mcp.resource_results.temp': path.join(appTemp, 'mcp-resource-results'),
     'feature.preprocess.temp': path.join(appTemp, 'preprocess'),
     'feature.pdf_translation.temp': path.join(appTemp, 'pdf-translation'),
-    'feature.lan_transfer.temp': path.join(appTemp, 'lan-transfer'),
     // FileManager's `withTempCopy` escape hatch parent dir; each call mkdtemps a
     // unique sub-directory under here.
     'feature.files.tempcopy.temp': path.join(appTemp, 'files-tempcopy'),
@@ -264,13 +241,7 @@ export function buildPathRegistry() {
     'external.deepseek_harness.config': path.join(sysHome, '.dsh'),
     'external.hermes.default_home': isWin
       ? path.join(process.env.LOCALAPPDATA?.trim() || path.join(sysHome, 'AppData', 'Local'), 'hermes')
-      : path.join(sysHome, '.hermes'),
-    // Nested ternary (not object literal) to satisfy file-level ESLint constraint
-    'external.obsidian.config_file': isWin
-      ? path.join(app.getPath('appData'), 'obsidian', 'obsidian.json')
-      : isMac
-        ? path.join(sysHome, 'Library', 'Application Support', 'obsidian', 'obsidian.json')
-        : path.join(sysHome, '.config', 'obsidian', 'obsidian.json')
+      : path.join(sysHome, '.hermes')
   } as const)
 }
 
@@ -317,7 +288,6 @@ const NO_ENSURE = [
   'feature.agents.builtin',
   'feature.agents.assistant.manifest.file',
   'feature.agents.skills.builtin',
-  'feature.mini_app.builtin',
   // AgentSessionService stores this path through DataApi. The runtime creates
   // the concrete session directory later, keeping database writes filesystem-free.
   'feature.agents.system_workspaces'

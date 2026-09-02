@@ -53,18 +53,7 @@ function createLazyOpenAICompatibleRerankingModel(
 const AnthropicExtension = ProviderExtension.create({
   name: 'anthropic',
   aliases: ['claude'] as const,
-  supportsImageGeneration: false,
-  create: async (settings) => (await import('@ai-sdk/anthropic')).createAnthropic(settings),
-  toolFactories: {
-    webSearch:
-      (provider) => (config: NonNullable<Parameters<AnthropicProvider['tools']['webSearch_20260209']>[0]>) => ({
-        tools: { webSearch: provider.tools.webSearch_20260209(config) }
-      }),
-    urlContext:
-      (provider) => (config: NonNullable<Parameters<AnthropicProvider['tools']['webFetch_20260209']>[0]>) => ({
-        tools: { urlContext: provider.tools.webFetch_20260209(config) }
-      })
-  }
+  create: async (settings) => (await import('@ai-sdk/anthropic')).createAnthropic(settings)
 } as const satisfies ProviderExtensionConfig<AnthropicProviderSettings, AnthropicProvider, 'anthropic'>)
 
 /**
@@ -73,7 +62,6 @@ const AnthropicExtension = ProviderExtension.create({
 const AzureExtension = ProviderExtension.create({
   name: 'azure',
   aliases: ['azure-openai'] as const,
-  supportsImageGeneration: true,
   create: async (settings): Promise<ProviderV3> => {
     const provider = (await import('@ai-sdk/azure')).createAzure(settings)
     // Default to chat mode (AI SDK defaults to responses API)
@@ -84,27 +72,13 @@ const AzureExtension = ProviderExtension.create({
       }
     })
   },
-  toolFactories: {
-    webSearch:
-      (provider: AzureOpenAIProvider) =>
-      (config: NonNullable<Parameters<AzureOpenAIProvider['tools']['webSearchPreview']>[0]>) => ({
-        tools: { webSearch: provider.tools.webSearchPreview(config) }
-      })
-  },
   variants: [
     {
       suffix: 'responses',
       name: 'Azure OpenAI Responses',
       // AI SDK defaults to responses API, so createAzure(settings) without
       // the chat override (used in base `create`) gives us Responses API behavior.
-      transform: async (_provider, settings) => (await import('@ai-sdk/azure')).createAzure(settings),
-      toolFactories: {
-        webSearch:
-          (provider: AzureOpenAIProvider) =>
-          (config: NonNullable<Parameters<AzureOpenAIProvider['tools']['webSearchPreview']>[0]>) => ({
-            tools: { webSearch: provider.tools.webSearchPreview(config) }
-          })
-      }
+      transform: async (_provider, settings) => (await import('@ai-sdk/azure')).createAzure(settings)
     },
     // Azure 上的 Claude 模型走 Anthropic SDK
     // https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry
@@ -120,24 +94,13 @@ const AzureExtension = ProviderExtension.create({
           // variant rebuilds the provider from scratch, so without this the request
           // silently falls back to the SDK default fetch and drops the wrapper.
           fetch: settings?.fetch
-        }),
-      toolFactories: {
-        webSearch:
-          (provider) => (config: NonNullable<Parameters<AnthropicProvider['tools']['webSearch_20260209']>[0]>) => ({
-            tools: { webSearch: provider.tools.webSearch_20260209(config) }
-          }),
-        urlContext:
-          (provider) => (config: NonNullable<Parameters<AnthropicProvider['tools']['webFetch_20260209']>[0]>) => ({
-            tools: { urlContext: provider.tools.webFetch_20260209(config) }
-          })
-      }
+        })
     } satisfies ProviderVariant<AzureOpenAIProviderSettings, AzureOpenAIProvider, AnthropicProvider>
   ] as const
 } as const satisfies ProviderExtensionConfig<AzureOpenAIProviderSettings, AzureOpenAIProvider, 'azure'>)
 
 const CherryInExtension = ProviderExtension.create({
   name: 'cherryin',
-  supportsImageGeneration: true,
   create: async (settings) => (await import('@cherrystudio/ai-sdk-provider')).createCherryIn(settings),
 
   variants: [
@@ -157,32 +120,17 @@ const CherryInExtension = ProviderExtension.create({
 
 const DeepSeekExtension = ProviderExtension.create({
   name: 'deepseek',
-  supportsImageGeneration: false,
   create: async (settings) => (await import('@ai-sdk/deepseek')).createDeepSeek(settings)
 } as const satisfies ProviderExtensionConfig<DeepSeekProviderSettings, ProviderV3, 'deepseek'>)
 
 const GoogleExtension = ProviderExtension.create({
   name: 'google',
   aliases: ['google-ai', 'gemini', 'google-gemini'] as const,
-  supportsImageGeneration: true,
-  create: async (settings) => (await import('@ai-sdk/google')).createGoogleGenerativeAI(settings),
-  toolFactories: {
-    webSearch:
-      (provider: GoogleGenerativeAIProvider) =>
-      (config: NonNullable<Parameters<GoogleGenerativeAIProvider['tools']['googleSearch']>[0]>) => ({
-        tools: { webSearch: provider.tools.googleSearch(config) }
-      }),
-    urlContext: (provider) => (config) => ({
-      tools: {
-        urlContext: provider.tools.urlContext(config)
-      }
-    })
-  }
+  create: async (settings) => (await import('@ai-sdk/google')).createGoogleGenerativeAI(settings)
 } as const satisfies ProviderExtensionConfig<GoogleGenerativeAIProviderSettings, GoogleGenerativeAIProvider, 'google'>)
 
 const OpenAICompatibleExtension = ProviderExtension.create({
   name: 'openai-compatible',
-  supportsImageGeneration: true,
   create: async (settings) => {
     if (!settings) {
       throw new Error('OpenAI Compatible provider requires settings')
@@ -209,70 +157,31 @@ const OpenAICompatibleExtension = ProviderExtension.create({
 const OpenAIExtension = ProviderExtension.create({
   name: 'openai',
   aliases: ['openai-response'] as const,
-  supportsImageGeneration: true,
   create: async (settings) => (await import('@ai-sdk/openai')).createOpenAI(settings),
-  toolFactories: {
-    webSearch:
-      (provider: OpenAIProvider) => (config: NonNullable<Parameters<OpenAIProvider['tools']['webSearch']>[0]>) => ({
-        tools: { webSearch: provider.tools.webSearch(config) }
-      })
-  },
 
   variants: [
     {
       suffix: 'chat',
       name: 'OpenAI Chat',
-      resolveModel: (provider: OpenAIProvider, modelId: string): LanguageModel => provider.chat(modelId),
-      toolFactories: {
-        webSearch:
-          (provider: OpenAIProvider) =>
-          (config: NonNullable<Parameters<OpenAIProvider['tools']['webSearchPreview']>[0]>) => ({
-            tools: { webSearch: provider.tools.webSearchPreview(config) }
-          })
-      }
+      resolveModel: (provider: OpenAIProvider, modelId: string): LanguageModel => provider.chat(modelId)
     }
   ] as const
 } as const satisfies ProviderExtensionConfig<OpenAIProviderSettings, OpenAIProvider, 'openai'>)
 
 const OpenRouterExtension = ProviderExtension.create({
   name: 'openrouter',
-  supportsImageGeneration: true,
-  create: async (settings) => (await import('@openrouter/ai-sdk-provider')).createOpenRouter(settings),
-  toolFactories: {
-    webSearch:
-      (provider: OpenRouterProvider) =>
-      (config: NonNullable<Parameters<OpenRouterProvider['tools']['webSearch']>[0]>) => ({
-        tools: { webSearch: provider.tools.webSearch(config) }
-      }),
-    urlContext: (provider: OpenRouterProvider) => () => ({
-      tools: { urlContext: provider.tools.webFetch({}) }
-    })
-  }
+  create: async (settings) => (await import('@openrouter/ai-sdk-provider')).createOpenRouter(settings)
 } as const satisfies ProviderExtensionConfig<OpenRouterProviderSettings, OpenRouterProvider, 'openrouter'>)
 
 const XaiExtension = ProviderExtension.create({
   name: 'xai',
   aliases: ['grok'] as const,
-  supportsImageGeneration: true,
   create: async (settings) => (await import('@ai-sdk/xai')).createXai(settings),
   variants: [
     {
       suffix: 'responses',
       name: 'xAI Responses',
-      resolveModel: (provider: XaiProvider, modelId: string) => provider.responses(modelId),
-      toolFactories: {
-        webSearch:
-          (provider: XaiProvider) =>
-          (config: {
-            webSearch?: Parameters<XaiProvider['tools']['webSearch']>[0]
-            xSearch?: Parameters<XaiProvider['tools']['xSearch']>[0]
-          }) => ({
-            tools: {
-              webSearch: provider.tools.webSearch(config?.webSearch ?? {}),
-              xSearch: provider.tools.xSearch(config?.xSearch ?? {})
-            }
-          })
-      }
+      resolveModel: (provider: XaiProvider, modelId: string) => provider.responses(modelId)
     }
   ] as const
 } as const satisfies ProviderExtensionConfig<XaiProviderSettings, XaiProvider, 'xai'>)

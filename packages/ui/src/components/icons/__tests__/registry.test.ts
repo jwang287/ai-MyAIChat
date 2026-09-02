@@ -98,8 +98,7 @@ describe('resolveModelIconRef — dedicated model marks', () => {
     ['gpt-image-2', 'gpt-image-2'],
     ['gpt-image-1-mini', 'gpt-image-1-mini'],
     ['gpt-audio-mini', 'gpt-audio-mini'],
-    ['gpt-realtime-2.1', 'gpt-realtime-2-1'],
-    ['dall-e-3', 'dalle']
+    ['gpt-realtime-2.1', 'gpt-realtime-2-1']
   ] as const
 
   it.each(gptCases)('routes %s to %s', (modelId, key) => {
@@ -125,7 +124,6 @@ describe('resolveModelIconRef — dedicated model marks', () => {
     ['relace/relace-search', 'relace'],
     ['jina-embeddings-v3', 'jina'],
     ['perplexity/sonar-pro', 'perplexity'],
-    ['black-forest-labs/flux.1-dev', 'flux'],
     ['ideogram-v3', 'ideogram'],
     ['stable-diffusion-xl', 'stability'],
     ['kling-v2.1', 'kling'],

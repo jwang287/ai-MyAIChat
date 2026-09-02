@@ -95,7 +95,7 @@ describe('initCrashTelemetry', () => {
   it('leaves a session alone when its owner installs its own header policy', async () => {
     // The bug this guards: Electron keeps ONE `onHeadersReceived` per session, so this pass
     // registering on every web contents does not ADD to a session's policy, it replaces it.
-    // A mini app's guest attaches after its session is configured, so the module that just
+    // A separately hardened guest attaches after its session is configured, so the module that just
     // installed the app's CSP re-delivery would silently lose the slot to this one.
     stubConstants({ isDev: false })
     stubElectron()

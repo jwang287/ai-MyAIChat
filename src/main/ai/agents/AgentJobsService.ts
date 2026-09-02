@@ -1,5 +1,4 @@
 import { application } from '@application'
-import { agentChannelService } from '@data/services/AgentChannelService'
 import { agentService } from '@data/services/AgentService'
 import { agentSessionService } from '@data/services/AgentSessionService'
 import {
@@ -59,9 +58,8 @@ function readAgentTaskJobInputTemplate(value: unknown): AgentTaskJobInputTemplat
  * Sole command owner for agent scheduled tasks — the renderer (IpcApi
  * `ai.agent.task.*`) and MCP (`cherryAutonomyTools`) both mutate through this
  * service; reads stay on `AgentTaskService` / DataApi. Owns the composition of
- * JobManager's transactional schedule primitives with the channel-subscription
- * writes: mutate inside one `withWriteTx`, then sync the timer on the
- * deterministic post-commit path.
+ * JobManager's transactional schedule primitives: mutate inside one `withWriteTx`,
+ * then sync the timer on the deterministic post-commit path.
  *
  * Every by-id command guards through `agentTaskService.getTask`, which rejects
  * non-`agent.task` schedules and other agents' tasks in one lookup.
@@ -89,9 +87,6 @@ export class AgentJobsService extends BaseService {
   createTask(agentId: string, form: AgentTaskForm): ScheduledTaskEntity {
     this.assertAgentExists(agentId)
     this.assertPromptNotReserved(form.prompt)
-    const channelIds = form.channelIds ?? []
-    this.assertChannelsBelongToAgent(agentId, channelIds)
-
     const jobManager = application.get('JobManager')
     const { id } = application.get('DbService').withWriteTx((tx) => {
       const created = jobManager.registerJobScheduleTx(tx, {
@@ -113,9 +108,6 @@ export class AgentJobsService extends BaseService {
         }),
         catchUpPolicy: { kind: 'skip-missed' }
       })
-      if (channelIds.length > 0) {
-        agentChannelService.replaceTaskSubscriptionsTx(tx, created.id, channelIds)
-      }
       return created
     })
     jobManager.syncJobScheduleTimerById(id)
@@ -130,10 +122,6 @@ export class AgentJobsService extends BaseService {
     const existing = agentTaskService.getTask(agentId, taskId)
     if (!existing) return null
     this.assertPromptNotReserved(patch.prompt)
-    if (patch.channelIds !== undefined) {
-      this.assertChannelsBelongToAgent(agentId, patch.channelIds)
-    }
-
     const schedulePatch: UpdateJobScheduleDto = {}
     if (patch.name !== undefined) schedulePatch.name = patch.name
     // Drop a value-identical trigger: the edit dialog submits full-field
@@ -184,9 +172,6 @@ export class AgentJobsService extends BaseService {
         }
       }
       jobManager.updateJobScheduleTx(tx, taskId, schedulePatch)
-      if (patch.channelIds !== undefined) {
-        agentChannelService.replaceTaskSubscriptionsTx(tx, taskId, patch.channelIds)
-      }
     })
     if (schedulePatch.trigger !== undefined) {
       jobManager.syncJobScheduleTimerById(taskId)
@@ -224,8 +209,6 @@ export class AgentJobsService extends BaseService {
   async deleteTask(agentId: string, taskId: string): Promise<boolean> {
     const existing = agentTaskService.getTask(agentId, taskId)
     if (!existing) return false
-    // Channel subscriptions cascade via the agentChannelTaskTable FK; historical
-    // jobs keep their rows with scheduleId set NULL (ON DELETE SET NULL).
     const deleted = await application.get('JobManager').unregisterJobScheduleById(taskId)
     if (deleted) logger.info('Task deleted', { taskId, agentId })
     return deleted
@@ -301,10 +284,6 @@ export class AgentJobsService extends BaseService {
     return bound
   }
 
-  // Plain Errors on purpose: no renderer branch consumes an agent/channel
-  // not-found code (the message reaches the toast through INTERNAL either
-  // way), so no AI-domain IpcError code is minted for them — unlike trigger
-  // validation, where the form must branch on the code.
   private assertAgentExists(agentId: string): void {
     if (!agentService.getAgent(agentId)) {
       throw new Error(`Agent not found: ${agentId}`)
@@ -321,15 +300,6 @@ export class AgentJobsService extends BaseService {
   private assertPromptNotReserved(prompt: string | undefined): void {
     if (prompt === HEARTBEAT_PROMPT_SENTINEL) {
       throw new Error(`Prompt is reserved for the agent heartbeat: ${HEARTBEAT_PROMPT_SENTINEL}`)
-    }
-  }
-
-  private assertChannelsBelongToAgent(agentId: string, channelIds: readonly string[]): void {
-    for (const channelId of channelIds) {
-      const channel = agentChannelService.getChannel(channelId)
-      if (!channel || channel.agentId !== agentId) {
-        throw new Error(`Channel not found: ${channelId}`)
-      }
     }
   }
 }

@@ -41,7 +41,7 @@ export class DshRuntimeDriver implements AgentSessionRuntimeDriver {
       approval: tool.approval
     }))
     // Host-bridged MCP tools, read cache-only from the same catalog the session bridge uses.
-    const catalog = application.get('McpCatalogService')
+    const catalog = application.get('McpToolCacheService')
     const mcpTools: Tool[] = mcpIds.flatMap((idOrName) => {
       const server = mcpServerService.findByIdOrName(idOrName)
       if (!server) return []

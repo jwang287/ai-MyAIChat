@@ -61,7 +61,7 @@ const mocks = vi.hoisted(() => ({
   dispatchLauncher: vi.fn(),
   unifiedPanelOpen: vi.fn(),
   unifiedPanelAvailable: true,
-  pinnedToolIds: ['composer:new-conversation', 'web-search'] as string[],
+  pinnedToolIds: ['composer:new-conversation'] as string[],
   ipcListeners: new Map<string, (_event: unknown, payload: unknown) => void>(),
   ipcOn: vi.fn(),
   chatWrite: undefined as any,
@@ -751,7 +751,7 @@ describe('ChatComposer', () => {
       name: 'Assistant 1',
       emoji: 'A',
       modelId: model.id,
-      settings: { enableWebSearch: true },
+      settings: {},
       knowledgeBaseIds: []
     }
     mocks.model = model
@@ -769,7 +769,7 @@ describe('ChatComposer', () => {
     mocks.dispatchLauncher.mockReset()
     mocks.unifiedPanelOpen.mockReset()
     mocks.unifiedPanelAvailable = true
-    mocks.pinnedToolIds = ['composer:new-conversation', 'web-search']
+    mocks.pinnedToolIds = ['composer:new-conversation']
     mocks.ipcListeners.clear()
     mocks.ipcOn.mockReset()
     mocks.chatWrite = undefined
@@ -1033,27 +1033,6 @@ describe('ChatComposer', () => {
     expect(onSend).toHaveBeenCalledWith('compare', expect.not.objectContaining({ fastMode: true }))
   })
 
-  it('rejects minimal reasoning while OpenAI web search is enabled', () => {
-    mocks.model = {
-      ...model,
-      id: 'openai::gpt-5',
-      providerId: 'openai',
-      capabilities: [MODEL_CAPABILITY.REASONING],
-      reasoning: {
-        controls: [{ kind: 'effort' as const, values: ['minimal' as const, 'high' as const] }],
-        selectableEfforts: ['minimal' as const, 'high' as const]
-      }
-    }
-
-    render(<ChatComposer topic={topic} onSend={vi.fn()} />)
-
-    act(() => mocks.speedControlProps?.onReasoningEffortChange('minimal'))
-
-    expect(toast.warning).toHaveBeenCalledWith('chat.web_search.warning.openai')
-    expect(mocks.updateAssistantSettings).not.toHaveBeenCalled()
-    expect(mocks.speedControlProps?.reasoningEffort).toBe('default')
-  })
-
   it('rolls back a local reasoning selection when its assistant PATCH fails', async () => {
     mocks.model = {
       ...model,
@@ -1071,30 +1050,31 @@ describe('ChatComposer', () => {
     await waitFor(() => expect(mocks.speedControlProps?.reasoningEffort).toBe('default'))
   })
 
-  it('keeps the web search shortcut in the assistant composer toolbar', () => {
-    const webSearchLauncher = {
-      id: 'web-search',
+  it('dispatches a pinned command shortcut from the assistant composer toolbar', () => {
+    const testCommandLauncher = {
+      id: 'test-command',
       kind: 'command',
-      label: 'chat.input.web_search.label',
-      icon: <span data-testid="web-search-icon" />,
+      label: 'test-command-label',
+      icon: <span data-testid="test-command-icon" />,
       sources: ['popover'],
       active: false
     }
-    mocks.toolLaunchers = [webSearchLauncher]
+    mocks.toolLaunchers = [testCommandLauncher]
     mocks.toolLaunchersVersion = 1
+    mocks.pinnedToolIds = ['test-command']
 
     render(<ChatComposer topic={topic} onSend={vi.fn()} />)
 
     const leftControls = screen.getByTestId('composer-left-controls')
-    const webSearchButton = within(leftControls).getByRole('button', { name: 'chat.input.web_search.label' })
+    const testCommandButton = within(leftControls).getByRole('button', { name: 'test-command-label' })
     const toolMenuButton = within(leftControls).getByRole('button', { name: 'tool menu' })
 
-    expect(webSearchButton).toHaveAttribute('aria-pressed', 'false')
-    expect(webSearchButton.compareDocumentPosition(toolMenuButton)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(testCommandButton).toHaveAttribute('aria-pressed', 'false')
+    expect(testCommandButton.compareDocumentPosition(toolMenuButton)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
 
-    fireEvent.click(webSearchButton)
+    fireEvent.click(testCommandButton)
     expect(mocks.dispatchLauncher).toHaveBeenCalledWith(
-      webSearchLauncher,
+      testCommandLauncher,
       expect.objectContaining({
         source: 'popover',
         inputAdapter: expect.objectContaining({ focus: mocks.inputAdapterFocus })
@@ -1165,7 +1145,7 @@ describe('ChatComposer', () => {
   it('runs clear context from the toolbar when the user pins it without changing the draft', async () => {
     const startNewContext = vi.fn().mockResolvedValue(undefined)
     mocks.chatWrite = { pause: vi.fn(), startNewContext }
-    mocks.pinnedToolIds = ['composer:new-conversation', 'composer:clear-context', 'thinking', 'web-search']
+    mocks.pinnedToolIds = ['composer:new-conversation', 'composer:clear-context', 'thinking']
 
     render(<ChatComposer topic={topic} onSend={vi.fn()} />)
 
@@ -1290,16 +1270,17 @@ describe('ChatComposer', () => {
   it.each(['home', 'docked'] as const)(
     'forwards compact presentation and keeps pinned shortcuts available for %s placement',
     (placement) => {
-      const webSearchLauncher = {
-        id: 'web-search',
+      const testCommandLauncher = {
+        id: 'test-command',
         kind: 'command',
-        label: 'chat.input.web_search.label',
-        icon: <span data-testid="web-search-icon" />,
+        label: 'test-command-label',
+        icon: <span data-testid="test-command-icon" />,
         sources: ['popover'],
         active: false
       }
-      mocks.toolLaunchers = [webSearchLauncher]
+      mocks.toolLaunchers = [testCommandLauncher]
       mocks.toolLaunchersVersion = 1
+      mocks.pinnedToolIds = ['test-command']
 
       render(
         <ChatPlacementComposer
@@ -1314,7 +1295,7 @@ describe('ChatComposer', () => {
       expect(mocks.surfaceProps?.compactWhenSingleLine).toBe(true)
       expect(
         within(screen.getByTestId('composer-compact-controls')).getByRole('button', {
-          name: 'chat.input.web_search.label'
+          name: 'test-command-label'
         })
       ).toBeInTheDocument()
     }
@@ -1432,9 +1413,7 @@ describe('ChatComposer', () => {
     expect(mocks.modelSelectorProps.at(-1)?.filter?.(rerankerModel)).toBe(false)
   })
 
-  // The composer no longer duplicates the web-search reconciliation: `setModel` does it with an
-  // ungated providers list, while the composer's own list is deferred and empty here.
-  it('delegates the web-search reconciliation to setModel when switching models', () => {
+  it('updates a selected model with function-call capability from the composer toolbar', () => {
     mocks.selectedModel = modelBWithFunctionCall
 
     render(<ChatComposer topic={topic} onSend={vi.fn()} />)
@@ -1724,7 +1703,7 @@ describe('ChatComposer', () => {
   })
 
   it('returns the new conversation action to the plus panel when it is unpinned', () => {
-    mocks.pinnedToolIds = ['web-search']
+    mocks.pinnedToolIds = ['mcp-status']
     const onCreateEmptyTopic = vi.fn()
 
     render(<ChatComposer topic={topic} onSend={vi.fn()} onCreateEmptyTopic={onCreateEmptyTopic} />)

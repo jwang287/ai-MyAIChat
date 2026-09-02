@@ -16,11 +16,11 @@ const chatModel: Model = {
   isEnabled: true,
   isHidden: false
 }
-const imageModel: Model = {
-  id: 'openai::image',
+const videoModel: Model = {
+  id: 'openai::video',
   providerId: 'openai',
-  name: 'Image',
-  capabilities: ['image-generation'],
+  name: 'Video',
+  capabilities: ['video-generation'],
   supportsStreaming: false,
   isEnabled: true,
   isHidden: false
@@ -30,7 +30,7 @@ const startSingleModelCheck = vi.fn()
 const startHealthCheck = vi.fn()
 const health = {
   modelCheckOpen: true,
-  models: [imageModel, chatModel],
+  models: [videoModel, chatModel],
   apiKeyEntries: [{ id: 'key-1', key: 'sk-primary', label: 'Primary', isEnabled: true }],
   canSelectApiKey: true,
   requiresApiKey: true,
@@ -58,7 +58,7 @@ describe('ModelCheckDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     health.modelCheckOpen = true
-    health.models = [imageModel, chatModel]
+    health.models = [videoModel, chatModel]
     health.apiKeyEntries = [{ id: 'key-1', key: 'sk-primary', label: 'Primary', isEnabled: true }]
     health.canSelectApiKey = true
     health.requiresApiKey = true
@@ -267,7 +267,7 @@ describe('ModelCheckDialog', () => {
 
   it('disables a single-model run with an unsupported-only placeholder', async () => {
     const user = userEvent.setup()
-    health.models = [imageModel]
+    health.models = [videoModel]
 
     render(<ModelCheckDialog />)
 
@@ -282,7 +282,7 @@ describe('ModelCheckDialog', () => {
 
   it('allows an all-model run when every model will be skipped', async () => {
     const user = userEvent.setup()
-    health.models = [imageModel]
+    health.models = [videoModel]
 
     render(<ModelCheckDialog />)
     await user.click(screen.getByRole('button', { name: 'settings.models.check.model_button_caption' }))

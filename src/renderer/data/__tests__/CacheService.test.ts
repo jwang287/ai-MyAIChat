@@ -75,8 +75,8 @@ describe('renderer CacheService equality semantics', () => {
   describe('setSharedInternal (shared cache)', () => {
     it('skips cross-window broadcast when Record value has same content (new reference)', async () => {
       const service = await createService()
-      const key = 'chat.web_search.active_searches'
-      // `chat.web_search.active_searches` is `Record<string, ...>` — exactly the
+      const key = 'agent.session.task_events.session-1'
+      // This record-valued shared cache key is exactly the
       // case the Object.is → isEqual upgrade is meant to fix.
       service.setShared(key, { topic1: { status: 'running' } } as any)
       broadcastSync.mockClear()
@@ -87,7 +87,7 @@ describe('renderer CacheService equality semantics', () => {
 
     it('broadcasts when Record value content actually changes', async () => {
       const service = await createService()
-      const key = 'chat.web_search.active_searches'
+      const key = 'agent.session.task_events.session-1'
       service.setShared(key, { topic1: { status: 'running' } } as any)
       broadcastSync.mockClear()
 

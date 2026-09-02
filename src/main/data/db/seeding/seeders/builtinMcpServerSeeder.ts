@@ -1,36 +1,17 @@
-import { type McpServerRow, mcpServerTable } from '@data/db/schemas/mcpServer'
+import { mcpServerTable } from '@data/db/schemas/mcpServer'
 import { PRESET_MCP_SERVERS } from '@shared/data/presets/mcpServers'
-import { BuiltinMcpServerNames } from '@shared/utils/mcp'
 import { and, eq } from 'drizzle-orm'
 
 import type { DbType, ISeeder } from '../../types'
 import { hashObject } from '../hashObject'
 
-const legacyMcpAutoInstallArgs = ['-y', '@mcpmarket/mcp-auto-install', 'connect', '--json']
-
-function isLegacyMcpAutoInstall(row: McpServerRow): boolean {
-  return (
-    row.installSource === null &&
-    row.name === BuiltinMcpServerNames.mcpAutoInstall &&
-    row.type === 'inMemory' &&
-    row.reference === 'https://docs.cherry-ai.com/advanced-basic/mcp/auto-install' &&
-    row.baseUrl === null &&
-    row.command === 'npx' &&
-    row.registryUrl === null &&
-    JSON.stringify(row.args) === JSON.stringify(legacyMcpAutoInstallArgs) &&
-    row.env === null &&
-    row.headers === null &&
-    row.provider === 'CherryAI'
-  )
-}
-
 /**
  * Adopt the transport a builtin MCP server preset declares for rows that were installed
  * while it was still started in-process (`@cherry/flomo` and `@cherry/nowledge-mem` are HTTP
- * endpoints, `@cherry/mcp-auto-install` is an npx child process).
+ * endpoints).
  *
- * Only explicit builtin rows or the exact legacy mcp-auto-install default are rewritten. Ambiguous
- * rows without ownership, already-migrated rows, and deleted builtins stay untouched.
+ * Only explicit builtin rows are rewritten. Ambiguous rows without ownership,
+ * already-migrated rows, and deleted builtins stay untouched.
  *
  * A rewritten row adopts the preset's connection wholesale — an edit to the retired transport's
  * command or args does not survive, because it describes a way of running the server that no
@@ -59,7 +40,7 @@ export class BuiltinMcpServerSeeder implements ISeeder {
           .all()
 
         for (const row of rows) {
-          if (row.installSource !== 'builtin' && !isLegacyMcpAutoInstall(row)) continue
+          if (row.installSource !== 'builtin') continue
 
           const transportFields =
             preset.type === 'stdio'

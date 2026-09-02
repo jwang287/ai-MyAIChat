@@ -3,7 +3,6 @@ import { agentSessionTable as sessionsTable } from '@data/db/schemas/agentSessio
 import { type AgentWorkspaceRow, agentWorkspaceTable } from '@data/db/schemas/agentWorkspace'
 import { defaultHandlersFor, withSqliteErrors } from '@data/db/sqliteErrors'
 import type { DbOrTx } from '@data/db/types'
-import { agentChannelService } from '@data/services/AgentChannelService'
 import { getDataService } from '@data/services/dataServiceRegistry'
 import { applyMoves, insertWithOrderKey } from '@data/services/utils/orderKey'
 import { timestampToISO } from '@data/services/utils/rowMappers'
@@ -128,12 +127,10 @@ export class AgentWorkspaceService {
       .orderBy(desc(sessionsTable.lastActivityAt), asc(sessionsTable.id))
       .limit(AGENT_WORKSPACE_REFERENCE_PREVIEW_LIMIT)
       .all()
-    const channels = agentChannelService.listWorkspaceReferencesTx(db, id)
     const tasks = getDataService('AgentTaskService').listWorkspaceReferencesTx(db, id)
 
     return {
       sessions: buildReferenceList(sessions, sessionTotal),
-      channels: buildReferenceList(channels),
       tasks: buildReferenceList(tasks)
     }
   }

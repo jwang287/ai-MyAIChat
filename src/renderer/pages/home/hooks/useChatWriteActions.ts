@@ -95,9 +95,6 @@ interface Params {
 
 interface Result {
   actions: ChatWriteActions
-  /** Capability flags the send path needs to mirror — exposed so
-   *  `handleSend` builds the same body shape. */
-  capabilityBody: Record<string, unknown>
 }
 
 export function useChatWriteActions(params: Params): Result {
@@ -112,8 +109,7 @@ export function useChatWriteActions(params: Params): Result {
     cache,
     seedReservedMessages,
     scrollToBottom,
-    startNewContextBlocked,
-    assistant
+    startNewContextBlocked
   } = params
   const {
     branchWithoutIds,
@@ -281,14 +277,7 @@ export function useChatWriteActions(params: Params): Result {
     [patchMessageTrigger, rollbackBranch, seedOptimisticBranch]
   )
 
-  const capabilityBody = useMemo<Record<string, unknown>>(
-    () => ({
-      enableWebSearch: assistant?.settings.enableWebSearch
-    }),
-    [assistant?.settings.enableWebSearch]
-  )
-
-  /** Regenerate with capability body + target-driven anchor/model. */
+  /** Regenerate with target-driven anchor/model. */
   const regenerateWithCapabilities = useCallback(
     async (messageId?: string, options?: { modelId?: UniqueModelId; turnOptions?: AssistantTurnOptions }) => {
       // Anchor semantics depend on the target role:
@@ -367,7 +356,6 @@ export function useChatWriteActions(params: Params): Result {
       const regeneratePromise = regenerate({
         messageId,
         body: {
-          ...capabilityBody,
           ...(parentAnchorId && { parentAnchorId }),
           ...(regenerateModelId && { mentionedModels: [regenerateModelId] }),
           ...turnOptionsRequestFields(turnOptions)
@@ -375,7 +363,7 @@ export function useChatWriteActions(params: Params): Result {
       })
       await regeneratePromise
     },
-    [regenerate, capabilityBody, uiMessages, setMessages, seedReservedMessages, topic.id]
+    [regenerate, uiMessages, setMessages, seedReservedMessages, topic.id]
   )
 
   const handleForkAndResend = useCallback<ChatWriteActions['forkAndResend']>(
@@ -558,5 +546,5 @@ export function useChatWriteActions(params: Params): Result {
     ]
   )
 
-  return { actions, capabilityBody }
+  return { actions }
 }

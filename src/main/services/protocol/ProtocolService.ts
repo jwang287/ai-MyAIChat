@@ -1,21 +1,15 @@
 import { exec } from 'node:child_process'
-import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { promisify } from 'node:util'
 
 import { application } from '@application'
-import { mcpServerService } from '@data/services/McpServerService'
 import { loggerService } from '@logger'
 import { BaseService, Injectable, Phase, ServicePhase } from '@main/core/lifecycle'
 import { isLinux } from '@main/core/platform'
 import { WindowType } from '@main/core/window/types'
-import { openSettingsInMainWindow } from '@main/services/mainWindowNavigation'
-import type { ProtocolMcpInstallRequest } from '@shared/data/types/mcpProtocolInstall'
-import type { McpServer } from '@shared/data/types/mcpServer'
 import { app } from 'electron'
 
-import { parseMcpInstallProtocolUrl } from './handlers/mcpInstall'
 import { handleNavigateProtocolUrl } from './handlers/navigate'
 import { handleProvidersProtocolUrl } from './handlers/providersImport'
 
@@ -33,7 +27,6 @@ const logger = loggerService.withContext('ProtocolService')
 // at call time inside listener callbacks — safe because OS events fire post-bootstrap.
 export class ProtocolService extends BaseService {
   private pendingProtocolUrls: string[] = []
-  private pendingMcpInstallRequests: ProtocolMcpInstallRequest[] = []
   private areServicesReady = false
   private isMainRendererReady = false
 
@@ -67,7 +60,7 @@ export class ProtocolService extends BaseService {
 
     // 3) Windows/Linux second-instance: sole owner.
     //    - argv carries `cherrystudio://...` → dispatch to URL handler; each handler
-    //      self-routes focus (mcp / navigate raise Main, providers / oauth do not),
+    //      self-routes focus (navigate raises Main; providers / oauth do not),
     //      so we never raise Main behind their backs.
     //    - argv carries no URL → plain re-launch (user double-clicked the icon while
     //      the app is running); surface the main window. MainWindowService is
@@ -102,40 +95,6 @@ export class ProtocolService extends BaseService {
 
     this.isMainRendererReady = true
     this.flushPendingProtocolUrls()
-  }
-
-  public listPendingMcpInstallRequests(windowId: string): ProtocolMcpInstallRequest[] {
-    if (application.get('WindowManager').getWindowType(windowId) !== WindowType.Main) {
-      return []
-    }
-
-    return [...this.pendingMcpInstallRequests]
-  }
-
-  public installPendingMcpInstallRequest(windowId: string, requestId: string): McpServer[] {
-    const requestIndex = this.findPendingMcpInstallRequest(windowId, requestId)
-    if (requestIndex === -1) {
-      throw new Error('MCP protocol install request not found')
-    }
-
-    const createdServers = mcpServerService.createMany(this.pendingMcpInstallRequests[requestIndex].servers)
-    this.pendingMcpInstallRequests.splice(requestIndex, 1)
-    return createdServers
-  }
-
-  public cancelPendingMcpInstallRequest(windowId: string, requestId: string): void {
-    const requestIndex = this.findPendingMcpInstallRequest(windowId, requestId)
-    if (requestIndex !== -1) {
-      this.pendingMcpInstallRequests.splice(requestIndex, 1)
-    }
-  }
-
-  private findPendingMcpInstallRequest(windowId: string, requestId: string): number {
-    if (application.get('WindowManager').getWindowType(windowId) !== WindowType.Main) {
-      return -1
-    }
-
-    return this.pendingMcpInstallRequests.findIndex((request) => request.requestId === requestId)
   }
 
   private registerProtocolScheme() {
@@ -181,9 +140,6 @@ export class ProtocolService extends BaseService {
       const params = new URLSearchParams(urlObj.search)
 
       switch (urlObj.hostname.toLowerCase()) {
-        case 'mcp':
-          this.handleMcpInstallProtocolUrl(urlObj)
-          return
         case 'providers':
           handleProvidersProtocolUrl(urlObj).catch((error) =>
             logger.error('Failed to handle providers protocol URL', error as Error)
@@ -202,11 +158,11 @@ export class ProtocolService extends BaseService {
 
       // Default branch: deep link with no main-process handler. Fan out to every
       // managed renderer (Main / SubWindow / pooled tool surfaces);
-      // consumers (oauth.ts, useNutstoreSso, ...) filter by urlObj.hostname/pathname.
+      // consumers filter by urlObj.hostname/pathname.
       // broadcast() — not broadcastToType(Main) — because the flow-initiating
       // window is not necessarily Main. Trade-off: the payload reaches renderers that don't need it; if
       // selective routing is required (e.g. to confine OAuth `code`), promote
-      // that scheme to its own switch case alongside mcp/providers/navigate.
+      // that scheme to its own switch case alongside providers/navigate.
       //
       // TODO(security): any future OAuth-style host added to this scheme MUST
       // get its own switch case above instead of falling through here — leaving
@@ -222,19 +178,6 @@ export class ProtocolService extends BaseService {
     } catch (error) {
       logger.error('Failed to handle protocol URL', error as Error)
     }
-  }
-
-  private handleMcpInstallProtocolUrl(url: URL) {
-    const servers = parseMcpInstallProtocolUrl(url)
-    if (!servers) {
-      application.get('MainWindowService').showMainWindow()
-      return
-    }
-
-    const requestId = randomUUID()
-    this.pendingMcpInstallRequests.push({ requestId, servers })
-    logger.debug('Prepared MCP protocol install preview', { count: servers.length })
-    openSettingsInMainWindow(`/settings/mcp/servers?protocolInstallRequestId=${requestId}`)
   }
 
   private handleArgvForUrl(args: string[]) {

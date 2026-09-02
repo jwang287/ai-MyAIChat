@@ -36,7 +36,6 @@ vi.mock('@main/core/paths/pathRegistry', async () => {
       Object.freeze({
         // Cherry-owned directories (eligible for auto-ensure)
         'feature.files.data': '/mock/userData/Data/Files',
-        'feature.notes.data': '/mock/userData/Data/Notes',
         'feature.agents.system_workspaces': '/mock/userData/Data/Agents/system',
         'cherry.bin': '/mock/home/.cherrystudio/bin',
         // Cherry-owned files (auto-ensure dirname only)
@@ -123,19 +122,6 @@ describe('Application.getPath', () => {
   })
 
   describe('lazy auto-ensure', () => {
-    it('mkdirs the base directory on first access of a directory key', () => {
-      app.getPath('feature.notes.data')
-      expect(fs.mkdirSync).toHaveBeenCalledTimes(1)
-      expect(fs.mkdirSync).toHaveBeenCalledWith('/mock/userData/Data/Notes', { recursive: true })
-    })
-
-    it('does not mkdir on the second access of the same key (cache hit)', () => {
-      app.getPath('feature.notes.data')
-      app.getPath('feature.notes.data')
-      // Cached after the first call — second call must skip mkdir entirely.
-      expect(fs.mkdirSync).toHaveBeenCalledTimes(1)
-    })
-
     it('mkdirs path.dirname(base) for a key whose name ends with "_file"', () => {
       app.getPath('feature.copilot.token_file')
       // The token file key points to a file; auto-ensure should target
@@ -204,29 +190,6 @@ describe('Application.getPath', () => {
       // directory gets ensured (always the registered base, not base/file).
       expect(fs.mkdirSync).toHaveBeenCalledTimes(1)
       expect(fs.mkdirSync).toHaveBeenCalledWith('/mock/userData/Data/Files', { recursive: true })
-    })
-
-    it('isolates the cache per key (two distinct keys each get their own mkdir)', () => {
-      app.getPath('feature.notes.data')
-      app.getPath('feature.files.data')
-      // Two distinct keys → two distinct mkdir calls; the cache for one
-      // must not suppress the other.
-      expect(fs.mkdirSync).toHaveBeenCalledTimes(2)
-      expect(fs.mkdirSync).toHaveBeenNthCalledWith(1, '/mock/userData/Data/Notes', { recursive: true })
-      expect(fs.mkdirSync).toHaveBeenNthCalledWith(2, '/mock/userData/Data/Files', { recursive: true })
-    })
-
-    it('clears the auto-ensure cache when __setPathMapForTesting is called', () => {
-      app.getPath('feature.notes.data')
-      expect(fs.mkdirSync).toHaveBeenCalledTimes(1)
-
-      // Re-injecting the path map should also clear the ensuredKeys cache,
-      // so the next call mkdirs the same key again.
-      app.__setPathMapForTesting(buildPathRegistry())
-      vi.mocked(fs.mkdirSync).mockClear()
-
-      app.getPath('feature.notes.data')
-      expect(fs.mkdirSync).toHaveBeenCalledTimes(1)
     })
   })
 

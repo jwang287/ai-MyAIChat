@@ -8,16 +8,11 @@ const mocks = vi.hoisted(() => ({
   requestMock: vi.fn(),
   useIpcOn: vi.fn(),
   events: new Map<string, (payload: Record<string, unknown>) => void>(),
-  openSmartMiniApp: vi.fn(),
   toastError: vi.fn()
 }))
 
 vi.mock('@data/hooks/usePreference', () => ({
   usePreference: () => [mocks.gatewayPort, vi.fn()]
-}))
-
-vi.mock('@renderer/hooks/useMiniAppPopup', () => ({
-  useMiniAppPopup: () => ({ openSmartMiniApp: mocks.openSmartMiniApp })
 }))
 
 vi.mock('@renderer/ipc', () => ({
@@ -93,7 +88,8 @@ describe('useOpenClawGatewayController', () => {
       await result.current.onOpenDashboard()
     })
 
-    const dashboardUrl = new URL(vi.mocked(mocks.openSmartMiniApp).mock.calls[0][0].url)
+    const dashboardCall = mocks.requestMock.mock.calls.find(([route]) => route === 'system.shell.open_website')
+    const dashboardUrl = new URL(dashboardCall?.[1] as string)
     expect(dashboardUrl.searchParams.get('cherry_navigation_revision')).toBe('1774560000000')
     expect(dashboardUrl.searchParams.get('theme')).toBe('dark')
     expect(dashboardUrl.hash).toBe('#token=secret')

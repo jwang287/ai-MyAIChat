@@ -684,8 +684,7 @@ class ModelService {
             serviceTierControl
           )
           const resolved = applyStoredPresetDeltas(baseline, row)
-          const imageGeneration = registryOverride?.imageGeneration ?? presetModel.imageGeneration
-          return applyStoredModelState(imageGeneration ? { ...resolved, imageGeneration } : resolved, row)
+          return applyStoredModelState(resolved, row)
         } catch (error) {
           logger.warn('Registry enrichment failed; serving preset-backed model with a minimal fallback', {
             providerId: row.providerId,
@@ -702,7 +701,6 @@ class ModelService {
       try {
         const { presetModel, registryOverride, reasoningProfile, serviceTierControl } =
           providerRegistryService.lookupModel(model.providerId, modelId, reasoningConfigCache)
-        const imageGeneration = registryOverride?.imageGeneration ?? presetModel?.imageGeneration
         const registryModel = presetModel
           ? mergePresetModel(
               presetModel,
@@ -715,7 +713,6 @@ class ModelService {
           : undefined
 
         const updates: Partial<Model> = {}
-        if (imageGeneration) updates.imageGeneration = imageGeneration
         if (model.description === undefined && registryModel?.description !== undefined) {
           updates.description = registryModel.description
         }
@@ -761,9 +758,7 @@ class ModelService {
         else if (model.reasoning) updates.reasoning = undefined
         return Object.keys(updates).length > 0 ? { ...model, ...updates } : model
       } catch (error) {
-        // A registry-lookup failure must not silently strip a model's
-        // imageGeneration / capabilities — log so a real registry/IO fault
-        // is diagnosable rather than masquerading as "model isn't image-gen".
+        // A registry-lookup failure must not silently strip model metadata.
         logger.warn('Registry enrichment failed; serving model without registry metadata', {
           providerId: model.providerId,
           modelId,

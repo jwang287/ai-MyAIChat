@@ -23,13 +23,12 @@ import { scrollIntoView } from '@renderer/utils/dom'
 import { cn } from '@renderer/utils/style'
 import { TRANSLATE_PROMPT } from '@shared/ai/prompts'
 import type { Model } from '@shared/data/types/model'
-import { isGenerateImageModel, isNonChatModel } from '@shared/utils/model'
+import { isNonChatModel } from '@shared/utils/model'
 import {
   ArrowRight,
   ChevronDown,
   Languages,
   MessageSquareMore,
-  Palette,
   RefreshCcw,
   Rocket,
   RotateCcw,
@@ -47,7 +46,6 @@ interface ModelSettingsProps {
   showSettingsButton?: boolean
   showDescription?: boolean
   showDividers?: boolean
-  showPaintingModel?: boolean
   modelFilter?: (model: Model) => boolean
   autoFillEmptyModels?: boolean
   onDefaultModelSelected?: (model: Model) => void | Promise<void>
@@ -124,7 +122,6 @@ const ModelSettings: FC<ModelSettingsProps> = ({
   showSettingsButton = true,
   showDescription = true,
   showDividers = true,
-  showPaintingModel = true,
   modelFilter,
   autoFillEmptyModels = false,
   onDefaultModelSelected,
@@ -132,16 +129,8 @@ const ModelSettings: FC<ModelSettingsProps> = ({
   focus,
   className
 }) => {
-  const {
-    defaultModel,
-    quickModel,
-    translateModel,
-    paintingModel,
-    setDefaultModel,
-    setQuickModel,
-    setTranslateModel,
-    setPaintingModel
-  } = useDefaultModel()
+  const { defaultModel, quickModel, translateModel, setDefaultModel, setQuickModel, setTranslateModel } =
+    useDefaultModel()
   const { providers } = useProviders({ enabled: true })
   const [activePanel, setActivePanel] = useState<ModelSettingsPanel>(null)
   const { theme } = useTheme()
@@ -198,14 +187,6 @@ const ModelSettings: FC<ModelSettingsProps> = ({
       void setTranslateModel(selected)
     },
     [setTranslateModel]
-  )
-
-  const onSelectPainting = useCallback(
-    (selected: Model | undefined) => {
-      if (!selected) return
-      void setPaintingModel(selected)
-    },
-    [setPaintingModel]
   )
 
   const onResetTranslatePrompt = () => {
@@ -325,25 +306,6 @@ const ModelSettings: FC<ModelSettingsProps> = ({
               </>
             )}
           </ModelSettingRow>
-          {showPaintingModel && (
-            <>
-              <SettingDivider />
-              <ModelSettingRow
-                compact={compact}
-                icon={<Palette size={16} className="lucide-custom shrink-0 text-foreground" />}
-                title={t('settings.models.painting_model')}
-                description={showDescription ? t('settings.models.painting_model_description') : undefined}>
-                <DefaultModelSelector
-                  model={paintingModel}
-                  providers={providers}
-                  filter={isGenerateImageModel}
-                  compact={compact}
-                  onSelect={onSelectPainting}
-                  placeholder={t('settings.models.empty')}
-                />
-              </ModelSettingRow>
-            </>
-          )}
           <SettingDivider />
           <ModelSettingRow
             compact={compact}

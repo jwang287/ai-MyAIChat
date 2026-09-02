@@ -9,7 +9,6 @@ import {
   MessageSquare,
   MonitorCog,
   Package,
-  Palette,
   Search,
   Settings2,
   Sparkles,
@@ -63,7 +62,7 @@ export const GhostVariant: Story = {
 export const SmallSize: Story = {
   args: {
     icon: <Search size={13} />,
-    label: 'Web Search',
+    label: 'Quick Search',
     size: 'sm'
   }
 }
@@ -132,7 +131,7 @@ function SettingsMenuExample() {
     { id: 'display', icon: MonitorCog, label: 'Display' },
     { id: 'data', icon: HardDrive, label: 'Data' },
     { id: 'divider-2', divider: true },
-    { id: 'websearch', icon: Search, label: 'Web Search' },
+    { id: 'quick-search', icon: Search, label: 'Quick Search' },
     { id: 'memory', icon: Brain, label: 'Memory' },
     { id: 'docprocess', icon: FileCode, label: 'Documents' },
     { id: 'quickphrase', icon: Zap, label: 'Quick Phrases' },
@@ -176,7 +175,7 @@ function SidebarFullMenuExample() {
   const items = [
     { id: 'chat', icon: MessageSquare, label: 'Chat' },
     { id: 'agent', icon: Sparkles, label: 'Agent' },
-    { id: 'painting', icon: Palette, label: 'Painting' },
+    { id: 'translation', icon: Search, label: 'Translation' },
     { id: 'search', icon: Search, label: 'Explore' },
     { id: 'knowledge', icon: Brain, label: 'Knowledge' }
   ]
@@ -221,7 +220,7 @@ function SmallMenuWithGroupsExample() {
     {
       label: 'Services',
       items: [
-        { id: 'search', icon: Search, label: 'Web Search' },
+        { id: 'quick-search', icon: Search, label: 'Quick Search' },
         { id: 'memory', icon: Brain, label: 'Memory' }
       ]
     },

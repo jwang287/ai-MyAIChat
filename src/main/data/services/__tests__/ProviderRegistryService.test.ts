@@ -683,97 +683,14 @@ describe('ProviderRegistryService', () => {
       expect(regional.apiModelId).toBe('us.anthropic.claude-sonnet-4-5-v1:0')
     })
 
-    it('getImageGenerationSupport returns the model block when present', async () => {
-      const block = {
-        modes: {
-          generate: { supports: { size: { type: 'enum' as const, options: ['1024x1024'], render: 'chips' as const } } }
-        }
-      }
-      mockReadModels.mockReturnValue({
-        version: '1.0',
-        models: [{ id: 'sd-1-5', name: 'SD 1.5', imageGeneration: block }]
-      } as ReturnType<typeof readModelRegistry>)
-      mockReadProviderModels.mockReturnValue({ version: '1.0', overrides: [] } as ReturnType<
-        typeof readProviderModelRegistry
-      >)
-      mockReadProviders.mockReturnValue({
-        version: '1.0',
-        providers: [
-          {
-            id: 'ovms',
-            name: 'OVMS',
-            defaultChatEndpoint: null,
-            metadata: { website: { official: 'https://openvino.ai' } }
-          }
-        ]
-      } as ReturnType<typeof readProviderRegistry>)
-      const result = providerRegistryService.getImageGenerationSupport('ovms', 'sd-1-5')
-      expect(result).toEqual(block)
-    })
-
-    it('getImageGenerationSupport resolves a custom provider through its persisted presetProviderId', async () => {
-      const block = { modes: { generate: { supports: {} } } }
-      mockReadModels.mockReturnValue({
-        version: '1.0',
-        models: [{ id: 'image-model', name: 'Image Model', imageGeneration: block }]
-      } as ReturnType<typeof readModelRegistry>)
-      mockReadProviderModels.mockReturnValue({
-        version: '1.0',
-        overrides: [{ providerId: 'openai', modelId: 'image-model' }]
-      } as ReturnType<typeof readProviderModelRegistry>)
-      mockReadProviders.mockReturnValue({
-        version: '1.0',
-        providers: [{ id: 'openai', name: 'OpenAI', defaultChatEndpoint: null, metadata: {} }]
-      } as ReturnType<typeof readProviderRegistry>)
-      await dbh.db.insert(userProviderTable).values({
-        providerId: 'custom-openai-image',
-        presetProviderId: 'openai',
-        name: 'Custom OpenAI Image',
-        orderKey: generateOrderKeyBetween(null, null)
-      })
-
-      expect(providerRegistryService.getImageGenerationSupport('custom-openai-image', 'image-model')).toEqual(block)
-    })
-
-    it('getImageGenerationSupport returns null when the model is unknown', async () => {
-      mockReadModels.mockReturnValue({ version: '1.0', models: [] } as ReturnType<typeof readModelRegistry>)
-      mockReadProviderModels.mockReturnValue({ version: '1.0', overrides: [] } as ReturnType<
-        typeof readProviderModelRegistry
-      >)
-      mockReadProviders.mockReturnValue({
-        version: '1.0',
-        providers: [
-          {
-            id: 'ovms',
-            name: 'OVMS',
-            defaultChatEndpoint: null,
-            metadata: { website: { official: 'https://openvino.ai' } }
-          }
-        ]
-      } as ReturnType<typeof readProviderRegistry>)
-      const result = providerRegistryService.getImageGenerationSupport('ovms', 'user-custom-sd')
-      expect(result).toBeNull()
-    })
-
-    it('getImageGenerationSupport returns null when neither model nor provider has the block', async () => {
-      setupRegistryData()
-      const result = providerRegistryService.getImageGenerationSupport('openai', 'gpt-4o')
-      expect(result).toBeNull()
-    })
-
     it('lists provider-declared registry models by disabled flag', async () => {
       mockReadModels.mockReturnValue({
         version: '1.0',
         models: [
+          { id: 'text-model', name: 'Text Model', capabilities: ['function-call'] },
           {
-            id: 'qwen-image',
-            name: 'Qwen Image',
-            capabilities: ['image-generation'],
-            imageGeneration: { modes: ['generate'] }
-          },
-          {
-            id: 'text-model',
-            name: 'Text Model',
+            id: 'secondary-text-model',
+            name: 'Secondary Text Model',
             capabilities: ['function-call']
           }
         ]
@@ -783,16 +700,16 @@ describe('ProviderRegistryService', () => {
         overrides: [
           {
             providerId: 'silicon',
-            modelId: 'qwen-image',
-            apiModelId: 'Qwen/Qwen-Image'
+            modelId: 'text-model',
+            apiModelId: 'Qwen/Qwen-Text'
           },
           {
             providerId: 'silicon',
-            modelId: 'text-model'
+            modelId: 'secondary-text-model'
           },
           {
             providerId: 'cherryin',
-            modelId: 'qwen-image',
+            modelId: 'text-model',
             disabled: true
           }
         ]
@@ -819,11 +736,11 @@ describe('ProviderRegistryService', () => {
       const disabled = providerRegistryService.listProviderRegistryModels({ disabled: true })
 
       expect(active.map((item) => `${item.providerId}:${item.presetModelId}:${item.apiModelId}`)).toEqual([
-        'silicon:qwen-image:Qwen/Qwen-Image',
-        'silicon:text-model:text-model'
+        'silicon:text-model:Qwen/Qwen-Text',
+        'silicon:secondary-text-model:secondary-text-model'
       ])
       expect(disabled.map((item) => `${item.providerId}:${item.presetModelId}:${item.apiModelId}`)).toEqual([
-        'cherryin:qwen-image:qwen-image'
+        'cherryin:text-model:text-model'
       ])
     })
 
@@ -853,44 +770,6 @@ describe('ProviderRegistryService', () => {
       ])
     })
 
-    it('a standalone override (no models.json entry) only carries image-generation capability when it declares capabilities.force', async () => {
-      // Regression: a vendor-exclusive override (e.g. Ollama's x/z-image-turbo) that sets
-      // imageGeneration but omits `capabilities` synthesizes with capabilities: [] — invisible to
-      // the Paintings model filter, which requires the image-generation capability.
-      mockReadModels.mockReturnValue({ version: '1.0', models: [] } as ReturnType<typeof readModelRegistry>)
-      mockReadProviderModels.mockReturnValue({
-        version: '1.0',
-        overrides: [
-          {
-            providerId: 'ollama',
-            modelId: 'x/z-image-turbo',
-            apiModelId: 'x/z-image-turbo',
-            name: 'Z-Image Turbo',
-            capabilities: { force: ['image-generation'] },
-            outputModalities: ['image'],
-            imageGeneration: { modes: { generate: { supports: {} } } }
-          },
-          {
-            providerId: 'ollama',
-            modelId: 'x/no-capability',
-            apiModelId: 'x/no-capability',
-            name: 'No Capability',
-            outputModalities: ['image'],
-            imageGeneration: { modes: { generate: { supports: {} } } }
-          }
-        ]
-      } as ReturnType<typeof readProviderModelRegistry>)
-      mockReadProviders.mockReturnValue({
-        version: '1.0',
-        providers: [{ id: 'ollama', name: 'Ollama', defaultChatEndpoint: null, metadata: {} }]
-      } as ReturnType<typeof readProviderRegistry>)
-
-      const models = providerRegistryService.listProviderRegistryModels({ providerId: 'ollama' })
-
-      expect(models.find((m) => m.apiModelId === 'x/z-image-turbo')?.capabilities).toEqual(['image-generation'])
-      expect(models.find((m) => m.apiModelId === 'x/no-capability')?.capabilities).toEqual([])
-    })
-
     it('lists provider-declared registry models without reading provider rows from DB', async () => {
       setupRegistryData()
       const providerSpy = vi.spyOn(providerService, 'getByProviderId').mockImplementationOnce(() => {
@@ -909,9 +788,9 @@ describe('ProviderRegistryService', () => {
         version: '1.0',
         models: [
           {
-            id: 'qwen-image',
-            name: 'Qwen Image',
-            capabilities: ['image-generation']
+            id: 'qwen-text',
+            name: 'Qwen Text',
+            capabilities: ['function-call']
           }
         ]
       } as ReturnType<typeof readModelRegistry>)
@@ -920,8 +799,8 @@ describe('ProviderRegistryService', () => {
         overrides: [
           {
             providerId: 'silicon',
-            modelId: 'qwen-image',
-            apiModelId: 'Qwen/Qwen-Image'
+            modelId: 'qwen-text',
+            apiModelId: 'Qwen/Qwen-Text'
           }
         ]
       } as ReturnType<typeof readProviderModelRegistry>)
@@ -937,11 +816,11 @@ describe('ProviderRegistryService', () => {
         ]
       } as ReturnType<typeof readProviderRegistry>)
 
-      const result = providerRegistryService.lookupModel('silicon', 'Qwen/Qwen-Image')
+      const result = providerRegistryService.lookupModel('silicon', 'Qwen/Qwen-Text')
 
-      expect(result.presetModel?.id).toBe('qwen-image')
-      expect(result.registryOverride?.modelId).toBe('qwen-image')
-      expect(result.registryOverride?.apiModelId).toBe('Qwen/Qwen-Image')
+      expect(result.presetModel?.id).toBe('qwen-text')
+      expect(result.registryOverride?.modelId).toBe('qwen-text')
+      expect(result.registryOverride?.apiModelId).toBe('Qwen/Qwen-Text')
     })
 
     it('should ignore a legacy persisted reasoningFormatType field', async () => {

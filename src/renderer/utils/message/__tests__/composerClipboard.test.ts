@@ -377,11 +377,11 @@ describe('composer clipboard', () => {
       segments: [
         {
           type: 'token',
-          fallbackText: 'Web search',
+          fallbackText: 'Custom action',
           token: {
-            id: 'command:web-search',
+            id: 'command:custom-action',
             kind: 'command',
-            label: 'Web search'
+            label: 'Custom action'
           }
         }
       ]
@@ -889,9 +889,9 @@ describe('composer clipboard', () => {
       text: 'Run command ',
       tokens: [
         {
-          id: 'command:web-search',
+          id: 'command:custom-action',
           kind: 'command',
-          label: 'Web Search',
+          label: 'Custom action',
           index: 0,
           textOffset: 0,
           promptText: 'Run command'
@@ -916,7 +916,7 @@ describe('composer clipboard', () => {
 
     expect(content?.plainText).toBe('Run command secret.pdf')
     expect(content?.html).not.toContain('/Users/example/private/secret.pdf')
-    expect(fragmentText).not.toContain('command:web-search')
+    expect(fragmentText).not.toContain('command:custom-action')
     expect(fragmentText).not.toContain('file:/Users/example/private/secret.pdf')
     expect(readComposerClipboardFragment(fragmentText)?.segments).toEqual([
       { type: 'text', text: 'Run command secret.pdf' }

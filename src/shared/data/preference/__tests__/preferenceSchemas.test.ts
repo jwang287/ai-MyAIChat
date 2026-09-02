@@ -19,19 +19,6 @@ describe('DefaultPreferences', () => {
     expect('feature.file_processing.default.image_to_text' in DefaultPreferences.default).toBe(false)
   })
 
-  it('defaults the URL fetch web search provider to jina', () => {
-    const fetchUrlsDefault: PreferenceSchemas['default']['chat.web_search.default_fetch_urls_provider'] = 'jina'
-
-    expect(DefaultPreferences.default['chat.web_search.default_fetch_urls_provider']).toBe(fetchUrlsDefault)
-  })
-
-  it('defaults the keyword search web search provider to exa-mcp', () => {
-    const searchKeywordsDefault: PreferenceSchemas['default']['chat.web_search.default_search_keywords_provider'] =
-      'exa-mcp'
-
-    expect(DefaultPreferences.default['chat.web_search.default_search_keywords_provider']).toBe(searchKeywordsDefault)
-  })
-
   it('groups conversations and agent sessions by the assistant and agent defaults for new users', () => {
     const topicDisplayDefault: PreferenceSchemas['default']['topic.tab.display_mode'] = 'assistant'
     const agentSessionDisplayDefault: PreferenceSchemas['default']['agent.session.display_mode'] = 'agent'
@@ -40,12 +27,11 @@ describe('DefaultPreferences', () => {
     expect(DefaultPreferences.default['agent.session.display_mode']).toBe(agentSessionDisplayDefault)
   })
 
-  it('defaults sidebar favorites to Chat before Agent for new users', () => {
+  it('defaults sidebar favorites to Chat, Agent, Translation, and Knowledge for new users', () => {
     const sidebarFavoritesDefault: PreferenceSchemas['default']['ui.sidebar.favorites'] = [
       { id: 'assistants', type: 'app' },
       { id: 'agents', type: 'app' },
       { id: 'translate', type: 'app' },
-      { id: 'paintings', type: 'app' },
       { id: 'knowledge', type: 'app' }
     ]
 

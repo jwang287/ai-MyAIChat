@@ -10,7 +10,6 @@ export {
   createAgent,
   createExecutor,
   embedMany,
-  generateImage,
   generateText,
   rerank,
   resolveLanguageModel,
@@ -46,14 +45,11 @@ export { PluginEngine } from './core/runtime/pluginEngine'
 // ==================== 类型工具 ====================
 export type {
   AiSdkModel,
-  ExtractToolConfig,
-  ExtractToolConfigMap,
   ProviderId,
   ToolCapability,
   ToolFactory,
   ToolFactoryMap,
-  ToolFactoryPatch,
-  WebSearchToolConfigMap
+  ToolFactoryPatch
 } from './core/providers'
 
 // ==================== Context 模块(截断 + 历史压缩) ====================

@@ -31,12 +31,12 @@ const policy = (overrides: Partial<BridgePolicy> = {}): BridgePolicy => ({
   ...overrides
 })
 
-/** Plan mode as the host pushes it: safe builtins + Cherry auto-approved bridged tools. */
+/** Plan mode as the host pushes it: safe builtins + explicitly approved local MCP tools. */
 const planPolicy = (overrides: Partial<BridgePolicy> = {}): BridgePolicy =>
   policy({
     permissionMode: 'plan',
-    autoApprovedTools: ['subagent', 'mcp__cherry-tools__web_search'],
-    planSafeTools: ['todo_write', 'exit_plan_mode', 'list_agents', 'mcp__cherry-tools__web_search'],
+    autoApprovedTools: ['subagent', 'mcp__local-server__read_status'],
+    planSafeTools: ['todo_write', 'exit_plan_mode', 'list_agents', 'mcp__local-server__read_status'],
     ...overrides
   })
 
@@ -162,9 +162,9 @@ describe('decideToolCall', () => {
     ],
     [
       'default',
-      'auto-approved first-party tool allows',
-      policy({ autoApprovedTools: ['mcp__cherry-tools__web_search'] }),
-      'mcp__cherry-tools__web_search',
+      'auto-approved MCP tool allows',
+      policy({ autoApprovedTools: ['mcp__local-server__read_status'] }),
+      'mcp__local-server__read_status',
       {},
       'allow'
     ],
@@ -172,10 +172,10 @@ describe('decideToolCall', () => {
       'default',
       'disabled beats first-party auto approval',
       policy({
-        disabledTools: ['mcp__cherry-tools__web_search'],
-        autoApprovedTools: ['mcp__cherry-tools__web_search']
+        disabledTools: ['mcp__local-server__read_status'],
+        autoApprovedTools: ['mcp__local-server__read_status']
       }),
-      'mcp__cherry-tools__web_search',
+      'mcp__local-server__read_status',
       {},
       'deny'
     ],
@@ -212,7 +212,7 @@ describe('decideToolCall', () => {
       ['read outside the roots denies (never asks)', 'read', { file_path: path.join(outside, 'secret.txt') }, 'deny'],
       ['plan-safe builtin allows', 'todo_write', { todos: [] }, 'allow'],
       ['exit_plan_mode allows', 'exit_plan_mode', { plan: '# P' }, 'allow'],
-      ['auto-approved bridged tool listed plan-safe allows', 'mcp__cherry-tools__web_search', {}, 'allow'],
+      ['auto-approved local MCP tool listed plan-safe allows', 'mcp__local-server__read_status', {}, 'allow'],
       ['edit denies', 'edit', { file_path: 'inside.txt' }, 'deny'],
       ['write denies', 'write', { file_path: 'sub/new.txt' }, 'deny'],
       ['bash denies', 'bash', { command: 'ls' }, 'deny'],

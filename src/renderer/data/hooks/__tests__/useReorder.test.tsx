@@ -366,7 +366,7 @@ describe('useReorder - revalidateOnSuccess option', () => {
 
 describe('useReorder - idKey option', () => {
   // Collection whose items expose identity under `appId` instead of `id`
-  // (mirrors the miniapp schema). The optimistic reorder must identify items
+  // (mirrors a non-`id` primary-key resource). The optimistic reorder must identify items
   // by `appId` — reading `.id` would find nothing and fail the move.
   type AppItem = { appId: string; label?: string }
   type AppCollectionValue = { items: AppItem[] }

@@ -34,7 +34,6 @@ vi.mock('@cherrystudio/ui', () => ({
 
 vi.mock('@data/hooks/usePreference', () => ({
   usePreference: (key: string) => {
-    if (key === 'feature.paintings.default_provider') return ['zhipu', vi.fn()]
     if (key === 'ui.launchpad.app_order') return [mocks.appOrder, mocks.setAppOrder]
     return [mocks.sidebarFavorites, mocks.setSidebarFavorites]
   }
@@ -86,11 +85,8 @@ vi.mock('@renderer/i18n/label', () => ({
       assistants: 'Chat',
       agents: 'Agent',
       store: 'Library',
-      paintings: 'Paintings',
       translate: 'Translate',
-      mini_app: 'Mini Apps',
       knowledge: 'Knowledge',
-      files: 'Files',
       code_tools: 'Code',
       notes: 'Notes',
       openclaw: 'OpenClaw'
@@ -110,18 +106,13 @@ vi.mock('react-i18next', () => ({
           'title.chat': 'Chat',
           'assistants.presets.title': 'Library',
           'code.title': 'Code',
-          'files.title': 'Files',
           'knowledge.title': 'Knowledge',
           'launchpad.apps': 'Apps',
           'launchpad.deepseek_harness_shortcut': 'DSH',
-          'launchpad.miniApps': 'Mini Apps',
           'launchpad.pin_to_sidebar': 'Add to Sidebar',
           'launchpad.unpin_from_sidebar': 'Remove from Sidebar',
-          'miniApp.reorder_failed': 'Failed to reorder mini apps',
-          'miniApp.title': 'Mini Apps',
           'notes.title': 'Notes',
           'openclaw.title': 'OpenClaw',
-          'paintings.title': 'Paintings',
           'title.launchpad': 'Launchpad',
           'translate.title': 'Translate'
         }[key] ??

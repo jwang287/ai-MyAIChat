@@ -22,7 +22,7 @@ export function createToolSearchTool(
 ): Tool {
   return tool({
     description:
-      'Discover available tools by namespace. This is tool discovery (NOT web search). Tools are ' +
+      'Discover available tools by namespace. This is tool discovery, not an internet lookup. Tools are ' +
       'grouped by domain (web, kb, mcp:gmail, ...). Omit `query` to browse all. Inspect a name ' +
       'returned here with `tool_inspect`, then call it with `tool_invoke`.',
     inputSchema: z.object({

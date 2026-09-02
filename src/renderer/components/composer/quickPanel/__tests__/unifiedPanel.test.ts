@@ -370,12 +370,12 @@ describe('createUnifiedQuickPanelOpenOptions', () => {
     const options = createUnifiedQuickPanelOpenOptions(
       [
         {
-          id: 'web-search',
+          id: 'local-tool',
           kind: 'command',
-          label: '网络搜索',
+          label: '本地工具',
           icon: 'search',
           sources: ['root-panel'],
-          searchAliases: ['Web Search', 'Online Search']
+          searchAliases: ['Local Tool', 'Manual Tool']
         }
       ],
       {
@@ -398,7 +398,7 @@ describe('createUnifiedQuickPanelOpenOptions', () => {
     const pinyinCache = new WeakMap<QuickPanelListItem, string>()
     const skill = options.list.find((item) => item.label === 'pdf')!
     const quickPhrases = options.list.find((item) => item.label === '提示词管理')!
-    const webSearch = options.list.find((item) => item.label === '网络搜索')!
+    const localTool = options.list.find((item) => item.label === '本地工具')!
 
     // Skills keep their explicit root-panel search field and do not match descriptions.
     expect(filterFn(skill, 'pdf', fuzzyRegex, pinyinCache)).toBe(true)
@@ -410,9 +410,9 @@ describe('createUnifiedQuickPanelOpenOptions', () => {
     expect(filterFn(quickPhrases, 'tscgl', fuzzyRegex, pinyinCache)).toBe(true)
 
     // Launcher rows with filterText still match hidden English aliases and visible Chinese labels by initials.
-    expect(filterFn(webSearch, 'web', fuzzyRegex, pinyinCache)).toBe(true)
-    expect(filterFn(webSearch, 'online', fuzzyRegex, pinyinCache)).toBe(true)
-    expect(filterFn(webSearch, 'wlss', fuzzyRegex, pinyinCache)).toBe(true)
+    expect(filterFn(localTool, 'local', fuzzyRegex, pinyinCache)).toBe(true)
+    expect(filterFn(localTool, 'manual', fuzzyRegex, pinyinCache)).toBe(true)
+    expect(filterFn(localTool, 'bdgj', fuzzyRegex, pinyinCache)).toBe(true)
     // ...but not by a loose fuzzy subsequence of its pinyin or initials.
     expect(filterFn(quickPhrases, 'sl', fuzzyRegex, pinyinCache)).toBe(false)
   })

@@ -56,17 +56,6 @@ export const PRESET_MCP_SERVERS = freezePresets([
     isTrusted: true
   },
   {
-    name: BuiltinMcpServerNames.mcpAutoInstall,
-    reference: 'https://docs.cherry-ai.com/advanced-basic/mcp/auto-install',
-    type: 'stdio',
-    command: 'npx',
-    args: ['-y', '@mcpmarket/mcp-auto-install', 'connect', '--json'],
-    isActive: false,
-    provider: 'CherryAI',
-    installSource: 'builtin',
-    isTrusted: true
-  },
-  {
     name: BuiltinMcpServerNames.memory,
     reference: 'https://github.com/modelcontextprotocol/servers/tree/main/src/memory',
     type: 'inMemory',
@@ -83,18 +72,6 @@ export const PRESET_MCP_SERVERS = freezePresets([
     name: BuiltinMcpServerNames.sequentialThinking,
     type: 'inMemory',
     isActive: true,
-    provider: 'CherryAI',
-    installSource: 'builtin',
-    isTrusted: true
-  },
-  {
-    name: BuiltinMcpServerNames.braveSearch,
-    type: 'inMemory',
-    isActive: false,
-    env: {
-      BRAVE_API_KEY: 'YOUR_API_KEY'
-    },
-    shouldConfig: true,
     provider: 'CherryAI',
     installSource: 'builtin',
     isTrusted: true

@@ -9,25 +9,15 @@ const BASE_URL = 'https://www.cherry-ai.com/'
 const routeTitleKeys: Record<string, string> = {
   '/app/chat': 'agent.session.group.conversation',
   '/app/agents': 'title.work',
-  '/app/paintings': 'title.paintings',
   '/app/translate': 'title.translate',
   '/app/launchpad': 'title.launchpad',
-  '/app/mini-app': 'title.apps',
   '/app/knowledge': 'title.knowledge',
-  '/app/files': 'title.files',
   '/app/code': 'title.code',
-  '/app/notes': 'title.notes',
   '/app/release-notes': 'settings.about.releases.title',
   '/settings': 'title.settings'
 }
 
-// Sub-routes of these base paths inherit the section's default title and
-// refresh on language change. Paintings qualifies because its splat route
-// ignores the URL segment (the provider comes from preference), so a
-// paintings sub-path tab has no per-entity title — the section title is the
-// only meaningful label. Contrast /app/mini-app, which is deliberately left
-// out so caller-supplied per-entity titles survive.
-const autoLocalizableBasePaths = new Set(['/app/paintings'])
+const autoLocalizableBasePaths = new Set<string>()
 
 /**
  * Get the base path for route matching

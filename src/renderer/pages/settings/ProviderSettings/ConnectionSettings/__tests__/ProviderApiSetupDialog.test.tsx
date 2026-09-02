@@ -678,7 +678,7 @@ describe('ProviderApiSetupDialog', () => {
   })
 
   it('adds high-cost models without probing or enabling the provider', async () => {
-    getModelHealthCheckSkipReasonMock.mockReturnValue({ kind: 'generation_cost', output: 'image' })
+    getModelHealthCheckSkipReasonMock.mockReturnValue({ kind: 'generation_cost', output: 'video' })
 
     render(<ProviderApiSetupDialog providerId="openai" initialStep="models" onClose={vi.fn()} />)
 

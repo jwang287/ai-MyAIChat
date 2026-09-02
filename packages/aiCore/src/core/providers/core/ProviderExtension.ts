@@ -36,9 +36,6 @@ interface ProviderExtensionConfigBase<
   /** 默认配置选项 */
   defaultOptions?: Partial<TSettings>
 
-  /** 是否支持图像生成 */
-  supportsImageGeneration?: boolean
-
   /**
    * Provider 变体配置
    * 用于注册同一 provider 的不同模式
@@ -47,7 +44,7 @@ interface ProviderExtensionConfigBase<
 
   /**
    * Tool factory 映射
-   * 声明该 provider 支持的工具能力（如 webSearch）
+   * 声明该 provider 支持的工具能力
    * 工具工厂从 provider 实例的 .tools 属性提取
    */
   toolFactories?: ToolFactoryMap<TProvider>

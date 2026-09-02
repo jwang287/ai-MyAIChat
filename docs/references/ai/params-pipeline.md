@@ -65,8 +65,6 @@ export const INTERNAL_FEATURES = [
   noThinkFeature,
   qwenThinkingFeature,
   skipGeminiThoughtSignatureFeature,
-  providerWebSearchFeature,
-  providerUrlContextFeature,
   terminalToolFailureFeature,
   steerYieldFeature
 ]
@@ -106,7 +104,7 @@ buildAgentParams(input)
   │     └─ syncMcpToolsToRegistry  (only servers owning a selected tool)
   │     └─ registry.selectActive   (per-entry applies)
   │     └─ applyDeferExposition    (defer pool → meta-tools + system section)
-  ├─ resolveCapabilities      → enableWebSearch / enableUrlContext / …
+  ├─ resolveCapabilities      → model and assistant capabilities
   ├─ resolveEffectiveEndpoint → endpointType (model > provider default)
   ├─ resolveAiSdkProviderId   → adapter-family routing (see adapter-family.md)
   ├─ extractAiSdkStandardParams → standard params + provider-scoped params

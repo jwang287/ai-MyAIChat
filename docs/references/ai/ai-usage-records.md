@@ -75,6 +75,8 @@ invoices remain authoritative.
   rotation state.
 - Every runtime route has one capture owner. Gateway-backed Agent traffic uses
   provider-call capture; direct/external Agent traffic uses Agent SDK messages.
+- Historic Mini App and image-generation records remain in SQLite for
+  compatibility, but are excluded from user-facing Usage DataApi results.
 
 There is deliberately no operation table or persistence compensation layer.
 
@@ -88,28 +90,15 @@ closed capture contract:
 | `streamText` | language model middleware | one row per successful `doStream`, written from its `finish` usage |
 | `generateText` | language model middleware | one row per successful `doGenerate` |
 | `embedMany` | aiCore embedding model middleware | one row per actual `doEmbed` batch |
-| `generateImage` | aiCore image model middleware or custom transport owner | one row per actual provider generation |
 | `rerank` | aiCore runtime handler | one row after a successful result; usage and cost may be null |
 
-AI SDK batching is observed below `embedMany` and `generateImage`, so each real
-provider call is counted separately. Tool-input repair explicitly reuses the
+AI SDK batching is observed below `embedMany`, so each real provider call is
+counted separately. Tool-input repair explicitly reuses the
 language usage middleware, making its `generateText` a separate invocation.
 
 Failed calls do not produce successful records. A streaming call is recorded
 only after its finish chunk supplies final usage; previously completed calls
 remain recorded if a later step fails.
-
-Custom async image jobs record after the vendor reports success and before
-local download/FileManager persistence. Submit plus polling is one generation
-invocation, not one invocation per poll. The stable job id makes restart
-delivery idempotent, and a successful response with zero images is retained
-with `imageCount = 0` even though the job is then failed as unusable.
-When a new-format persisted `taskId` is resumed, the transport re-reads the
-exact enabled submit key by the non-secret key id in the frozen capture
-context. It never rotates to another account while polling the existing remote
-task. Older queued jobs without a capture context remain unattributed and can
-only use current configuration. If no `taskId` exists, recovery performs a new
-selection, capture, timer, and submit.
 
 ## Immutable capture context
 

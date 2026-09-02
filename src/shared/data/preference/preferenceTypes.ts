@@ -98,18 +98,7 @@ export type TopicTabPosition = 'left' | 'right'
 
 export type AgentSessionDisplayMode = 'time' | 'agent' | 'workdir'
 
-export const SIDEBAR_FAVORITES = [
-  'assistants',
-  'agents',
-  'paintings',
-  'translate',
-  'mini_app',
-  'knowledge',
-  'files',
-  'code_tools',
-  'notes',
-  'openclaw'
-] as const
+export const SIDEBAR_FAVORITES = ['assistants', 'agents', 'translate', 'knowledge', 'code_tools'] as const
 
 export type SidebarFavorite = (typeof SIDEBAR_FAVORITES)[number]
 
@@ -125,10 +114,6 @@ export type SidebarFavoriteItem =
   | {
       type: 'app'
       id: SidebarFavorite
-    }
-  | {
-      type: 'mini_app'
-      id: string
     }
   | {
       type: 'agent'
@@ -217,83 +202,6 @@ export const parseTranslateBidirectionalPair = (value: readonly [string, string]
 ]
 
 // ============================================================================
-// WebSearch Types
-// ============================================================================
-
-export const WEB_SEARCH_PROVIDER_TYPES = ['api', 'mcp'] as const
-
-export type WebSearchProviderType = (typeof WEB_SEARCH_PROVIDER_TYPES)[number]
-
-export const WEB_SEARCH_PROVIDER_IDS = [
-  'zhipu',
-  'tavily',
-  'searxng',
-  'exa',
-  'exa-mcp',
-  'bocha',
-  'querit',
-  'fetch',
-  'jina',
-  'firecrawl',
-  'parallel'
-] as const
-
-export type WebSearchProviderId = (typeof WEB_SEARCH_PROVIDER_IDS)[number]
-
-export const WEB_SEARCH_CAPABILITIES = ['searchKeywords', 'fetchUrls'] as const
-
-export type WebSearchCapability = (typeof WEB_SEARCH_CAPABILITIES)[number]
-
-export type WebSearchProviderCapabilityOverride = {
-  apiHost?: string
-}
-
-export type WebSearchProviderCapabilityOverrides = Partial<
-  Record<WebSearchCapability, WebSearchProviderCapabilityOverride>
->
-
-export type WebSearchProviderOverride = {
-  apiKeys?: string[]
-  capabilities?: WebSearchProviderCapabilityOverrides
-  engines?: string[]
-  basicAuthUsername?: string
-  basicAuthPassword?: string
-}
-
-export type WebSearchProviderOverrides = Partial<Record<WebSearchProviderId, WebSearchProviderOverride>>
-
-/**
- * Full WebSearch Provider configuration
- * Generated at runtime by merging preset with user overrides
- */
-export interface WebSearchProvider {
-  /** Unique provider identifier */
-  id: WebSearchProviderId
-  /** Display name (from preset) */
-  name: string
-  /** Provider type (from preset) */
-  type: WebSearchProviderType
-  /** API keys (from user overrides) */
-  apiKeys: string[]
-  /** Capability API settings (user override merged into preset capabilities) */
-  capabilities: Array<{
-    feature: WebSearchCapability
-    /** Whether this capability requires a configured HTTP(S) endpoint. */
-    requiresApiHost?: boolean
-    /** Whether this capability requires at least one configured API key. */
-    requiresApiKey?: boolean
-    /** Can be empty for self-hosted or hostless providers; resolve and validate via resolveProviderApiHost. */
-    apiHost?: string
-  }>
-  /** Search engines (from user overrides) */
-  engines: string[]
-  /** Basic auth username (from user overrides) */
-  basicAuthUsername: string
-  /** Basic auth password (from user overrides) */
-  basicAuthPassword: string
-}
-
-// ============================================================================
 // CodeCLI Types
 // ============================================================================
 
@@ -346,16 +254,6 @@ export interface CodeCliToolState {
 export type CodeCliConfigs = Partial<Record<CodeCliId, CodeCliToolState>>
 
 // ============================================================================
-// WebSearch Compression Types (v2 - Flattened)
-// ============================================================================
-
-/**
- * Compression method type
- * Stored in chat.web_search.compression.method
- */
-export type WebSearchCompressionMethod = 'none' | 'cutoff'
-
-// ============================================================================
 // File Processor Types
 // ============================================================================
 
@@ -400,11 +298,6 @@ export type FileProcessorOverride = {
 }
 
 export type FileProcessorOverrides = Partial<Record<FileProcessorId, FileProcessorOverride>>
-
-/** Region types for miniApps visibility */
-export type MiniAppRegion = 'CN' | 'Global'
-
-export type MiniAppRegionFilter = 'auto' | MiniAppRegion
 
 /** User-configurable settings for BinaryManager's isolated mise install environment. */
 export type BinaryInstallSettings = {

@@ -1,4 +1,3 @@
-import { PROVIDER_WEB_SEARCH_TOOL_NAME } from '@shared/ai/builtinTools'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -43,12 +42,9 @@ vi.mock('../../tools/shared/GenericTools', () => ({
 vi.mock('../../tools/ToolHeader', () => ({
   __esModule: true,
   getReadableToolActivity: (toolName: string) =>
-    toolName === PROVIDER_WEB_SEARCH_TOOL_NAME
-      ? { label: 'message.tools.activity.search', description: 'message.tools.activity.webSearch' }
-      : toolName.startsWith('mcp__') ||
-          ['do_magic', 'fetch_markdown', 'send_email', 'web_search'].some((name) => toolName.includes(name))
-        ? undefined
-        : { label: 'Check', description: 'Project checks' },
+    toolName.startsWith('mcp__') || ['do_magic', 'fetch_markdown', 'send_email'].some((name) => toolName.includes(name))
+      ? undefined
+      : { label: 'Check', description: 'Project checks' },
   default: ({ shimmer, toolResponse, status }: any) => (
     <div data-testid="mock-tool-header" data-shimmer={String(!!shimmer)}>
       {toolResponse?.tool?.name}:{status ?? toolResponse?.status}
@@ -131,17 +127,6 @@ const workflowDoneItem = {
   }
 } as ToolRenderItem
 
-const webSearchDoneItem = {
-  ...readDoneItem,
-  id: 'tool-web-search',
-  toolResponse: {
-    ...readDoneItem.toolResponse,
-    id: 'tool-web-search',
-    toolCallId: 'tool-web-search',
-    tool: { id: 'tool-web-search', name: 'exa:web_search_exa', type: 'mcp' }
-  }
-} as ToolRenderItem
-
 const webFetchDoneItem = {
   ...readDoneItem,
   id: 'tool-web-fetch',
@@ -150,17 +135,6 @@ const webFetchDoneItem = {
     id: 'tool-web-fetch',
     toolCallId: 'tool-web-fetch',
     tool: { id: 'tool-web-fetch', name: 'fetch_markdown', type: 'mcp' }
-  }
-} as ToolRenderItem
-
-const providerWebSearchDoneItem = {
-  ...readDoneItem,
-  id: 'provider-web-search',
-  toolResponse: {
-    ...readDoneItem.toolResponse,
-    id: 'provider-web-search',
-    toolCallId: 'provider-web-search',
-    tool: { id: 'provider-web-search', name: PROVIDER_WEB_SEARCH_TOOL_NAME, type: 'provider' }
   }
 } as ToolRenderItem
 
@@ -321,24 +295,6 @@ describe('ToolBlockGroup', () => {
     render(<ToolBlockGroup items={[workflowDoneItem]} />)
 
     expect(screen.getByTestId('tool-group-content-icon').querySelector('.lucide-workflow')).not.toBeNull()
-  })
-
-  it('uses a readable title and web icon for a web-search tool group', () => {
-    render(<ToolBlockGroup items={[webSearchDoneItem]} />)
-
-    expect(screen.getByTestId('tool-group-content-icon').querySelector('.lucide-globe')).not.toBeNull()
-    expect(
-      screen.getByRole('button', { name: 'message.tools.activity.search message.tools.activity.webSearch' })
-    ).toBeInTheDocument()
-  })
-
-  it('uses a readable title and web icon for a provider web-search tool group', () => {
-    render(<ToolBlockGroup items={[providerWebSearchDoneItem]} />)
-
-    expect(screen.getByTestId('tool-group-content-icon').querySelector('.lucide-globe')).not.toBeNull()
-    expect(
-      screen.getByRole('button', { name: 'message.tools.activity.search message.tools.activity.webSearch' })
-    ).toBeInTheDocument()
   })
 
   it('uses a readable title and web icon for a web-fetch tool group', () => {

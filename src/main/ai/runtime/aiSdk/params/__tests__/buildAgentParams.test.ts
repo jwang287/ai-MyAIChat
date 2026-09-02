@@ -5,7 +5,7 @@ import type { LanguageModelV3CallOptions } from '@ai-sdk/provider'
 import type { ProviderOptions } from '@ai-sdk/provider-utils'
 import { generateText as aiCoreGenerateText } from '@cherrystudio/ai-core'
 import { FS_READ_TOOL_NAME } from '@shared/ai/builtinTools'
-import { ENDPOINT_TYPE, type EndpointType, MODEL_CAPABILITY, SERVER_TOOL } from '@shared/data/types/model'
+import { ENDPOINT_TYPE, type EndpointType, MODEL_CAPABILITY } from '@shared/data/types/model'
 import type { StopCondition, Tool, ToolSet } from 'ai'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -321,71 +321,6 @@ describe('buildAgentParams provider resolution', () => {
     expect(result.options.providerOptions).not.toHaveProperty('google')
   })
 
-  it('suppresses URL Context when Gemini 2.5 receives actual function tools', async () => {
-    resolveProviderAiSdkConfigMock.mockResolvedValue({
-      config: { providerId: 'google', providerSettings: {} },
-      credentialReceipt: { attribution: 'unknown' }
-    })
-    const provider = makeProvider({
-      id: 'gemini',
-      defaultChatEndpoint: ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT,
-      endpointConfigs: {
-        [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: { adapterFamily: 'google' }
-      },
-      serverTools: [{ id: 'url-context', modelScope: 'model-dependent' }]
-    })
-    const model = makeModel({
-      id: 'gemini::gemini-2.5-pro',
-      providerId: 'gemini',
-      apiModelId: 'gemini-2.5-pro',
-      capabilities: [MODEL_CAPABILITY.FUNCTION_CALL]
-    })
-    const assistant = makeAssistant({ settings: { enableWebSearch: true } })
-
-    const result = await buildAgentParams({
-      request: { callOverrides: { tools: { mcp__test__lookup: {} as Tool } } },
-      signal: undefined,
-      provider,
-      model,
-      assistant
-    })
-
-    expect(result.tools).toHaveProperty('mcp__test__lookup')
-    expect(result.plugins.map((plugin) => plugin.name)).not.toContain('urlContext')
-  })
-
-  it('keeps URL Context when Gemini 3 receives function tools', async () => {
-    resolveProviderAiSdkConfigMock.mockResolvedValue({
-      config: { providerId: 'google', providerSettings: {} },
-      credentialReceipt: { attribution: 'unknown' }
-    })
-    const provider = makeProvider({
-      id: 'gemini',
-      defaultChatEndpoint: ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT,
-      endpointConfigs: {
-        [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: { adapterFamily: 'google' }
-      },
-      serverTools: [{ id: 'url-context', modelScope: 'model-dependent' }]
-    })
-    const model = makeModel({
-      id: 'gemini::gemini-3-1-pro-preview',
-      providerId: 'gemini',
-      apiModelId: 'gemini-3-1-pro-preview',
-      capabilities: [MODEL_CAPABILITY.FUNCTION_CALL]
-    })
-    const assistant = makeAssistant({ settings: { enableWebSearch: true } })
-
-    const result = await buildAgentParams({
-      request: { callOverrides: { tools: { mcp__test__lookup: {} as Tool } } },
-      signal: undefined,
-      provider,
-      model,
-      assistant
-    })
-
-    expect(result.plugins.map((plugin) => plugin.name)).toContain('urlContext')
-  })
-
   it('preserves assistant custom parameters unchanged in the final provider request body', async () => {
     const firstCustomParameters = [
       { name: 'enable_search', type: 'json' as const, value: 'true' },
@@ -672,257 +607,6 @@ describe('buildAgentParams standard model parameters', () => {
 
     expect(result.options.providerOptions).toMatchObject({ anthropic: { thinking: { type: 'adaptive' } } })
     expect(result.options.maxOutputTokens).toBe(10_000)
-  })
-})
-
-describe('buildAgentParams web-tool routing', () => {
-  const provider = makeProvider({
-    id: 'anthropic',
-    defaultChatEndpoint: ENDPOINT_TYPE.ANTHROPIC_MESSAGES,
-    endpointConfigs: {
-      [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: { adapterFamily: 'anthropic' }
-    },
-    serverTools: [
-      { id: SERVER_TOOL.WEB_SEARCH, modelScope: 'all-chat-models' },
-      { id: SERVER_TOOL.URL_CONTEXT, modelScope: 'model-dependent' }
-    ]
-  })
-  const model = makeModel({
-    id: 'anthropic::claude-sonnet-4-6',
-    providerId: 'anthropic',
-    apiModelId: 'claude-sonnet-4-6',
-    capabilities: [MODEL_CAPABILITY.FUNCTION_CALL]
-  })
-  const assistant = makeAssistant({ settings: { enableWebSearch: true } })
-  const clientSearchEntry: ToolEntry = {
-    name: 'web_search',
-    namespace: 'web',
-    description: 'client search',
-    defer: 'never',
-    tool: {} as Tool,
-    applies: (scope) => scope.webToolRoutes?.webSearch === 'client'
-  }
-  const clientFetchEntry: ToolEntry = {
-    name: 'web_fetch',
-    namespace: 'web',
-    description: 'client fetch',
-    defer: 'never',
-    tool: {} as Tool,
-    applies: (scope) => scope.webToolRoutes?.webFetch === 'client'
-  }
-
-  beforeEach(() => {
-    resolveProviderAiSdkConfigMock.mockResolvedValue({
-      config: { providerId: 'anthropic', providerSettings: {} },
-      credentialReceipt: { attribution: 'unknown' }
-    })
-  })
-
-  afterEach(() => {
-    registry.deregister(clientSearchEntry.name)
-    registry.deregister(clientFetchEntry.name)
-  })
-
-  it.each([
-    { clientToolsPreferred: true, expectedRoute: 'client' },
-    { clientToolsPreferred: false, expectedRoute: 'server' }
-  ])(
-    'injects only $expectedRoute implementations when preference is $clientToolsPreferred',
-    async ({ clientToolsPreferred, expectedRoute }) => {
-      const preferences = new Map<string, unknown>([
-        ['app.developer_mode.enabled', false],
-        ['chat.web_search.client_tools_preferred', clientToolsPreferred],
-        ['chat.web_search.default_search_keywords_provider', 'exa-mcp'],
-        ['chat.web_search.default_fetch_urls_provider', 'jina'],
-        ['chat.web_search.provider_overrides', {}],
-        ['chat.web_search.max_results', 5],
-        ['chat.web_search.exclude_domains', []]
-      ])
-      preferenceGetMock.mockImplementation((key: string) => preferences.get(key) ?? null)
-      registry.register(clientSearchEntry)
-      registry.register(clientFetchEntry)
-
-      const result = await buildAgentParams({ request: {}, signal: undefined, provider, model, assistant })
-      const hasClientSearch = result.tools?.web_search === clientSearchEntry.tool
-      const hasClientFetch = result.tools?.web_fetch === clientFetchEntry.tool
-      const hasServerSearch = result.plugins.some((plugin) => plugin.name === 'webSearch')
-      const hasServerFetch = result.plugins.some((plugin) => plugin.name === 'urlContext')
-
-      expect(hasClientSearch).toBe(expectedRoute === 'client')
-      expect(hasClientFetch).toBe(expectedRoute === 'client')
-      expect(hasServerSearch).toBe(expectedRoute === 'server')
-      expect(hasServerFetch).toBe(expectedRoute === 'server')
-      expect(Number(hasClientSearch) + Number(hasServerSearch)).toBe(1)
-      expect(Number(hasClientFetch) + Number(hasServerFetch)).toBe(1)
-    }
-  )
-
-  it('disables Responses storage for assistant-backed calls too', async () => {
-    resolveProviderAiSdkConfigMock.mockResolvedValue({
-      config: { providerId: 'openai', providerSettings: {} },
-      credentialReceipt: { attribution: 'unknown' }
-    })
-    const provider = makeProvider({
-      id: 'openai',
-      presetProviderId: 'openai',
-      defaultChatEndpoint: ENDPOINT_TYPE.OPENAI_RESPONSES,
-      endpointConfigs: { [ENDPOINT_TYPE.OPENAI_RESPONSES]: { adapterFamily: 'openai' } }
-    })
-    const model = makeModel({
-      id: 'openai::gpt-5.6',
-      providerId: 'openai',
-      apiModelId: 'gpt-5.6',
-      endpointTypes: [ENDPOINT_TYPE.OPENAI_RESPONSES]
-    })
-
-    const result = await buildAgentParams({ request: {}, signal: undefined, provider, model, assistant })
-
-    expect(result.options.providerOptions?.openai).toMatchObject({ store: false })
-  })
-
-  it.each([
-    { endpointType: ENDPOINT_TYPE.OPENAI_RESPONSES, runtimeProviderId: 'openai', expectedRoute: 'server' },
-    {
-      endpointType: ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS,
-      runtimeProviderId: 'deepseek',
-      expectedRoute: 'client'
-    },
-    { endpointType: ENDPOINT_TYPE.ANTHROPIC_MESSAGES, runtimeProviderId: 'anthropic', expectedRoute: 'client' }
-  ] as const)(
-    'routes DeepSeek V4 Flash web search to $expectedRoute on $endpointType',
-    async ({ endpointType, runtimeProviderId, expectedRoute }) => {
-      resolveProviderAiSdkConfigMock.mockResolvedValue({
-        config: { providerId: runtimeProviderId, providerSettings: {} },
-        credentialReceipt: { attribution: 'unknown' }
-      })
-      const deepseekProvider = makeProvider({
-        id: 'deepseek',
-        presetProviderId: 'deepseek',
-        defaultChatEndpoint: ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS,
-        endpointConfigs: {
-          [ENDPOINT_TYPE.OPENAI_RESPONSES]: { adapterFamily: 'openai' },
-          [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]: { adapterFamily: 'deepseek' },
-          [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: { adapterFamily: 'anthropic' }
-        },
-        serverTools: [
-          {
-            id: SERVER_TOOL.WEB_SEARCH,
-            modelScope: 'model-dependent',
-            endpointTypes: [ENDPOINT_TYPE.OPENAI_RESPONSES]
-          }
-        ]
-      })
-      const deepseekModel = makeModel({
-        id: 'deepseek::deepseek-v4-flash',
-        providerId: 'deepseek',
-        apiModelId: 'deepseek-v4-flash',
-        endpointTypes: [endpointType],
-        capabilities: [MODEL_CAPABILITY.FUNCTION_CALL]
-      })
-      const preferences = new Map<string, unknown>([
-        ['app.developer_mode.enabled', false],
-        ['chat.web_search.client_tools_preferred', false],
-        ['chat.web_search.default_search_keywords_provider', 'exa-mcp'],
-        ['chat.web_search.provider_overrides', {}],
-        ['chat.web_search.max_results', 5],
-        ['chat.web_search.exclude_domains', []]
-      ])
-      preferenceGetMock.mockImplementation((key: string) => preferences.get(key) ?? null)
-      registry.register(clientSearchEntry)
-
-      const result = await buildAgentParams({
-        request: {},
-        signal: undefined,
-        provider: deepseekProvider,
-        model: deepseekModel,
-        assistant
-      })
-
-      expect(result.plugins.some((plugin) => plugin.name === 'webSearch')).toBe(expectedRoute === 'server')
-      expect(result.tools?.web_search === clientSearchEntry.tool).toBe(expectedRoute === 'client')
-    }
-  )
-
-  it.each(['deepseek-v3', 'deepseek-v3.2'])(
-    'keeps Bailian built-in search enabled for %s on Chat Completions',
-    async (apiModelId) => {
-      resolveProviderAiSdkConfigMock.mockResolvedValue({
-        config: { providerId: 'openai-compatible', providerSettings: {} },
-        credentialReceipt: { attribution: 'unknown' }
-      })
-      const dashscopeProvider = makeProvider({
-        id: 'dashscope',
-        presetProviderId: 'dashscope',
-        defaultChatEndpoint: ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS,
-        endpointConfigs: {
-          [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]: { adapterFamily: 'openai-compatible' }
-        },
-        serverTools: [{ id: SERVER_TOOL.WEB_SEARCH, modelScope: 'model-dependent' }]
-      })
-      const dashscopeModel = makeModel({
-        id: `dashscope::${apiModelId}`,
-        providerId: 'dashscope',
-        apiModelId,
-        endpointTypes: [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS],
-        capabilities: [MODEL_CAPABILITY.FUNCTION_CALL]
-      })
-      preferenceGetMock.mockImplementation((key: string) => {
-        if (key === 'chat.web_search.client_tools_preferred') return false
-        if (key === 'chat.web_search.max_results') return 5
-        if (key === 'chat.web_search.exclude_domains') return []
-        return null
-      })
-
-      const result = await buildAgentParams({
-        request: {},
-        signal: undefined,
-        provider: dashscopeProvider,
-        model: dashscopeModel,
-        assistant
-      })
-
-      expect(result.options.providerOptions).toMatchObject({
-        dashscope: { enable_search: true, search_options: { forced_search: true } }
-      })
-      expect(result.tools?.web_search).toBeUndefined()
-    }
-  )
-
-  // Owning a knowledge base is global account state; the KB tools only load when this request also
-  // scopes one (their `applies` requires both). Treating the global flag as a function-tool signal
-  // made every Gemini 2.5 request look like a native-tool conflict and lose the server route.
-  it('keeps the server route for Gemini 2.5 when a knowledge base exists but none is selected', async () => {
-    resolveProviderAiSdkConfigMock.mockResolvedValue({
-      config: { providerId: 'google', providerSettings: {} },
-      credentialReceipt: { attribution: 'unknown' }
-    })
-    const geminiProvider = makeProvider({
-      id: 'gemini',
-      defaultChatEndpoint: ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT,
-      endpointConfigs: { [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: { adapterFamily: 'google' } },
-      serverTools: [{ id: SERVER_TOOL.WEB_SEARCH, modelScope: 'model-dependent' }]
-    })
-    const geminiModel = makeModel({
-      id: 'gemini::gemini-2.5-pro',
-      providerId: 'gemini',
-      apiModelId: 'gemini-2.5-pro',
-      capabilities: [MODEL_CAPABILITY.FUNCTION_CALL]
-    })
-    preferenceGetMock.mockImplementation((key: string) =>
-      key === 'chat.web_search.client_tools_preferred' ? false : null
-    )
-    registry.register(clientSearchEntry)
-
-    const result = await buildAgentParams({
-      request: {},
-      signal: undefined,
-      provider: geminiProvider,
-      model: geminiModel,
-      assistant
-    })
-
-    expect(result.plugins.some((plugin) => plugin.name === 'webSearch')).toBe(true)
-    expect(result.tools?.web_search).toBeUndefined()
   })
 })
 
@@ -1256,33 +940,6 @@ describe('buildAgentParams assistant-less reasoning', () => {
     })
 
     expect(result.options.providerOptions).toBeUndefined()
-  })
-
-  it('does not add citation guidance for a same-named Gateway client tool', async () => {
-    const { provider, model } = makeOffCapableSetup()
-    const entry: ToolEntry = {
-      name: 'web_search',
-      namespace: 'web',
-      description: 'first-party search',
-      defer: 'never',
-      tool: {} as Tool
-    }
-    registry.register(entry)
-
-    try {
-      const customTool = {} as Tool
-      const result = await buildAgentParams({
-        request: { callOverrides: { tools: { web_search: customTool } } },
-        signal: undefined,
-        provider,
-        model: { ...model, capabilities: [MODEL_CAPABILITY.FUNCTION_CALL] }
-      })
-
-      expect(result.tools?.web_search).toBe(customTool)
-      expect(result.system ?? '').not.toContain('<citations>')
-    } finally {
-      registry.deregister(entry.name)
-    }
   })
 })
 
@@ -1773,40 +1430,6 @@ describe('resolveTools knowledge-base wiring', () => {
   })
 })
 
-describe('resolveTools citation provenance', () => {
-  const tool = {} as Tool
-  const entry: ToolEntry = {
-    name: 'web_search',
-    namespace: 'web',
-    description: 'first-party search',
-    defer: 'never',
-    tool
-  }
-
-  afterEach(() => registry.deregister(entry.name))
-
-  it('reports citation capability for a selected first-party entry', async () => {
-    registry.register(entry)
-    const result = await resolveTools({}, undefined, makeModel(), false, [])
-    expect(result.hasCitableTools).toBe(true)
-  })
-
-  it('does not report citation capability when a Gateway client tool overrides the name', async () => {
-    registry.register(entry)
-    const customTool = {} as Tool
-    const result = await resolveTools(
-      { callOverrides: { tools: { web_search: customTool } } },
-      undefined,
-      makeModel(),
-      false,
-      []
-    )
-
-    expect(result.tools?.web_search).toBe(customTool)
-    expect(result.hasCitableTools).toBe(false)
-  })
-})
-
 describe('resolveTools fs_read gating', () => {
   const OTHER_TOOL_NAME = 'test-plain-tool'
   const otherEntry: ToolEntry = {
@@ -1824,30 +1447,30 @@ describe('resolveTools fs_read gating', () => {
   })
 
   it('drops a lone fs_read when no markers exist (nothing else can be offloaded)', async () => {
-    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, undefined, false, true)
+    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, undefined, false)
     expect(tools).toBeUndefined()
   })
 
   it('keeps fs_read alongside another function tool when offload is possible', async () => {
     registry.register(otherEntry)
-    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, undefined, false, true)
+    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, false, true)
     expect(tools?.[FS_READ_TOOL_NAME]).toBeDefined()
     expect(tools?.[OTHER_TOOL_NAME]).toBeDefined()
   })
 
   it('keeps a lone fs_read when the conversation already has persisted-output markers', async () => {
-    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, undefined, true, false)
+    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, true)
     expect(tools?.[FS_READ_TOOL_NAME]).toBeDefined()
   })
 
   it('omits fs_read when offload is impossible and no markers exist, even with other tools', async () => {
     registry.register(otherEntry)
-    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, undefined, false, false)
+    const { tools } = await resolveTools({}, undefined, makeModel(), false, [], undefined, undefined, false)
     expect(tools?.[FS_READ_TOOL_NAME]).toBeUndefined()
     expect(tools?.[OTHER_TOOL_NAME]).toBeDefined()
   })
 
-  it('keeps a lone fs_read when gateway client tools are present', async () => {
+  it('omits fs_read when gateway client tools are present but offload is impossible', async () => {
     const { tools } = await resolveTools(
       { callOverrides: { tools: { client_tool: {} as Tool } } },
       undefined,
@@ -1856,10 +1479,9 @@ describe('resolveTools fs_read gating', () => {
       [],
       undefined,
       undefined,
-      false,
-      true
+      false
     )
-    expect(tools?.[FS_READ_TOOL_NAME]).toBeDefined()
+    expect(tools?.[FS_READ_TOOL_NAME]).toBeUndefined()
     expect(tools?.client_tool).toBeDefined()
   })
 })

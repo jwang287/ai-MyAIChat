@@ -6,7 +6,6 @@ const ALLOWED_EXTERNAL_PROTOCOLS = new Set([
   'http:',
   'https:',
   'mailto:',
-  'obsidian:',
   'vscode:',
   'vscode-insiders:',
   'cursor:',

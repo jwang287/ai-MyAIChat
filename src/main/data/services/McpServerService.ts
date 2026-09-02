@@ -24,7 +24,17 @@ const logger = loggerService.withContext('DataApi:McpServerService')
  * Convert database row to McpServer entity
  */
 function rowToMcpServer(row: typeof mcpServerTable.$inferSelect): McpServer {
-  const clean = nullsToUndefined(row)
+  const {
+    dxtVersion: _dxtVersion,
+    dxtPath: _dxtPath,
+    searchKey: _searchKey,
+    configSample: _configSample,
+    ...clean
+  } = nullsToUndefined(row)
+  void _dxtVersion
+  void _dxtPath
+  void _searchKey
+  void _configSample
   return {
     ...clean,
     type: clean.type as McpServer['type'],

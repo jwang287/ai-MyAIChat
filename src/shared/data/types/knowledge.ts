@@ -1,5 +1,5 @@
 import { AbsoluteFilePathSchema } from '@shared/types/file'
-import { PosixRelativeFilePathSchema, resolvePosixRelativeSegments, sanitizeFilename } from '@shared/utils/file'
+import { PosixRelativeFilePathSchema, resolvePosixRelativeSegments } from '@shared/utils/file'
 import * as z from 'zod'
 
 import { GroupIdSchema } from './group'
@@ -54,7 +54,7 @@ export const KnowledgeRelativePathSchema = PosixRelativeFilePathSchema.refine((v
   return segments !== null && segments.length > 0
 }, 'must stay inside the knowledge base material root and point below it')
 
-export const KNOWLEDGE_ITEM_TYPES = ['file', 'url', 'note', 'directory'] as const
+export const KNOWLEDGE_ITEM_TYPES = ['file', 'url', 'directory'] as const
 export const KnowledgeItemTypeSchema = z.enum(KNOWLEDGE_ITEM_TYPES)
 export type KnowledgeItemType = z.infer<typeof KnowledgeItemTypeSchema>
 
@@ -64,7 +64,7 @@ export type KnowledgeItemType = z.infer<typeof KnowledgeItemTypeSchema>
  * State machine:
  *
  * ```text
- * file/url/note:
+ * file/url:
  *   idle -> processing -> reading -> embedding -> completed
  *      \                    \             \          \
  *       +--------------------+-------------+-----------> failed
@@ -80,8 +80,8 @@ export type KnowledgeItemType = z.infer<typeof KnowledgeItemTypeSchema>
  * - `idle`: item row exists but indexing has not started.
  * - `preparing`: container expansion is running; only `directory` items may use it.
  * - `processing`: work has been queued or is running before a more specific phase is known.
- * - `reading`: leaf source documents are being read; only `file` / `url` / `note` items may use it.
- * - `embedding`: leaf chunks are being embedded and written to the vector store; only `file` / `url` / `note`.
+ * - `reading`: leaf source documents are being read; only `file` / `url` items may use it.
+ * - `embedding`: leaf chunks are being embedded and written to the vector store; only `file` / `url`.
  * - `completed`: indexing or container reconciliation finished successfully.
  * - `failed`: workflow failed; `error` must be a non-empty string — either a code the
  *   UI localizes (e.g. `directory_not_migrated`, set when a v1-indexed folder's vectors
@@ -154,7 +154,6 @@ export const DEFAULT_KNOWLEDGE_BASE_CHUNK_OVERLAP = 200
 export const DEFAULT_KNOWLEDGE_CHUNK_STRATEGY: KnowledgeChunkStrategy = 'structured'
 export const DEFAULT_KNOWLEDGE_CHUNK_SEPARATOR = '\\n\\n'
 export const KNOWLEDGE_RUNTIME_ITEMS_MAX = 100
-export const KNOWLEDGE_NOTE_CONTENT_MAX = 1_000_000
 
 // ============================================================================
 // Knowledge Base Entity
@@ -324,18 +323,6 @@ export const UrlItemDataSchema = KnowledgeItemSharedSchema.extend({
 })
 
 /**
- * Note item data.
- */
-export const NoteItemDataSchema = KnowledgeItemSharedSchema.extend({
-  content: z.string().max(KNOWLEDGE_NOTE_CONTENT_MAX).describe('Plain text note content to index.'),
-  // Written lazily by main on first index, never by raw caller input (add omits
-  // it).
-  relativePath: KnowledgeRelativePathSchema.optional().describe(
-    'Knowledge-base-relative path for the captured note snapshot markdown, written on first index.'
-  )
-})
-
-/**
  * Directory item data. The original folder to (re)scan lives in `source` (shared with
  * every item type); `relativePath` is the deduped `raw/` directory the expanded files
  * are stored under, mirroring FileItemData's source/relativePath split.
@@ -352,12 +339,7 @@ export type DirectoryItemData = z.infer<typeof DirectoryItemDataSchema>
 /**
  * JSON payload stored in `knowledge_item.data`.
  */
-export const KnowledgeItemDataSchema = z.union([
-  FileItemDataSchema,
-  UrlItemDataSchema,
-  NoteItemDataSchema,
-  DirectoryItemDataSchema
-])
+export const KnowledgeItemDataSchema = z.union([FileItemDataSchema, UrlItemDataSchema, DirectoryItemDataSchema])
 export type KnowledgeItemData = z.infer<typeof KnowledgeItemDataSchema>
 
 // ============================================================================
@@ -390,14 +372,14 @@ const ProcessingKnowledgeItemLifecycleSchema = {
 } as const
 
 const ReadingKnowledgeItemLifecycleSchema = {
-  status: z.literal('reading').describe('Leaf source documents are being read; only file, url, and note items use it.'),
+  status: z.literal('reading').describe('Leaf source documents are being read; only file and url items use it.'),
   error: z.null().describe('No error is stored for non-failed lifecycle states.')
 } as const
 
 const EmbeddingKnowledgeItemLifecycleSchema = {
   status: z
     .literal('embedding')
-    .describe('Leaf chunks are being embedded and written to the vector store; only file, url, and note items use it.'),
+    .describe('Leaf chunks are being embedded and written to the vector store; only file and url items use it.'),
   error: z.null().describe('No error is stored for non-failed lifecycle states.')
 } as const
 
@@ -503,10 +485,6 @@ const UrlKnowledgeItemSchema = z.discriminatedUnion(
   'status',
   createLeafKnowledgeItemEntitySchemas('url', UrlItemDataSchema)
 )
-const NoteKnowledgeItemSchema = z.discriminatedUnion(
-  'status',
-  createLeafKnowledgeItemEntitySchemas('note', NoteItemDataSchema)
-)
 const DirectoryKnowledgeItemSchema = z.discriminatedUnion(
   'status',
   createContainerKnowledgeItemEntitySchemas('directory', DirectoryItemDataSchema)
@@ -518,7 +496,6 @@ const DirectoryKnowledgeItemSchema = z.discriminatedUnion(
 export const KnowledgeItemSchema = z.union([
   FileKnowledgeItemSchema,
   UrlKnowledgeItemSchema,
-  NoteKnowledgeItemSchema,
   DirectoryKnowledgeItemSchema
 ])
 export type KnowledgeItem = z.infer<typeof KnowledgeItemSchema>
@@ -647,17 +624,13 @@ const CreateKnowledgeItemBaseSchema = z.strictObject({
 })
 
 // Members shared verbatim by the persisted-create and runtime-add unions. The
-// `file`, `url`, and `note` members differ between the two (persisted carries a
+// `file` and `url` members differ between the two (persisted carries a
 // main-written base-relative path the add surface must not accept), so they are
 // declared separately below; the remaining `directory` member is declared once
 // and reused.
 const UrlItemMemberSchema = CreateKnowledgeItemBaseSchema.extend({
   type: z.literal('url'),
   data: UrlItemDataSchema
-})
-const NoteItemMemberSchema = CreateKnowledgeItemBaseSchema.extend({
-  type: z.literal('note'),
-  data: NoteItemDataSchema
 })
 const DirectoryItemMemberSchema = CreateKnowledgeItemBaseSchema.extend({
   type: z.literal('directory'),
@@ -670,7 +643,6 @@ export const CreateKnowledgeItemSchema = z.discriminatedUnion('type', [
     data: FileItemDataSchema
   }),
   UrlItemMemberSchema,
-  NoteItemMemberSchema,
   DirectoryItemMemberSchema
 ])
 export type CreateKnowledgeItemDto = z.infer<typeof CreateKnowledgeItemSchema>
@@ -701,25 +673,12 @@ const RuntimeUrlItemMemberSchema = CreateKnowledgeItemBaseSchema.extend({
   data: RuntimeUrlItemDataSchema
 })
 
-// Runtime note add carries only the caller-supplied content; `relativePath` is
-// written lazily by main on first index (see ensureSnapshot), never by raw
-// caller input, so it is omitted from the add surface.
-const RuntimeNoteItemDataSchema = KnowledgeItemSharedSchema.extend({
-  content: z.string().max(KNOWLEDGE_NOTE_CONTENT_MAX).describe('Plain text note content to index.')
-})
-
-const RuntimeNoteItemMemberSchema = CreateKnowledgeItemBaseSchema.extend({
-  type: z.literal('note'),
-  data: RuntimeNoteItemDataSchema
-})
-
 export const KnowledgeAddItemInputSchema = z.discriminatedUnion('type', [
   CreateKnowledgeItemBaseSchema.extend({
     type: z.literal('file'),
     data: RuntimeFileItemDataSchema
   }),
   RuntimeUrlItemMemberSchema,
-  RuntimeNoteItemMemberSchema,
   DirectoryItemMemberSchema
 ])
 export type KnowledgeAddItemInput = z.infer<typeof KnowledgeAddItemInputSchema>
@@ -798,64 +757,11 @@ export function getKnowledgePathBasename(value: string): string {
   return name || normalized || value
 }
 
-/** First non-empty, trimmed line of note content (the note's display title). */
-export function getKnowledgeNoteFirstLine(content: string): string {
-  return (
-    content
-      .split('\n')
-      .map((line) => line.trim())
-      .find(Boolean) || ''
-  )
-}
-
-const SNAPSHOT_TITLE_MAX = 80
-
-/**
- * File stem a captured note snapshot is stored under, derived from the note's title, falling back to
- * `note` when sanitizing leaves nothing usable.
- *
- * Lives here rather than beside the capture code because the same slug is the note's identity: an
- * add-input has no snapshot yet, so detection has to predict the name an already-indexed note was
- * stored under (`Q4: plan` → `Q4_ plan`) or a re-add of an ordinary title would never be detected.
- * For the same reason the title is reduced to its first line *before* sanitizing — a `source` can
- * legitimately be the whole note body (the v1 migrator's fallback), and newlines are control
- * characters, so sanitizing it whole would fold the body into the name as `Title__- item`.
- */
-export function deriveNoteSnapshotSlug(source: string): string {
-  // Trim after truncating: `sanitizeFilename` only strips *trailing* whitespace, and it turns a tab
-  // landing on the cut into an `_` first, so an 80-char cut would otherwise keep a stray separator.
-  const sanitized = sanitizeFilename(getKnowledgeNoteFirstLine(source).slice(0, SNAPSHOT_TITLE_MAX).trim())
-  if (sanitized && sanitized !== 'untitled') {
-    return sanitized
-  }
-  return 'note'
-}
-
-/**
- * A note's name, shared by its display title and its conflict key so the two cannot name different
- * items. Falls back in the order the name actually becomes available: the deduped `raw/` snapshot
- * name once indexed (`Alpha_2.md` → `Alpha_2`), else the user-supplied title, else the first content
- * line for notes carrying no title at all.
- *
- * The title is read one line at a time because it is not always one: the v1 migrator falls back to
- * the whole note body when a legacy note has no `sourceUrl` (see `KnowledgeMappings`), and rendering
- * an entire note as its own row title is worse than the first line it used to show.
- *
- * Keying detection off the body's first line instead would split the two axes apart: notes the user
- * gave distinct titles could not coexist if their bodies opened with the same line, and `replace`
- * would purge an existing note the conflict dialog had named after a title the user never typed.
- */
-function getKnowledgeNoteName(data: KnowledgeItemTitleSource['data']): string {
-  const snapshotName = data.relativePath ? getKnowledgePathBasename(data.relativePath).replace(/\.md$/i, '') : ''
-  return snapshotName || getKnowledgeNoteFirstLine(data.source || '') || getKnowledgeNoteFirstLine(data.content || '')
-}
-
 /**
  * User-facing display name for a knowledge item or add-input. Prefers the
  * `relativePath` — the deduped name stored under `raw/` (e.g. `测试_2.pdf`) — so
  * that same-name items kept side by side ("保留全部") stay distinguishable:
  * - file: relativePath basename (always set at add-time) else source basename
- * - note: see {@link getKnowledgeNoteName}
  * - url: captured snapshot name (set on first index) else the raw url
  * - directory: deduped `raw/` directory prefix (set on first expansion, e.g. `docs_2`)
  *   else the original folder's source basename
@@ -867,8 +773,6 @@ export function getKnowledgeItemDisplayTitle(item: KnowledgeItemTitleSource): st
       return getKnowledgePathBasename(data.relativePath || data.source || '')
     case 'directory':
       return getKnowledgePathBasename(data.relativePath || data.source || '')
-    case 'note':
-      return getKnowledgeNoteName(data)
     case 'url': {
       const snapshotName = data.relativePath ? getKnowledgePathBasename(data.relativePath).replace(/\.md$/i, '') : ''
       return snapshotName || data.url || data.source || ''
@@ -883,10 +787,7 @@ export function getKnowledgeItemDisplayTitle(item: KnowledgeItemTitleSource): st
  * relativePath yet, so it keys off the source basename and detection still fires;
  * an existing item keys off its deduped relativePath, so `replace` targets only
  * the one colliding copy (relativePath `test.md`) instead of every item sharing a
- * source basename (`test.md`, `test_2.md`, `test_3.md`). note keys off the same
- * {@link getKnowledgeNoteName} the display title uses, normalized through
- * {@link deriveNoteSnapshotSlug} while it is still a raw title, so an add-input matches the slug an
- * already-indexed note is stored under. url stays separate from its display title: it keys off the
+ * source basename (`test.md`, `test_2.md`, `test_3.md`). url stays separate from its display title: it keys off the
  * raw `data.url` (exact, no normalization) because its deduped name is a post-index snapshot name
  * absent at add-time — keying off that would miss real duplicate urls.
  */
@@ -896,13 +797,6 @@ export function getKnowledgeItemConflictKey(item: KnowledgeItemTitleSource): str
     case 'file':
     case 'directory':
       return getKnowledgePathBasename(data.relativePath || data.source || '')
-    case 'note': {
-      const name = getKnowledgeNoteName(data)
-      // An unnamed note has no real name to collide on — keep the empty key so detection skips it.
-      if (!name) return ''
-      // A stored snapshot name is already a slug; only a raw title still needs normalizing.
-      return data.relativePath ? name : deriveNoteSnapshotSlug(name)
-    }
     case 'url':
       return (data.url || '').trim()
   }

@@ -2,7 +2,7 @@ import type { ApiClient, Model } from '@renderer/types/model'
 
 import type { FileMetadata } from './file'
 
-export type KnowledgeItemType = 'file' | 'url' | 'note' | 'sitemap' | 'directory' | 'memory' | 'video'
+export type KnowledgeItemType = 'file' | 'url' | 'sitemap' | 'directory' | 'memory' | 'video'
 
 export type KnowledgeItem = {
   id: string
@@ -37,16 +37,6 @@ export type KnowledgeVideoItem = KnowledgeItem & {
 
 export const isKnowledgeVideoItem = (item: KnowledgeItem): item is KnowledgeVideoItem => {
   return item.type === 'video'
-}
-
-export type KnowledgeNoteItem = KnowledgeItem & {
-  type: 'note'
-  content: string
-  sourceUrl?: string
-}
-
-export const isKnowledgeNoteItem = (item: KnowledgeItem): item is KnowledgeNoteItem => {
-  return item.type === 'note'
 }
 
 export type KnowledgeDirectoryItem = KnowledgeItem & {

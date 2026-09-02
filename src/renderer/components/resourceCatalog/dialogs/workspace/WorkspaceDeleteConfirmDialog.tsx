@@ -15,7 +15,7 @@ import { toast } from '@renderer/services/toast'
 import { formatErrorMessageWithPrefix } from '@renderer/utils/error'
 import type { AgentWorkspaceEntity, AgentWorkspaceReferenceItem } from '@shared/data/api/schemas/agentWorkspaces'
 import type { LucideIcon } from 'lucide-react'
-import { BotMessageSquare, CalendarClock, FolderOpen, Loader2, MousePointerClick, TriangleAlert } from 'lucide-react'
+import { CalendarClock, FolderOpen, Loader2, MousePointerClick, TriangleAlert } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -103,9 +103,7 @@ export function WorkspaceDeleteConfirmDialog({ workspace, onDeleted, onClose }: 
       closeConversationTabs('agents', result.deletedIds)
       try {
         await Promise.all(
-          ['/agent-sessions', '/agent-workspaces', '/pins', '/agent-channels', '/agent-tasks'].map((key) =>
-            invalidateCache(key)
-          )
+          ['/agent-sessions', '/agent-workspaces', '/pins', '/agent-tasks'].map((key) => invalidateCache(key))
         )
       } catch (error) {
         logger.warn('Failed to refresh after deleting workspace', error as Error, { workspaceId: workspace.id })
@@ -165,15 +163,6 @@ export function WorkspaceDeleteConfirmDialog({ workspace, onDeleted, onClose }: 
         total={references.sessions.total}
         icon={MousePointerClick}
         fallbackName={t('agent.session.new')}
-      />
-      <ImpactSection
-        title={t('agent.session.workdir.delete.channels_title')}
-        countLabel={t('agent.session.workdir.delete.channels_count', { count: references.channels.total })}
-        emptyLabel={t('agent.session.workdir.delete.channels_empty')}
-        items={references.channels.items}
-        total={references.channels.total}
-        icon={BotMessageSquare}
-        fallbackName={t('common.unnamed')}
       />
       <ImpactSection
         title={t('agent.session.workdir.delete.tasks_title')}

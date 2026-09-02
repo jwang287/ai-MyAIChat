@@ -194,17 +194,6 @@
 | `fs.promises.access()` | 异步 | 删除前检查 token 文件是否存在 |
 | `fs.promises.unlink()` | 异步 | 登出时删除 token 文件 |
 
-### `services/ObsidianVaultService.ts`
-- **Import**: `import fs from 'fs'`
-- **Tags**: `sync` `stat` `dir` `rw`
-
-| API | 同步/异步 | 用途 |
-|-----|-----------|------|
-| `fs.existsSync()` | 同步 | 检查配置/仓库路径是否存在 |
-| `fs.readFileSync()` | 同步 | 读取 Obsidian 配置 JSON 文件 |
-| `fs.statSync()` | 同步 | 检查仓库路径是否为目录 |
-| `fs.readdirSync()` | 同步 | 列出目录内容（含文件类型信息） |
-
 ### `services/OpenClawService.ts`
 - **Import**: `import fs from 'node:fs'`
 - **Tags**: `sync` `del` `rw` `dir` `copy`
@@ -376,17 +365,6 @@
 |-----|-----------|------|
 | `fs.existsSync()` | 同步 | 检查旧内存数据库路径是否存在 |
 | `fs.renameSync()` | 同步 | 将内存数据库从旧位置迁移到新位置 |
-
-### `services/lanTransfer/handlers/fileTransfer.ts`
-- **Import**: `import * as fs from 'node:fs'`
-- **Tags**: `async` `stream` `stat`
-
-| API | 同步/异步 | 用途 |
-|-----|-----------|------|
-| `fs.promises.stat()` | 异步 | 获取文件信息（存在性、大小检查） |
-| `fs.createReadStream()` | 流 | 流式传输文件块用于局域网传输 |
-
----
 
 ## 3. Agent Services（`src/main/services/agents/`）
 

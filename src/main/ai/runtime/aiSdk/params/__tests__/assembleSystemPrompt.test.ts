@@ -25,7 +25,6 @@ function makeAssistant(overrides: Partial<Assistant> = {}): Assistant {
       mcpMode: 'auto',
       maxToolCalls: 20,
       enableMaxToolCalls: true,
-      enableWebSearch: false,
       customParameters: []
     },
     ...overrides
@@ -106,17 +105,6 @@ describe('assembleSystemPrompt', () => {
     expect(out).toBe('base')
   })
 
-  it('appends citation guidance when web_search is an inline tool', async () => {
-    const out = await assembleSystemPrompt({
-      assistant: makeAssistant({ prompt: 'base' }),
-      model,
-      tools: { web_search: {} } as unknown as ToolSet,
-      hasCitableTools: true
-    })
-    expect(out).toContain('<citations>')
-    expect(out).toContain('[cite:ID]')
-  })
-
   it('appends citation guidance when kb_search is the only citable tool', async () => {
     const out = await assembleSystemPrompt({
       assistant: makeAssistant({ prompt: 'base' }),
@@ -137,57 +125,12 @@ describe('assembleSystemPrompt', () => {
     expect(out).toContain('<citations>')
   })
 
-  it('appends citation guidance when web tools are only available deferred', async () => {
-    const out = await assembleSystemPrompt({
-      assistant: makeAssistant({ prompt: 'base' }),
-      model,
-      tools: { tool_search: {} } as unknown as ToolSet,
-      deferredEntries: [{ name: 'web_search', namespace: 'web' }] as never,
-      hasCitableTools: true
-    })
-    expect(out).toContain('<citations>')
-  })
-
   it('does not append citation guidance without a citable tool', async () => {
     const out = await assembleSystemPrompt({
       assistant: makeAssistant({ prompt: 'base' }),
       model,
       tools: { other_tool: {}, kb_list: {} } as unknown as ToolSet
     })
-    expect(out).toBe('base')
-  })
-
-  it('does not infer citation capability from a same-named final tool', async () => {
-    const out = await assembleSystemPrompt({
-      assistant: makeAssistant({ prompt: 'base' }),
-      model,
-      tools: { web_search: {} } as unknown as ToolSet,
-      hasCitableTools: false
-    })
-    expect(out).toBe('base')
-  })
-
-  it('anchors relative dates to the runtime local date when web search is enabled', async () => {
-    const out = await assembleSystemPrompt({
-      assistant: makeAssistant({ prompt: 'base' }),
-      model,
-      webSearchEnabled: true,
-      now: new Date(2026, 7, 20, 23, 59)
-    })
-
-    expect(out).toContain('<current-date>2026-08-20</current-date>')
-    expect(out).toContain('this month')
-    expect(out).toContain('Do not substitute dates remembered from training')
-  })
-
-  it('does not add volatile date context when web search is unavailable', async () => {
-    const out = await assembleSystemPrompt({
-      assistant: makeAssistant({ prompt: 'base' }),
-      model,
-      webSearchEnabled: false,
-      now: new Date(2026, 7, 20)
-    })
-
     expect(out).toBe('base')
   })
 })

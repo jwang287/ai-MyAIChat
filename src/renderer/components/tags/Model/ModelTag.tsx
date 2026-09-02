@@ -4,12 +4,10 @@ import {
   type Model,
   MODEL_CAPABILITY,
   type ModelCapability,
-  type ModelTag,
-  SERVER_TOOL
+  type ModelTag
 } from '@shared/data/types/model'
 import type { Provider } from '@shared/data/types/provider'
 import { isFreeModel } from '@shared/utils/model'
-import { isBuiltinWebSearchAvailable } from '@shared/utils/provider'
 import type { ComponentType } from 'react'
 
 import type { CustomTagProps } from '../CustomTag'
@@ -21,7 +19,6 @@ import { RerankerTag } from './RerankerTag'
 import { ToolsCallingTag } from './ToolsCallingTag'
 import { VideoTag } from './VideoTag'
 import { VisionTag } from './VisionTag'
-import { WebSearchTag } from './WebSearchTag'
 
 export type ModelDisplayTagSource = Pick<Model, 'id' | 'name' | 'providerId' | 'capabilities' | 'inputModalities'>
 
@@ -37,11 +34,7 @@ export const MODEL_DISPLAY_CAPABILITY_TAGS = [
   MODEL_CAPABILITY.RERANK
 ] as const satisfies readonly ModelCapability[]
 
-export const MODEL_DISPLAY_TAGS = [
-  ...MODEL_DISPLAY_CAPABILITY_TAGS,
-  SERVER_TOOL.WEB_SEARCH,
-  'free'
-] as const satisfies readonly ModelTag[]
+export const MODEL_DISPLAY_TAGS = [...MODEL_DISPLAY_CAPABILITY_TAGS, 'free'] as const satisfies readonly ModelTag[]
 
 export type ModelDisplayCapabilityTag = (typeof MODEL_DISPLAY_CAPABILITY_TAGS)[number]
 export type ModelDisplayTag = (typeof MODEL_DISPLAY_TAGS)[number]
@@ -80,14 +73,11 @@ export function isModelTagVisible(
 export function modelMatchesDisplayTag(
   model: ModelDisplayTagSource,
   tag: ModelDisplayTag,
-  provider?: Pick<Provider, 'id' | 'presetProviderId' | 'defaultChatEndpoint' | 'serverTools'>
+  provider?: Pick<Provider, 'id' | 'presetProviderId' | 'defaultChatEndpoint'>
 ) {
+  void provider
   if (tag === 'free') {
     return isFreeModel(model)
-  }
-
-  if (tag === SERVER_TOOL.WEB_SEARCH) {
-    return provider ? isBuiltinWebSearchAvailable(model as Model, provider) : false
   }
 
   const inputModality = INPUT_MODALITY_BY_DISPLAY_TAG[tag]
@@ -97,7 +87,7 @@ export function modelMatchesDisplayTag(
 export function getModelDisplayTags(
   model: ModelDisplayTagSource,
   options?: ModelTagVisibilityOptions,
-  provider?: Pick<Provider, 'id' | 'presetProviderId' | 'defaultChatEndpoint' | 'serverTools'>
+  provider?: Pick<Provider, 'id' | 'presetProviderId' | 'defaultChatEndpoint'>
 ) {
   return MODEL_DISPLAY_TAGS.filter(
     (tag) => isModelTagVisible(tag, options) && modelMatchesDisplayTag(model, tag, provider)
@@ -117,7 +107,6 @@ const MODEL_TAG_COMPONENTS = {
   'image-recognition': VisionTag,
   'audio-recognition': AudioTag,
   'video-recognition': VideoTag,
-  'web-search': WebSearchTag,
   reasoning: ReasoningTag,
   'function-call': ToolsCallingTag,
   embedding: EmbeddingTag,

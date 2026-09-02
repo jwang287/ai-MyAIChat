@@ -47,7 +47,7 @@ function toResourceEntry(resource: McpResource): McpResourceEntry {
 
 /** Every resource the given servers publish. A server that fails to list is logged and skipped. */
 export async function listScopedMcpResources(servers: readonly McpServer[]): Promise<McpResourceEntry[]> {
-  const catalog = application.get('McpCatalogService')
+  const catalog = application.get('McpToolCacheService')
   const results = await Promise.allSettled(servers.map((server) => catalog.listResources(server.id)))
 
   return results.flatMap((result, index) => {
@@ -89,7 +89,7 @@ export async function readScopedMcpResource(
   // anything outside it is a uri the model constructed rather than one the user made reachable.
   let published: readonly McpResource[]
   try {
-    published = await application.get('McpCatalogService').listResources(server.id)
+    published = await application.get('McpToolCacheService').listResources(server.id)
   } catch (error) {
     logger.warn('Failed to list resources while validating a read', { serverId: server.id, error })
     return { error: `Could not reach ${server.name} to verify ${uri}.` }

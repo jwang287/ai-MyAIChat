@@ -261,27 +261,6 @@ describe('PreferencesMigrator', () => {
       expect(settingsRows[0].value).toEqual({ binding: ['CommandOrControl', ','], enabled: false })
     })
 
-    it('routes websearch.compressionConfig through complex mapping (1 → N split)', async () => {
-      const ctx = createTestContext(
-        {
-          redux: {
-            websearch: {
-              compressionConfig: { method: 'cutoff', cutoffLimit: 2000, cutoffUnit: 'token' }
-            }
-          }
-        },
-        dbh.db
-      )
-      await migrator.prepare(ctx)
-      await migrator.execute(ctx)
-
-      const method = await selectByKey(dbh.db, 'chat.web_search.compression.method')
-      const limit = await selectByKey(dbh.db, 'chat.web_search.compression.cutoff_limit')
-      expect(method[0]?.value).toBe('cutoff')
-      expect(limit[0]?.value).toBe(2000)
-      expect(await selectByKey(dbh.db, 'chat.web_search.compression.cutoff_unit')).toHaveLength(0)
-    })
-
     it('migrates legacy localStorage onboarding-completed to app.onboarding.provider_setup.status', async () => {
       const ctx = createTestContext({ localStorage: [{ key: 'onboarding-completed', value: 'true' }] }, dbh.db)
 
@@ -502,10 +481,7 @@ describe('PreferencesMigrator', () => {
       const ctx = createTestContext(
         {
           redux: {
-            settings: { language: 'zh-CN', theme: 'dark' },
-            websearch: {
-              compressionConfig: { method: 'cutoff', cutoffLimit: 1000, cutoffUnit: 'char' }
-            }
+            settings: { language: 'zh-CN', theme: 'dark' }
           },
           electronStore: { ZoomFactor: 1.1 },
           dexieSettings: [{ id: 'translate:scroll:sync', value: true }]
@@ -525,8 +501,6 @@ describe('PreferencesMigrator', () => {
       expect(zoom.value).toBe(1.1)
       const [scroll] = await selectByKey(dbh.db, 'feature.translate.page.scroll_sync')
       expect(scroll.value).toBe(true)
-      const [method] = await selectByKey(dbh.db, 'chat.web_search.compression.method')
-      expect(method.value).toBe('cutoff')
     })
 
     it('declares correct id, name, order metadata', () => {

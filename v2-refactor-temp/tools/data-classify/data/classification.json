@@ -5,7 +5,7 @@
     "totalItems": 408,
     "classified": 299,
     "pending": 100,
-    "deleted": 0
+    "deleted": 50
   },
   "classifications": {
     "redux": {
@@ -480,7 +480,7 @@
           "originalKey": "nutstoreToken",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.nutstore.token"
         },
@@ -488,7 +488,7 @@
           "originalKey": "nutstorePath",
           "type": "string",
           "defaultValue": "/cherry-studio",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.nutstore.path"
         },
@@ -496,7 +496,7 @@
           "originalKey": "nutstoreAutoSync",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.nutstore.auto_sync"
         },
@@ -504,7 +504,7 @@
           "originalKey": "nutstoreSyncInterval",
           "type": "number",
           "defaultValue": 0,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.nutstore.sync_interval"
         },
@@ -520,7 +520,7 @@
           "originalKey": "nutstoreSkipBackupFile",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.nutstore.skip_backup_file"
         },
@@ -528,107 +528,9 @@
           "originalKey": "nutstoreMaxBackups",
           "type": "number",
           "defaultValue": 0,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.nutstore.max_backups"
-        }
-      ],
-      "paintings": [
-        {
-          "originalKey": "siliconflow_paintings",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "dmxapi_paintings",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "tokenflux_paintings",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "zhipu_paintings",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "aihubmix_image_generate",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "aihubmix_image_remix",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "aihubmix_image_edit",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "aihubmix_image_upscale",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "openai_image_generate",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "openai_image_edit",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "ovms_paintings",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
-        },
-        {
-          "originalKey": "ppio_draw",
-          "type": "array",
-          "defaultValue": [],
-          "status": "pending",
-          "category": null,
-          "targetKey": null
         }
       ],
       "preprocess": [
@@ -1438,7 +1340,7 @@
           "originalKey": "webdavHost",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.host"
         },
@@ -1446,7 +1348,7 @@
           "originalKey": "webdavUser",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.user"
         },
@@ -1454,7 +1356,7 @@
           "originalKey": "webdavPass",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.pass"
         },
@@ -1462,7 +1364,7 @@
           "originalKey": "webdavPath",
           "type": "string",
           "defaultValue": "/cherry-studio",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.path"
         },
@@ -1470,7 +1372,7 @@
           "originalKey": "webdavAutoSync",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.auto_sync"
         },
@@ -1478,7 +1380,7 @@
           "originalKey": "webdavSyncInterval",
           "type": "number",
           "defaultValue": 0,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.sync_interval"
         },
@@ -1486,7 +1388,7 @@
           "originalKey": "webdavMaxBackups",
           "type": "number",
           "defaultValue": 0,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.max_backups"
         },
@@ -1494,7 +1396,7 @@
           "originalKey": "webdavSkipBackupFile",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.skip_backup_file"
         },
@@ -1502,7 +1404,7 @@
           "originalKey": "webdavDisableStream",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.backup.webdav.disable_stream"
         },
@@ -1574,7 +1476,7 @@
         {
           "originalKey": "sidebarIcons",
           "type": "unknown",
-          "defaultValue": "{ visible: ['assistants', 'agents', 'paintings', 'translate', 'store'], disabled: [] }",
+          "defaultValue": "{ visible: ['assistants', 'agents', 'translate', 'store'], disabled: [] }",
           "status": "pending",
           "category": null,
           "targetKey": null,
@@ -1584,7 +1486,6 @@
               "defaultValue": [
                 "assistants",
                 "agents",
-                "paintings",
                 "translate",
                 "store"
               ],
@@ -1609,7 +1510,6 @@
           "defaultValue": [
             "assistants",
             "agents",
-            "paintings",
             "translate",
             "store"
           ],
@@ -1669,7 +1569,7 @@
           "originalKey": "notionDatabaseID",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.notion.database_id"
         },
@@ -1677,7 +1577,7 @@
           "originalKey": "notionApiKey",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.notion.api_key"
         },
@@ -1685,7 +1585,7 @@
           "originalKey": "notionPageNameKey",
           "type": "string",
           "defaultValue": "Name",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.notion.page_name_key"
         },
@@ -1741,7 +1641,7 @@
           "originalKey": "notionExportReasoning",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.notion.export_reasoning"
         },
@@ -1765,7 +1665,7 @@
           "originalKey": "yuqueToken",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.yuque.token"
         },
@@ -1773,7 +1673,7 @@
           "originalKey": "yuqueUrl",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.yuque.url"
         },
@@ -1781,7 +1681,7 @@
           "originalKey": "yuqueRepoId",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.yuque.repo_id"
         },
@@ -1789,7 +1689,7 @@
           "originalKey": "joplinToken",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.joplin.token"
         },
@@ -1797,7 +1697,7 @@
           "originalKey": "joplinUrl",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.joplin.url"
         },
@@ -1805,7 +1705,7 @@
           "originalKey": "joplinExportReasoning",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.joplin.export_reasoning"
         },
@@ -1813,7 +1713,7 @@
           "originalKey": "defaultObsidianVault",
           "type": "string",
           "defaultValue": "",
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.obsidian.default_vault"
         },
@@ -1829,7 +1729,7 @@
           "originalKey": "siyuanApiUrl",
           "type": "string",
           "defaultValue": null,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.siyuan.api_url"
         },
@@ -1837,7 +1737,7 @@
           "originalKey": "siyuanToken",
           "type": "string",
           "defaultValue": null,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.siyuan.token"
         },
@@ -1845,7 +1745,7 @@
           "originalKey": "siyuanBoxId",
           "type": "string",
           "defaultValue": null,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.siyuan.box_id"
         },
@@ -1853,7 +1753,7 @@
           "originalKey": "siyuanRootPath",
           "type": "string",
           "defaultValue": null,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.integration.siyuan.root_path"
         },
@@ -1869,9 +1769,9 @@
           "originalKey": "maxKeepAliveMinapps",
           "type": "number",
           "defaultValue": 3,
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "feature.mini_app.max_keep_alive"
+          "status": "deleted",
+          "category": null,
+          "targetKey": null
         },
         {
           "originalKey": "showOpenedMinappsInSidebar",
@@ -1885,17 +1785,17 @@
           "originalKey": "minappsOpenLinkExternal",
           "type": "boolean",
           "defaultValue": false,
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "feature.mini_app.open_link_external"
+          "status": "deleted",
+          "category": null,
+          "targetKey": null
         },
         {
           "originalKey": "minAppRegion",
           "type": "PreferenceTypes.MiniAppRegionFilter",
           "defaultValue": "auto",
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "feature.mini_app.region"
+          "status": "deleted",
+          "category": null,
+          "targetKey": null
         },
         {
           "originalKey": "enableDataCollection",
@@ -1989,7 +1889,7 @@
               "category": "preferences",
               "defaultValue": true,
               "originalKey": "notion",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.export.menus.notion",
               "type": "boolean"
             },
@@ -1997,7 +1897,7 @@
               "category": "preferences",
               "defaultValue": true,
               "originalKey": "yuque",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.export.menus.yuque",
               "type": "boolean"
             },
@@ -2005,7 +1905,7 @@
               "category": "preferences",
               "defaultValue": true,
               "originalKey": "joplin",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.export.menus.joplin",
               "type": "boolean"
             },
@@ -2013,7 +1913,7 @@
               "category": "preferences",
               "defaultValue": true,
               "originalKey": "obsidian",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.export.menus.obsidian",
               "type": "boolean"
             },
@@ -2021,7 +1921,7 @@
               "category": "preferences",
               "defaultValue": true,
               "originalKey": "siyuan",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.export.menus.siyuan",
               "type": "boolean"
             },
@@ -2071,7 +1971,7 @@
           "originalKey": "notion",
           "type": "boolean",
           "defaultValue": true,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.export.menus.notion"
         },
@@ -2079,7 +1979,7 @@
           "originalKey": "yuque",
           "type": "boolean",
           "defaultValue": true,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.export.menus.yuque"
         },
@@ -2087,7 +1987,7 @@
           "originalKey": "joplin",
           "type": "boolean",
           "defaultValue": true,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.export.menus.joplin"
         },
@@ -2095,7 +1995,7 @@
           "originalKey": "obsidian",
           "type": "boolean",
           "defaultValue": true,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.export.menus.obsidian"
         },
@@ -2103,7 +2003,7 @@
           "originalKey": "siyuan",
           "type": "boolean",
           "defaultValue": true,
-          "status": "classified",
+          "status": "classified-deleted",
           "category": "preferences",
           "targetKey": "data.export.menus.siyuan"
         },
@@ -2296,14 +2196,6 @@
           "targetKey": "data.backup.local.skip_backup_file"
         },
         {
-          "originalKey": "defaultPaintingProvider",
-          "type": "string",
-          "defaultValue": "zhipu",
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "feature.paintings.default_provider"
-        },
-        {
           "originalKey": "s3",
           "type": "unknown",
           "defaultValue": "{ endpoint: '', region: '', bucket: '', accessKeyId: '', secretAccessKey: '', root: '', autoSync: false, syncInterval: 0, maxBackups: 0, skipBackupFile: false }",
@@ -2315,7 +2207,7 @@
               "category": "preferences",
               "defaultValue": "",
               "originalKey": "endpoint",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.endpoint",
               "type": "string"
             },
@@ -2323,7 +2215,7 @@
               "category": "preferences",
               "defaultValue": "",
               "originalKey": "region",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.region",
               "type": "string"
             },
@@ -2331,7 +2223,7 @@
               "category": "preferences",
               "defaultValue": "",
               "originalKey": "bucket",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.bucket",
               "type": "string"
             },
@@ -2339,7 +2231,7 @@
               "category": "preferences",
               "defaultValue": "",
               "originalKey": "accessKeyId",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.access_key_id",
               "type": "string"
             },
@@ -2347,7 +2239,7 @@
               "category": "preferences",
               "defaultValue": "",
               "originalKey": "secretAccessKey",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.secret_access_key",
               "type": "string"
             },
@@ -2355,7 +2247,7 @@
               "category": "preferences",
               "defaultValue": "",
               "originalKey": "root",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.root",
               "type": "string"
             },
@@ -2363,7 +2255,7 @@
               "category": "preferences",
               "defaultValue": false,
               "originalKey": "autoSync",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.auto_sync",
               "type": "boolean"
             },
@@ -2371,7 +2263,7 @@
               "category": "preferences",
               "defaultValue": 0,
               "originalKey": "syncInterval",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.sync_interval",
               "type": "number"
             },
@@ -2379,7 +2271,7 @@
               "category": "preferences",
               "defaultValue": 0,
               "originalKey": "maxBackups",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.max_backups",
               "type": "number"
             },
@@ -2387,7 +2279,7 @@
               "category": "preferences",
               "defaultValue": false,
               "originalKey": "skipBackupFile",
-              "status": "classified",
+              "status": "classified-deleted",
               "targetKey": "data.backup.s3.skip_backup_file",
               "type": "boolean"
             }
@@ -2852,22 +2744,6 @@
           "targetKey": null
         },
         {
-          "originalKey": "maxResults",
-          "type": "number",
-          "defaultValue": 5,
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "chat.web_search.max_results"
-        },
-        {
-          "originalKey": "excludeDomains",
-          "type": "array",
-          "defaultValue": [],
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "chat.web_search.exclude_domains"
-        },
-        {
           "originalKey": "subscribeSources",
           "type": "array",
           "defaultValue": [],
@@ -3033,130 +2909,6 @@
           "status": "classified",
           "category": "preferences",
           "targetKey": "feature.file_processing.default_image_to_text"
-        }
-      ],
-      "note": [
-        {
-          "originalKey": "activeNodeId",
-          "type": "string",
-          "defaultValue": null,
-          "status": "classified",
-          "category": "cache",
-          "targetKey": null
-        },
-        {
-          "originalKey": "activeFilePath",
-          "type": "string",
-          "defaultValue": null,
-          "status": "classified",
-          "category": "cache",
-          "targetKey": "notes.active_file_path"
-        },
-        {
-          "originalKey": "settings",
-          "type": "unknown",
-          "defaultValue": "{ isFullWidth: true, fontFamily: 'default', fontSize: 16, showTableOfContents: true, defaultViewMode: 'edit', defaultEditMode: 'preview', showTabStatus: true, showWorkspace: true }",
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": null,
-          "children": [
-            {
-              "category": "preferences",
-              "defaultValue": true,
-              "originalKey": "isFullWidth",
-              "status": "classified",
-              "targetKey": "feature.notes.full_width",
-              "type": "boolean"
-            },
-            {
-              "category": "preferences",
-              "defaultValue": "default",
-              "originalKey": "fontFamily",
-              "status": "classified",
-              "targetKey": "feature.notes.font_family",
-              "type": "string"
-            },
-            {
-              "category": "preferences",
-              "defaultValue": 16,
-              "originalKey": "fontSize",
-              "status": "classified",
-              "targetKey": "feature.notes.font_size",
-              "type": "number"
-            },
-            {
-              "category": "preferences",
-              "defaultValue": true,
-              "originalKey": "showTableOfContents",
-              "status": "classified",
-              "targetKey": "feature.notes.show_table_of_contents",
-              "type": "boolean"
-            },
-            {
-              "category": "preferences",
-              "defaultValue": "edit",
-              "originalKey": "defaultViewMode",
-              "status": "classified",
-              "targetKey": "feature.notes.default_view_mode",
-              "type": "string"
-            },
-            {
-              "category": "preferences",
-              "defaultValue": "preview",
-              "originalKey": "defaultEditMode",
-              "status": "classified",
-              "targetKey": "feature.notes.default_edit_mode",
-              "type": "string"
-            },
-            {
-              "category": "preferences",
-              "defaultValue": true,
-              "originalKey": "showTabStatus",
-              "status": "classified",
-              "targetKey": "feature.notes.show_tab_status",
-              "type": "boolean"
-            },
-            {
-              "category": "preferences",
-              "defaultValue": true,
-              "originalKey": "showWorkspace",
-              "status": "classified",
-              "targetKey": "feature.notes.show_workspace",
-              "type": "boolean"
-            }
-          ]
-        },
-        {
-          "originalKey": "notesPath",
-          "type": "string",
-          "defaultValue": "",
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "feature.notes.path"
-        },
-        {
-          "originalKey": "sortType",
-          "type": "string",
-          "defaultValue": "sort_a2z",
-          "status": "classified",
-          "category": "preferences",
-          "targetKey": "feature.notes.sort_type"
-        },
-        {
-          "originalKey": "starredPaths",
-          "type": "string",
-          "defaultValue": [],
-          "status": "classified",
-          "category": "user_data",
-          "targetKey": null
-        },
-        {
-          "originalKey": "expandedPaths",
-          "type": "string",
-          "defaultValue": null,
-          "status": "classified",
-          "category": "user_data",
-          "targetKey": null
         }
       ]
     },

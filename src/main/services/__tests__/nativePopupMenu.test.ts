@@ -120,18 +120,18 @@ describe('showNativePopupMenu', () => {
       event,
       {
         location: 'chat.input.tools.context',
-        items: [{ type: 'custom', id: 'tool:web-search', label: 'Web Search', checked: true }]
+        items: [{ type: 'custom', id: 'tool:custom-action', label: 'Custom action', checked: true }]
       } satisfies NativePopupMenuModel,
       undefined,
       neverExecute
     )
 
     const template = latestTemplate()
-    expect(template[0]).toEqual(expect.objectContaining({ label: 'Web Search', type: 'checkbox', checked: true }))
+    expect(template[0]).toEqual(expect.objectContaining({ label: 'Custom action', type: 'checkbox', checked: true }))
 
     template[0].click?.()
 
-    await expect(result).resolves.toEqual({ type: 'custom', id: 'tool:web-search' })
+    await expect(result).resolves.toEqual({ type: 'custom', id: 'tool:custom-action' })
   })
 
   it('returns custom submenu item clicks to the caller', async () => {

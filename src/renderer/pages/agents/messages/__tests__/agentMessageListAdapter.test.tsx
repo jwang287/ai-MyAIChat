@@ -11,12 +11,7 @@ const exportActionsMock = vi.hoisted(() => ({
   saveToKnowledge: vi.fn(),
   exportMessageAsMarkdown: vi.fn(),
   exportToNotes: vi.fn(),
-  exportToWord: vi.fn(),
-  exportToNotion: vi.fn(),
-  exportToYuque: vi.fn(),
-  exportToObsidian: vi.fn(),
-  exportToJoplin: vi.fn(),
-  exportToSiyuan: vi.fn()
+  exportToWord: vi.fn()
 }))
 const useMessageExportActionsMock = vi.hoisted(() => vi.fn(() => exportActionsMock))
 const cacheHookMocks = vi.hoisted(() => ({
@@ -121,11 +116,6 @@ vi.mock('@renderer/components/chat/messages/hooks/useMessageMenuConfig', () => (
       image: false,
       markdown: false,
       markdown_reason: false,
-      notion: false,
-      yuque: false,
-      joplin: false,
-      obsidian: false,
-      siyuan: false,
       docx: false,
       plain_text: false
     }
@@ -190,178 +180,6 @@ describe('useAgentMessageListProviderValue', () => {
       modifiedAt: 0,
       mime: 'application/octet-stream'
     })
-  })
-
-  it('adapts CherryUIMessage input and injects supported agent capabilities', () => {
-    const topic = {
-      id: 'agent-session-topic',
-      assistantId: 'agent-1',
-      name: 'Agent session',
-      lastActivityAt: '2026-01-01T00:00:00.000Z',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
-      messages: []
-    } as Topic
-    const messages = [
-      {
-        id: 'user-1',
-        role: 'user',
-        parts: [{ type: 'text', text: 'hello' }],
-        metadata: { createdAt: '2026-01-01T00:00:00.000Z' }
-      },
-      {
-        id: 'assistant-1',
-        role: 'assistant',
-        parts: [{ type: 'text', text: 'streaming reply' }],
-        metadata: {
-          parentId: 'user-1',
-          createdAt: '2026-01-01T00:00:01.000Z',
-          status: 'pending',
-          messageSnapshot: {
-            id: 'agent-1',
-            name: 'My Agent',
-            model: { id: 'claude-4', name: 'Claude 4', provider: 'anthropic' }
-          }
-        }
-      }
-    ] as CherryUIMessage[]
-    const partsByMessageId = Object.fromEntries(messages.map((message) => [message.id, message.parts ?? []]))
-    const deleteMessage = vi.fn()
-    const respondToolApproval = vi.fn()
-    const openArtifactFile = vi.fn()
-    let value: MessageListProviderValue | undefined
-
-    const Probe = () => {
-      value = useAgentMessageListProviderValue({
-        topic,
-        messages,
-        partsByMessageId,
-        assistantId: 'agent-1',
-        isLoading: false,
-        openArtifactFile,
-        deleteMessage,
-        respondToolApproval,
-        messageNavigation: 'anchor',
-        workspacePath: '/tmp/workspace'
-      })
-      return null
-    }
-
-    render(<Probe />)
-
-    expect(value?.state.partsByMessageId).toBe(partsByMessageId)
-    expect(value?.state.messages.map((message) => message.id)).toEqual(['user-1', 'assistant-1'])
-    expect(value?.state.messages[1]).toMatchObject({
-      role: 'assistant',
-      parentId: 'user-1',
-      status: 'pending',
-      model: {
-        id: 'claude-4',
-        name: 'Claude 4',
-        provider: 'anthropic'
-      }
-    })
-    expect(value?.state.selection).toEqual({
-      enabled: true,
-      isMultiSelectMode: true,
-      selectedMessageIds: ['user-1']
-    })
-    expect(useMessageExportActionsMock).toHaveBeenCalledWith({
-      topicName: 'Agent session'
-    })
-    expect(value?.actions.deleteMessage).toBe(deleteMessage)
-    expect(value?.actions.respondToolApproval).toBe(respondToolApproval)
-    expect(value?.actions.selectMessage).toEqual(expect.any(Function))
-    expect(value?.actions.toggleMultiSelectMode).toEqual(expect.any(Function))
-    expect(value?.actions.copySelectedMessages).toEqual(expect.any(Function))
-    expect(value?.actions.saveSelectedMessages).toEqual(expect.any(Function))
-    expect(value?.actions.deleteSelectedMessages).toEqual(expect.any(Function))
-    expect(value?.actions.regenerateMessage).toBeUndefined()
-    expect(value?.actions.editMessage).toBeUndefined()
-    expect(value?.actions.saveTextFile).toBe(exportActionsMock.saveTextFile)
-    expect(value?.actions.saveImage).toBe(exportActionsMock.saveImage)
-    expect(value?.actions.saveToKnowledge).toBe(exportActionsMock.saveToKnowledge)
-    expect(value?.actions.exportMessageAsMarkdown).toBe(exportActionsMock.exportMessageAsMarkdown)
-    expect(value?.actions.exportToNotes).toBe(exportActionsMock.exportToNotes)
-    expect(value?.actions.exportToWord).toBe(exportActionsMock.exportToWord)
-    expect(value?.actions.exportToNotion).toBe(exportActionsMock.exportToNotion)
-    expect(value?.actions.exportToYuque).toBe(exportActionsMock.exportToYuque)
-    expect(value?.actions.exportToObsidian).toBe(exportActionsMock.exportToObsidian)
-    expect(value?.actions.exportToJoplin).toBe(exportActionsMock.exportToJoplin)
-    expect(value?.actions.exportToSiyuan).toBe(exportActionsMock.exportToSiyuan)
-    expect(value?.actions.diagnoseMessageError).toBe(errorActionsMock.diagnoseMessageError)
-    expect(value?.actions.openErrorDetail).toBe(errorActionsMock.openErrorDetail)
-    expect(value?.actions.navigateErrorTarget).toBe(errorActionsMock.navigateErrorTarget)
-    expect(value?.actions.removeMessageErrorPart).toBeUndefined()
-    expect(value?.actions.previewFile).toBe(leafCapabilitiesMock.previewFile)
-    expect(value?.actions.subscribeToolProgress).toBe(leafCapabilitiesMock.subscribeToolProgress)
-    expect(value?.actions.openExternalUrl).toBe(leafCapabilitiesMock.openExternalUrl)
-    expect(value?.actions.navigateToRoute).toEqual(expect.any(Function))
-    expect(value?.actions.openUserProfile).toBe(headerCapabilitiesMock.openUserProfile)
-    expect(value?.actions.copyText).toBe(leafCapabilitiesMock.copyText)
-    expect(value?.actions.copyRichContent).toBe(leafCapabilitiesMock.copyRichContent)
-    expect(value?.actions.copyImage).toBe(leafCapabilitiesMock.copyImage)
-    expect(value?.actions.exportTableAsExcel).toBe(leafCapabilitiesMock.exportTableAsExcel)
-    expect(value?.actions.notifyInfo).toBe(leafCapabilitiesMock.notifyInfo)
-    expect(value?.actions.notifySuccess).toBe(leafCapabilitiesMock.notifySuccess)
-    expect(value?.actions.notifyWarning).toBe(leafCapabilitiesMock.notifyWarning)
-    expect(value?.actions.notifyError).toBe(leafCapabilitiesMock.notifyError)
-    expect(value?.state.isToolAutoApproved).toBe(leafCapabilitiesMock.isToolAutoApproved)
-    expect(value?.state.getFileView).toBe(leafCapabilitiesMock.getFileView)
-    expect(value?.meta.userProfile).toBe(headerCapabilitiesMock.userProfile)
-    expect(value?.meta.aiUsageMessageKind).toBe('agent-session')
-    expect(value?.actions.openArtifactFile).toBe(openArtifactFile)
-    expect(value?.actions.resolvePath?.('dist/report.md')).toBe('/tmp/workspace/dist/report.md')
-    expect(value?.actions.openPath).toEqual(expect.any(Function))
-    expect(value?.actions.abortTool).toEqual(expect.any(Function))
-    expect(value?.actions.bindRuntime).toEqual(expect.any(Function))
-    expect(value?.actions.bindMessageRuntime).toEqual(expect.any(Function))
-    expect(value?.actions.bindMessageGroupRuntime).toEqual(expect.any(Function))
-    expect(value?.actions.locateMessage).toEqual(expect.any(Function))
-
-    void value?.actions.openPath?.('dist/report.md')
-    expect(window.api.file.openPath).toHaveBeenCalledWith('/tmp/workspace/dist/report.md')
-
-    void value?.actions.navigateToRoute?.({ path: '/settings/provider', query: { id: 'provider-1' } })
-    expect(openRouteMock).toHaveBeenCalledWith('/settings/provider', { id: 'provider-1' })
-
-    const locateMessage = vi.fn()
-    const startEditing = vi.fn()
-    const unbindMessageRuntime = value?.actions.bindMessageRuntime?.('assistant-1', { locateMessage, startEditing })
-    expect(eventMocks.on).toHaveBeenCalledWith('LOCATE_MESSAGE:assistant-1', locateMessage)
-    unbindMessageRuntime?.()
-
-    const locateMessageGroup = vi.fn()
-    value?.actions.bindMessageGroupRuntime?.(['user-1', 'assistant-1'], { locateMessage: locateMessageGroup })
-    expect(eventMocks.on).toHaveBeenCalledWith('LOCATE_MESSAGE:user-1', expect.any(Function))
-    expect(eventMocks.on).toHaveBeenCalledWith('LOCATE_MESSAGE:assistant-1', expect.any(Function))
-
-    const listLocateMessage = vi.fn()
-    const listRuntime = {
-      scrollToBottom: vi.fn(),
-      locateMessage: listLocateMessage,
-      copyTopicImage: vi.fn(),
-      exportTopicImage: vi.fn()
-    } as MessageListRuntime
-    const unbindRuntime = value?.actions.bindRuntime?.(listRuntime)
-
-    vi.useFakeTimers()
-    try {
-      eventMocks.emit.mockClear()
-      value?.actions.locateMessage?.('assistant-1', true)
-      expect(listLocateMessage).toHaveBeenCalledWith('assistant-1')
-      expect(eventMocks.emit).not.toHaveBeenCalled()
-
-      vi.advanceTimersByTime(100)
-      expect(eventMocks.emit).toHaveBeenCalledWith('LOCATE_MESSAGE:assistant-1', true)
-    } finally {
-      vi.useRealTimers()
-      unbindRuntime?.()
-    }
-
-    eventMocks.emit.mockClear()
-    value?.actions.locateMessage?.('assistant-1', true)
-    expect(eventMocks.emit).toHaveBeenCalledWith('LOCATE_MESSAGE:assistant-1', true)
   })
 
   it('rejects unresolved relative paths when no workspace root is available', () => {

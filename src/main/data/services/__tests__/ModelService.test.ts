@@ -1005,13 +1005,10 @@ describe('ModelService.list', () => {
 //
 // Preset-backed rows resolve from the current registry on every read. Every
 // non-null sparse config column is a stored delta.
-// Registry-only metadata such as `imageGeneration` is attached at read time.
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('ModelService.list — registry enrichment', () => {
   const dbh = setupTestDatabase()
-
-  const imageGenerationMeta = { modes: {} } as any
 
   beforeEach(() => {
     // Reset to the default no-op registry hit; tests opt in per model.
@@ -1358,8 +1355,7 @@ describe('ModelService.list — registry enrichment', () => {
         pricing: {
           input: { perMillionTokens: 5 },
           output: { perMillionTokens: 15 }
-        },
-        imageGeneration: imageGenerationMeta
+        }
       },
       registryOverride: {
         endpointTypes: ['openai-responses'],
@@ -1394,7 +1390,6 @@ describe('ModelService.list — registry enrichment', () => {
         cacheRead: undefined,
         cacheWrite: undefined
       },
-      imageGeneration: imageGenerationMeta,
       isEnabled: false,
       isHidden: true,
       isDeprecated: true,
@@ -1431,75 +1426,7 @@ describe('ModelService.list — registry enrichment', () => {
     expect(model.supportsStreaming).toBe(false)
   })
 
-  it('adds image-generation (and imageGeneration metadata) when the preset declares it but the user row lacks it', async () => {
-    await dbh.db.insert(userProviderTable).values(providerRow('cherryin', 'CherryIn'))
-    await dbh.db.insert(userModelTable).values(
-      modelRow('cherryin', 'qwen-image-edit-2509', {
-        presetModelId: 'qwen-image-edit-2509',
-        name: 'Qwen Image Edit',
-        // Provider's /models endpoint shipped it untagged.
-        capabilities: null
-      })
-    )
-
-    lookupModelMock.mockImplementation((providerId: string, modelId: string) => {
-      if (providerId === 'cherryin' && modelId === 'qwen-image-edit-2509') {
-        return {
-          presetModel: {
-            id: 'qwen-image-edit-2509',
-            capabilities: [MODEL_CAPABILITY.IMAGE_GENERATION],
-            imageGeneration: imageGenerationMeta
-          },
-          registryOverride: null,
-          reasoningProfile: OPENAI_CHAT_REASONING_PROFILE
-        }
-      }
-      return { presetModel: null, registryOverride: null, reasoningProfile: OPENAI_CHAT_REASONING_PROFILE }
-    })
-
-    const [model] = modelService.list({ providerId: 'cherryin' })
-
-    expect(model.capabilities).toContain(MODEL_CAPABILITY.IMAGE_GENERATION)
-    expect(model.imageGeneration).toEqual(imageGenerationMeta)
-  })
-
-  it('does not re-add image-generation when the user overrode capabilities', async () => {
-    await dbh.db.insert(userProviderTable).values(providerRow('cherryin', 'CherryIn'))
-    await dbh.db.insert(userModelTable).values(
-      modelRow('cherryin', 'qwen-image-edit-2509', {
-        presetModelId: 'qwen-image-edit-2509',
-        name: 'Qwen Image Edit',
-        capabilities: []
-      })
-    )
-
-    lookupModelMock.mockImplementation((providerId: string, modelId: string) => {
-      if (providerId === 'cherryin' && modelId === 'qwen-image-edit-2509') {
-        return {
-          presetModel: {
-            id: 'qwen-image-edit-2509',
-            capabilities: [MODEL_CAPABILITY.IMAGE_GENERATION],
-            imageGeneration: imageGenerationMeta
-          },
-          registryOverride: null,
-          reasoningProfile: OPENAI_CHAT_REASONING_PROFILE
-        }
-      }
-      return { presetModel: null, registryOverride: null, reasoningProfile: OPENAI_CHAT_REASONING_PROFILE }
-    })
-
-    const [model] = modelService.list({ providerId: 'cherryin' })
-    const imageModels = modelService.list({
-      providerId: 'cherryin',
-      capability: MODEL_CAPABILITY.IMAGE_GENERATION
-    })
-
-    expect(model.capabilities).toEqual([])
-    expect(model.imageGeneration).toEqual(imageGenerationMeta)
-    expect(imageModels).toEqual([])
-  })
-
-  it('does NOT re-add a non-image-generation preset capability the user removed', async () => {
+  it('does not re-add a preset capability the user removed', async () => {
     await dbh.db.insert(userProviderTable).values(providerRow('anthropic', 'Anthropic'))
     await dbh.db.insert(userModelTable).values(
       modelRow('anthropic', 'claude-3', {

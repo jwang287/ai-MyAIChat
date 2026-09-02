@@ -14,7 +14,7 @@ vi.mock('@cherrystudio/ui', async (importOriginal) => importOriginal<typeof Cher
 
 const translations: Record<string, string> = {
   'settings.models.check.failed': 'Failed',
-  'settings.models.check.generation_output_image': 'an image',
+  'settings.models.check.generation_output_video': 'a video',
   'settings.models.check.keys_failed_count': '{{failed}}/{{total}} keys failed',
   'settings.models.check.latency': 'Latency {{latency}} milliseconds',
   'settings.models.check.passed': 'Passed',
@@ -176,7 +176,7 @@ describe('ModelCheckStatus', () => {
         status: HealthStatus.NOT_CHECKED,
         checking: false,
         keyResults: [],
-        skipReason: { kind: 'generation_cost', output: 'image' }
+        skipReason: { kind: 'generation_cost', output: 'video' }
       },
       []
     )
@@ -185,7 +185,7 @@ describe('ModelCheckStatus', () => {
 
     expect(
       await screen.findByText(
-        'Checking this model would generate an image and consume quota, so it is skipped by default.'
+        'Checking this model would generate a video and consume quota, so it is skipped by default.'
       )
     ).toBeInTheDocument()
   })

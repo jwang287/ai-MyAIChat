@@ -1,9 +1,7 @@
 import type { AiUsageRecordListSortBy, AiUsageRecordSortOrder } from '@shared/data/api/schemas/aiUsageRecords'
 import type { JobProgress, JobSnapshot } from '@shared/data/api/schemas/jobs'
-import type { MiniAppRegion, TransientMiniApp } from '@shared/data/types/miniApp'
 import type { Currency } from '@shared/data/types/model'
 import type { AutoBackupType } from '@shared/types/backup'
-import type { AbsoluteFilePath } from '@shared/types/file'
 
 import type { TopicStatusSnapshotEntry } from '../../ai/transport'
 import type * as CacheValueTypes from './cacheValueTypes'
@@ -124,7 +122,6 @@ export type UseCacheSchema = {
   // Chat context
   'chat.multi_select_mode': boolean
   'chat.selected_message_ids': string[]
-  'chat.web_search.searching': boolean
   // Per-topic composer draft. Renderer memory only; app restart discards it.
   'chat.composer_draft.${topicId}': CacheValueTypes.CacheChatComposerDraft
   // Message-list scroll position memory, keyed per topic / agent session.
@@ -135,18 +132,6 @@ export type UseCacheSchema = {
   'knowledge.recall.search_queries': Record<string, string[]>
 
   // Notes page state
-  'notes.active_file_path': AbsoluteFilePath | undefined
-
-  // MiniApp management
-  'mini_app.opened_keep_alive': CacheValueTypes.CacheMiniAppType[]
-  'mini_app.current_id': string
-  /** Whether the mini app view is split into two panes. */
-  'mini_app.split_open': boolean
-  /** Mini app shown in the split pane. Empty while the pane awaits a pick. */
-  'mini_app.split_id': string
-  'mini_app.show': boolean
-  'mini_app.opened_oneoff': CacheValueTypes.CacheMiniAppType | null
-  'mini_app.detected_region': MiniAppRegion | null
 
   // Topic management
   'topic.renaming': string[]
@@ -166,10 +151,6 @@ export type UseCacheSchema = {
   'translate.detecting': boolean
   /** Whether translating input text */
   'translate.translating': CacheValueTypes.TranslatingState
-
-  // Painting in-flight generation state, keyed by paintingId. Survives page
-  // navigation so the spinner reappears when the user returns mid-run.
-  'painting.generation.${paintingId}': CacheValueTypes.CachePaintingGenerationState | null
 
   // Template key examples (for testing and demonstration)
   'scroll.position.${topicId}': number
@@ -214,7 +195,6 @@ export const DefaultUseCache: UseCacheSchema = {
   // Chat context
   'chat.multi_select_mode': false,
   'chat.selected_message_ids': [],
-  'chat.web_search.searching': false,
   'chat.composer_draft.${topicId}': {
     text: '',
     tokens: [],
@@ -225,16 +205,6 @@ export const DefaultUseCache: UseCacheSchema = {
   },
   'chat.scroll_anchor.${topicId}': null,
   'knowledge.recall.search_queries': {},
-  'notes.active_file_path': undefined,
-
-  // MiniApp management
-  'mini_app.opened_keep_alive': [],
-  'mini_app.current_id': '',
-  'mini_app.split_open': false,
-  'mini_app.split_id': '',
-  'mini_app.show': false,
-  'mini_app.opened_oneoff': null,
-  'mini_app.detected_region': null,
 
   // Topic management
   'topic.renaming': [],
@@ -260,8 +230,6 @@ export const DefaultUseCache: UseCacheSchema = {
     abortKey: null
   },
 
-  'painting.generation.${paintingId}': null,
-
   // Template key examples (for testing and demonstration)
   'scroll.position.${topicId}': 0,
   'entity.cache.${type}_${id}': { loaded: false, data: null },
@@ -280,7 +248,6 @@ export const DefaultUseCache: UseCacheSchema = {
  * Use shared cache schema for renderer hook
  */
 export type SharedCacheSchema = {
-  'chat.web_search.active_searches': CacheValueTypes.CacheActiveSearches
   'mcp.tools.${serverId}': CacheValueTypes.CacheMcpTool[]
   'mcp.status.${serverId}': CacheValueTypes.McpRuntimeStatus
   // Runtime-only opt-out shared across windows; resets when the app exits.
@@ -299,7 +266,6 @@ export type SharedCacheSchema = {
   'feature.api_gateway.running': boolean
   'feature.binary.latest_versions': Record<string, string>
   // API key rotation state (cross-window, tracks last used key per provider)
-  'web_search.provider.last_used_key.${providerId}': string
   'ocr.provider.last_used_key.${providerId}': string
   // Job system: state snapshot + progress, broadcast main → all windows. TTL 60s
   // (JobManager sets ttl when calling setShared, so cache miss after a job
@@ -314,26 +280,14 @@ export type SharedCacheSchema = {
   // active, then left to linger under a short TTL after the job exits so the
   // polled item status can reach its terminal state before the value vanishes.
   'knowledge.item.embedding_progress.${itemId}': number | null
-  // A mini app opened via `openSmartMiniApp` (OpenClaw's dashboard, the S3 help page,
-  // the release notes) has no database row, so `/app/mini-app/<id>` is unresolvable
-  // through DataApi. Publishing the descriptor here — not into the keep-alive list,
-  // which doubles as the per-window WebView LRU — makes it readable by every window
-  // and outlives any single window's eviction, so detaching such a tab and attaching
-  // it back both keep resolving. Memory-only: the URL can hold a session secret (the
-  // OpenClaw dashboard embeds the gateway auth token) and must not reach disk.
-  // Nothing evicts an entry — that is the point, and it costs a handful of rows per
-  // session. Null is the cache miss (see the `jobs.state` precedent above).
-  'mini_app.transient_descriptor.${appId}': TransientMiniApp | null
   // Apps that want the user's attention, and why (a host-added permission, or an update).
   // Written by `useWindowRuntime` only; identical in every window, hence shared.
-  'mini_app.attention': CacheValueTypes.CacheMiniAppAttention[]
   // Directory copy progress for a knowledge item, main -> all windows. Like
   // embedding progress, the prepare job owns this runtime-only value.
   'knowledge.item.directory_copy_progress.${itemId}': number | null
 }
 
 export const DefaultSharedCache: SharedCacheSchema = {
-  'chat.web_search.active_searches': {},
   'mcp.tools.${serverId}': [],
   'mcp.status.${serverId}': { state: 'disabled', lastCheckedAt: 0 },
   'agent.model_switch_confirmation.skipped': false,
@@ -349,15 +303,12 @@ export const DefaultSharedCache: SharedCacheSchema = {
   'feature.openclaw.gateway_status': 'stopped',
   'feature.api_gateway.running': false,
   'feature.binary.latest_versions': {},
-  'web_search.provider.last_used_key.${providerId}': '',
   'ocr.provider.last_used_key.${providerId}': '',
   // Template defaults are placeholders never consumed at runtime — concrete
   // keys are populated by JobManager when actual jobs exist.
   'jobs.state.${jobId}': null,
   'jobs.progress.${jobId}': { progress: 0 },
   'knowledge.item.embedding_progress.${itemId}': null,
-  'mini_app.transient_descriptor.${appId}': null,
-  'mini_app.attention': [],
   'knowledge.item.directory_copy_progress.${itemId}': null
 }
 
@@ -418,8 +369,6 @@ export type RendererPersistCacheSchema = {
   'settings.usage.entry_sort_order': AiUsageRecordSortOrder
   // Null defers to the cost-total fallback (USD, else the first currency with usage).
   'settings.usage.currency': Currency | null
-  // MCP marketplace "available servers" fetched per provider; re-fetchable, so cached not stored
-  'feature.mcp.provider_available_servers': CacheValueTypes.McpAvailableServers
   // Last successful external-open target per directory or file-extension scope.
   'external_app.target.preferences': CacheValueTypes.ExternalOpenTargetPreferences
   // Recently picked emojis (MRU order, capped to 32) shown at the top of the shared emoji picker
@@ -468,7 +417,6 @@ export const DefaultRendererPersistCache: RendererPersistCacheSchema = {
   'settings.usage.entry_sort_by': 'createdAt',
   'settings.usage.entry_sort_order': 'desc',
   'settings.usage.currency': null,
-  'feature.mcp.provider_available_servers': {},
   'external_app.target.preferences': {},
   'ui.emoji.recently_used': [],
   'ui.screenshot.color_mode': 'hex',
@@ -501,7 +449,7 @@ export type MainPersistCacheSchema = {
 }
 
 export const DefaultMainPersistCache: MainPersistCacheSchema = {
-  'backup.auto_sync.last_attempt_times': { webdav: null, s3: null, local: null, nutstore: null },
+  'backup.auto_sync.last_attempt_times': { local: null },
   'internal.persist_probe': 0,
   'window.bounds': {}
 }
@@ -524,8 +472,8 @@ export type MainPersistCacheKey = keyof MainPersistCacheSchema
  * Key type for shared cache (supports both fixed and template keys).
  *
  * Mirrors UseCacheKey: expands each schema key through ProcessKey so that
- * template keys like 'web_search.provider.last_used_key.${providerId}' match
- * any concrete instance (e.g. 'web_search.provider.last_used_key.google').
+ * template keys like 'ocr.provider.last_used_key.${providerId}' match any
+ * concrete instance (e.g. 'ocr.provider.last_used_key.google').
  */
 export type SharedCacheKey = {
   [K in keyof SharedCacheSchema]: ProcessKey<K & string>

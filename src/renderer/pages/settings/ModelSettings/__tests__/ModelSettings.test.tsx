@@ -12,7 +12,6 @@ const harness = vi.hoisted(() => ({
   setDefaultModel: vi.fn(),
   setQuickModel: vi.fn(),
   setTranslateModel: vi.fn(),
-  setPaintingModel: vi.fn(),
   onDefaultModelSelected: vi.fn(),
   selectorCallbacks: [] as Array<(model: Model | undefined) => void>,
   selectorFilters: [] as Array<((model: Model) => boolean) | undefined>,
@@ -82,11 +81,9 @@ vi.mock('@renderer/hooks/useModel', () => ({
     defaultModel: harness.defaultModel,
     quickModel: harness.quickModel,
     translateModel: harness.translateModel,
-    paintingModel: undefined,
     setDefaultModel: harness.setDefaultModel,
     setQuickModel: harness.setQuickModel,
-    setTranslateModel: harness.setTranslateModel,
-    setPaintingModel: harness.setPaintingModel
+    setTranslateModel: harness.setTranslateModel
   })
 }))
 
@@ -179,7 +176,6 @@ describe('ModelSettings', () => {
         autoFillEmptyModels
         modelFilter={(model) => model.providerId !== 'cherryai'}
         onDefaultModelSelected={harness.onDefaultModelSelected}
-        showPaintingModel={false}
         showSettingsButton={false}
       />
     )
@@ -198,7 +194,6 @@ describe('ModelSettings', () => {
       <ModelSettings
         autoFillEmptyModels
         modelFilter={(model) => model.providerId !== 'cherryai'}
-        showPaintingModel={false}
         showSettingsButton={false}
       />
     )
@@ -211,13 +206,7 @@ describe('ModelSettings', () => {
   })
 
   it('combines the onboarding provider filter with non-chat model filtering', () => {
-    render(
-      <ModelSettings
-        modelFilter={(model) => model.providerId !== 'cherryai'}
-        showPaintingModel={false}
-        showSettingsButton={false}
-      />
-    )
+    render(<ModelSettings modelFilter={(model) => model.providerId !== 'cherryai'} showSettingsButton={false} />)
 
     const filter = harness.selectorFilters[0]!
     expect(filter(createModel('openai', 'gpt-4o'))).toBe(true)
@@ -246,13 +235,7 @@ describe('ModelSettings', () => {
     harness.preferenceValues['chat.retry.max_attempts'] = 3
     harness.preferenceValues['chat.retry.fallback_model_ids'] = ['openai::gpt-4o']
 
-    render(
-      <ModelSettings
-        modelFilter={(model) => model.providerId !== 'hidden'}
-        showPaintingModel={false}
-        showSettingsButton={false}
-      />
-    )
+    render(<ModelSettings modelFilter={(model) => model.providerId !== 'hidden'} showSettingsButton={false} />)
 
     expect(screen.getByLabelText('settings.models.retry.max_attempts')).toHaveValue(3)
     expect(screen.getByLabelText('settings.models.retry.backoff')).toBeInTheDocument()
@@ -272,7 +255,7 @@ describe('ModelSettings', () => {
     harness.preferenceValues['chat.retry.enabled'] = true
     harness.preferenceValues['chat.retry.max_attempts'] = 2
 
-    render(<ModelSettings showPaintingModel={false} showSettingsButton={false} />)
+    render(<ModelSettings showSettingsButton={false} />)
 
     fireEvent.click(screen.getByLabelText('settings.models.retry.label'))
     fireEvent.change(screen.getByLabelText('settings.models.retry.max_attempts'), { target: { value: '99' } })
@@ -287,7 +270,7 @@ describe('ModelSettings', () => {
     ['default', 'settings.models.default_assistant_model'],
     ['translate', 'settings.models.translate_model']
   ] as const)('points to the %s model selector requested by the route', (focus, expectedTitle) => {
-    render(<ModelSettings focus={focus} showPaintingModel={false} showSettingsButton={false} />)
+    render(<ModelSettings focus={focus} showSettingsButton={false} />)
 
     const scrollTarget = vi.mocked(Element.prototype.scrollIntoView).mock.instances[0]
     expect(scrollTarget).toHaveTextContent(expectedTitle)
@@ -308,7 +291,7 @@ describe('ModelSettings', () => {
   it('avoids smooth scrolling when reduced motion is requested', () => {
     matchMediaMock.mockReturnValue({ matches: true })
 
-    render(<ModelSettings focus="default" showPaintingModel={false} showSettingsButton={false} />)
+    render(<ModelSettings focus="default" showSettingsButton={false} />)
 
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
       behavior: 'auto',
@@ -318,6 +301,6 @@ describe('ModelSettings', () => {
   })
 
   it('renders off-router (onboarding compact) without calling useSearch', () => {
-    expect(() => render(<ModelSettings compact showPaintingModel={false} showSettingsButton={false} />)).not.toThrow()
+    expect(() => render(<ModelSettings compact showSettingsButton={false} />)).not.toThrow()
   })
 })

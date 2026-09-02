@@ -24,7 +24,6 @@ import type {
   ReasoningFormatType,
   ReasoningWireDialect,
   ReasoningWireProfile,
-  ServerToolConfig,
   ServiceTierRequestControl
 } from '@cherrystudio/provider-registry'
 import type { EndpointType, Modality, ModelCapability } from '@cherrystudio/provider-registry'
@@ -53,7 +52,6 @@ import { ErrorCode, isDataApiError } from '@shared/data/api/errors'
 import type { ProviderPreset, ProviderPresetField } from '@shared/data/api/schemas/providers'
 import type {
   Currency,
-  ImageGenerationSupport,
   Model,
   ReasoningSummary,
   RuntimeModelPricing,
@@ -79,8 +77,6 @@ export interface ProviderDisplayMetadata {
   authMethods?: ('api-key' | 'oauth' | 'external-cli')[]
   /** Registry capability: serves requests without any credential (default false). */
   authOptional?: boolean
-  /** Registry capability: provider-native tools served by this host. */
-  serverTools?: ServerToolConfig[]
   /** Registry-owned currency for provider-reported cost amounts. */
   reportedCostCurrency?: Currency
   /** Registry-owned Fast request transport. */
@@ -451,8 +447,7 @@ export function synthesizePresetFromOverride(override: ProtoProviderModelOverrid
     inputModalities: override.inputModalities,
     outputModalities: override.outputModalities,
     pricing: override.pricing as ProtoModelConfig['pricing'],
-    parameterSupport: override.parameterSupport as ProtoModelConfig['parameterSupport'],
-    imageGeneration: override.imageGeneration
+    parameterSupport: override.parameterSupport as ProtoModelConfig['parameterSupport']
   }
 }
 
@@ -566,9 +561,6 @@ function applyPresetAndOverride(presetModel: ProtoModelConfig, catalogOverride: 
             perMillionTokens: mergedPricing.cacheWrite.perMillionTokens ?? null,
             currency: mergedPricing.cacheWrite.currency
           }
-        : undefined,
-      perImage: mergedPricing.perImage
-        ? { price: mergedPricing.perImage.price, unit: mergedPricing.perImage.unit }
         : undefined,
       perMinute: mergedPricing.perMinute ? { price: mergedPricing.perMinute.price } : undefined
     }
@@ -784,7 +776,6 @@ class ProviderRegistryService {
         modelListSource: provider?.modelListSource,
         authMethods: provider?.authMethods,
         authOptional: provider?.authOptional,
-        serverTools: provider?.serverTools,
         reportedCostCurrency: provider?.reportedCostCurrency,
         fastMode: provider?.fastMode,
         reportsActualCost: provider?.reportsActualCost,
@@ -1248,11 +1239,8 @@ class ProviderRegistryService {
     for (const override of overrides) {
       if ((override.disabled ?? false) !== includeDisabled) continue
 
-      // Synthesize a preset when models.json has no entry — vendor-exclusive
-      // models (modelscope's Tongyi-MAI/*, ppio bespoke endpoints, …) live
-      // entirely inside provider-models.json with their imageGeneration
-      // block declared inline. Reduces models.json clutter from
-      // single-provider entries.
+      // Synthesize a preset when models.json has no entry for a
+      // vendor-exclusive provider-model override.
       const presetModel = loader.findModel(override.modelId) ?? synthesizePresetFromOverride(override)
 
       let providerContext = providerContextByProvider.get(override.providerId)
@@ -1292,30 +1280,6 @@ class ProviderRegistryService {
     }
 
     return results
-  }
-
-  /**
-   * Read the painting-page metadata block the registry exposes for a
-   * (provider, model) pair. Drives the generic painting form: providers
-   * opting into `useRegistryForm` derive their field set from this block
-   * instead of a hand-rolled `fields.ts`.
-   *
-   * Resolution order:
-   *  1. Per-(provider, model) `imageGeneration` override from the
-   *     provider-model registry (vendor-exclusive UI).
-   *  2. Model-level `imageGeneration` from `models.json` (per-model UI).
-   *  3. `null` — renderer falls back to the provider's `fields.byTab`.
-   *
-   * Used by: GET /providers/:providerId/models/:modelId/image-generation-support
-   * (greedy `:modelId` capture for HuggingFace-style ids containing `/`).
-   */
-  getImageGenerationSupport(providerId: string, modelId: string): ImageGenerationSupport | null {
-    const { presetModel, registryOverride } = this.lookupModel(providerId, modelId)
-    // Override wins — lets vendor-exclusive overrides declare their own
-    // imageGeneration block without polluting the global models.json.
-    if (registryOverride?.imageGeneration) return registryOverride.imageGeneration
-    if (presetModel?.imageGeneration) return presetModel.imageGeneration
-    return null
   }
 }
 

@@ -551,10 +551,10 @@ describe('ProviderEditorDrawer', () => {
       name: 'settings.provider.create_custom.preset_instance.placeholder'
     })
     const responsesInput = screen.getByLabelText('settings.provider.more_endpoints.openai_responses')
-    const imageEditInput = screen.getByLabelText('settings.provider.image_endpoints.image_edit_base_url.label')
+    const geminiInput = screen.getByLabelText('settings.provider.more_endpoints.gemini')
     expect(moreTrigger).toHaveAttribute('aria-expanded', 'true')
     expect(moreTrigger.compareDocumentPosition(responsesInput) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(imageEditInput.compareDocumentPosition(presetPicker) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(geminiInput.compareDocumentPosition(presetPicker) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(screen.queryByText('settings.provider.create_custom.compatibility.label')).not.toBeInTheDocument()
   })
 
@@ -583,7 +583,7 @@ describe('ProviderEditorDrawer', () => {
     expect(firstTextEndpoint.parentElement).toContainElement(endpointError)
   })
 
-  it('submits multiple independent text and image endpoints with an explicit default chat endpoint', () => {
+  it('submits multiple text endpoints with an explicit default chat endpoint', () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined)
     render(
       <ProviderEditorDrawer
@@ -616,11 +616,11 @@ describe('ProviderEditorDrawer', () => {
     )
     fireEvent.click(setDefaultButton)
     toggleMoreSettings()
-    fireEvent.change(screen.getByLabelText('settings.provider.image_endpoints.image_generation_base_url.label'), {
-      target: { value: 'https://images.example.com' }
+    fireEvent.change(screen.getByLabelText('settings.provider.more_endpoints.openai_responses'), {
+      target: { value: 'https://responses.example.com' }
     })
-    fireEvent.change(screen.getByLabelText('settings.provider.image_endpoints.image_edit_base_url.label'), {
-      target: { value: 'https://edits.example.com' }
+    fireEvent.change(screen.getByLabelText('settings.provider.more_endpoints.gemini'), {
+      target: { value: 'https://gemini.example.com' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'button.add' }))
 
@@ -630,8 +630,8 @@ describe('ProviderEditorDrawer', () => {
         endpointConfigs: {
           'openai-chat-completions': { baseUrl: 'https://chat.example.com' },
           'anthropic-messages': { baseUrl: 'https://anthropic.example.com' },
-          'openai-image-generation': { baseUrl: 'https://images.example.com' },
-          'openai-image-edit': { baseUrl: 'https://edits.example.com' }
+          'openai-responses': { baseUrl: 'https://responses.example.com' },
+          'google-generate-content': { baseUrl: 'https://gemini.example.com' }
         }
       })
     )
@@ -917,9 +917,6 @@ describe('ProviderEditorDrawer', () => {
     fireEvent.change(screen.getByLabelText('settings.provider.more_endpoints.openai_responses'), {
       target: { value: 'https://responses.example.com' }
     })
-    fireEvent.change(screen.getByLabelText('settings.provider.image_endpoints.image_generation_base_url.label'), {
-      target: { value: 'https://images.example.com' }
-    })
     fireEvent.click(screen.getByRole('button', { name: 'settings.provider.duplicate.menu_label' }))
 
     expect(onSubmit).toHaveBeenCalledWith(
@@ -930,8 +927,7 @@ describe('ProviderEditorDrawer', () => {
           'openai-chat-completions': { baseUrl: 'https://new-api.example.com' },
           'openai-responses': { baseUrl: 'https://responses.example.com' },
           'anthropic-messages': { baseUrl: 'https://new-api.example.com' },
-          'google-generate-content': { baseUrl: 'https://new-api.example.com' },
-          'openai-image-generation': { baseUrl: 'https://images.example.com' }
+          'google-generate-content': { baseUrl: 'https://new-api.example.com' }
         }
       })
     )

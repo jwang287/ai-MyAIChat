@@ -102,11 +102,21 @@ describe('legacyV1BrowserData', () => {
   })
 
   it('reports a retry-marker write failure without throwing', () => {
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => {
-      throw new DOMException('quota exceeded', 'QuotaExceededError')
+    const browserStorage = localStorage
+    vi.stubGlobal('localStorage', {
+      clear: browserStorage.clear.bind(browserStorage),
+      getItem: browserStorage.getItem.bind(browserStorage),
+      removeItem: browserStorage.removeItem.bind(browserStorage),
+      setItem: () => {
+        throw new DOMException('quota exceeded', 'QuotaExceededError')
+      }
     })
 
-    expect(beginLegacyV1Cleanup()).toBe(false)
+    try {
+      expect(beginLegacyV1Cleanup()).toBe(false)
+    } finally {
+      vi.stubGlobal('localStorage', browserStorage)
+    }
   })
 
   it('estimates selected localStorage keys and every IndexedDB page', async () => {
@@ -172,7 +182,7 @@ describe('legacyV1BrowserData', () => {
     for (const key of LEGACY_LOCAL_STORAGE_KEYS) {
       localStorage.setItem(key, `legacy-${key}`)
     }
-    const failedFaviconKeys = ['failed_favicon_https://example.com', 'failed_favicon_app://miniapp']
+    const failedFaviconKeys = ['failed_favicon_https://example.com', 'failed_favicon_app://legacy']
     for (const key of failedFaviconKeys) {
       localStorage.setItem(key, 'true')
     }

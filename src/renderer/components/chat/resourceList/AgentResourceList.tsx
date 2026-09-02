@@ -256,11 +256,7 @@ export function AgentResourceList({
           closeConversationTabs('agents', result.deletedSessionIds ?? [])
         }
         try {
-          await Promise.all(
-            ['/agents', '/agent-sessions', '/agent-workspaces', '/pins', '/agent-channels'].map((key) =>
-              invalidate(key)
-            )
-          )
+          await Promise.all(['/agents', '/agent-sessions', '/agent-workspaces', '/pins'].map((key) => invalidate(key)))
         } catch (err) {
           logger.warn('Failed to refresh after deleting Agent from classic-layout rail', { agentId, err })
         }

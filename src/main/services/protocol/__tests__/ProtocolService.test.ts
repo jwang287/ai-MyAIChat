@@ -8,8 +8,6 @@ const {
   handlersMock,
   ipcApiServiceMock,
   mainWindowServiceMock,
-  mcpServerServiceMock,
-  openSettingsInMainWindowMock,
   oauthRuntimeServiceMock,
   windowManagerMock
 } = vi.hoisted(() => {
@@ -24,7 +22,6 @@ const {
     warn: vi.fn()
   }
   const handlersMock = {
-    parseMcpInstallProtocolUrl: vi.fn(),
     handleNavigateProtocolUrl: vi.fn(),
     handleProvidersProtocolUrl: vi.fn()
   }
@@ -34,10 +31,6 @@ const {
   const mainWindowServiceMock = {
     showMainWindow: vi.fn()
   }
-  const mcpServerServiceMock = {
-    createMany: vi.fn()
-  }
-  const openSettingsInMainWindowMock = vi.fn()
   const oauthRuntimeServiceMock = {
     handleDeepLinkCallback: vi.fn()
   }
@@ -52,8 +45,6 @@ const {
     handlersMock,
     ipcApiServiceMock,
     mainWindowServiceMock,
-    mcpServerServiceMock,
-    openSettingsInMainWindowMock,
     oauthRuntimeServiceMock,
     windowManagerMock
   }
@@ -65,10 +56,6 @@ vi.mock('@logger', () => ({
   loggerService: {
     withContext: () => loggerMock
   }
-}))
-
-vi.mock('@data/services/McpServerService', () => ({
-  mcpServerService: mcpServerServiceMock
 }))
 
 vi.mock('@application', () => ({
@@ -97,14 +84,6 @@ vi.mock('@main/core/lifecycle', () => {
     Phase: { Background: 'background' }
   }
 })
-
-vi.mock('@main/services/mainWindowNavigation', () => ({
-  openSettingsInMainWindow: openSettingsInMainWindowMock
-}))
-
-vi.mock('../handlers/mcpInstall', () => ({
-  parseMcpInstallProtocolUrl: handlersMock.parseMcpInstallProtocolUrl
-}))
 
 vi.mock('../handlers/navigate', () => ({
   handleNavigateProtocolUrl: handlersMock.handleNavigateProtocolUrl
@@ -213,23 +192,21 @@ describe('ProtocolService', () => {
       const handler = getOpenUrlHandler()
       const event = { preventDefault: vi.fn() }
 
-      handler(event, 'cherrystudio://mcp/install?servers=abc')
+      handler(event, 'cherrystudio://navigate/agents')
 
       expect(event.preventDefault).toHaveBeenCalledTimes(1)
-      expect(handlersMock.parseMcpInstallProtocolUrl).not.toHaveBeenCalled()
+      expect(handlersMock.handleNavigateProtocolUrl).not.toHaveBeenCalled()
 
       await (service as any).onAllReady()
       await (service as any).onAllReady()
 
-      expect(handlersMock.parseMcpInstallProtocolUrl).not.toHaveBeenCalled()
+      expect(handlersMock.handleNavigateProtocolUrl).not.toHaveBeenCalled()
 
       service.onMainRendererReady('main-1')
       service.onMainRendererReady('main-1')
 
-      expect(handlersMock.parseMcpInstallProtocolUrl).toHaveBeenCalledTimes(1)
-      expect(handlersMock.parseMcpInstallProtocolUrl.mock.calls[0][0].href).toBe(
-        'cherrystudio://mcp/install?servers=abc'
-      )
+      expect(handlersMock.handleNavigateProtocolUrl).toHaveBeenCalledTimes(1)
+      expect(handlersMock.handleNavigateProtocolUrl.mock.calls[0][0].href).toBe('cherrystudio://navigate/agents')
     })
 
     it('handles a hot-start URL immediately', async () => {
@@ -239,63 +216,6 @@ describe('ProtocolService', () => {
 
       expect(handlersMock.handleNavigateProtocolUrl).toHaveBeenCalledTimes(1)
       expect(handlersMock.handleNavigateProtocolUrl.mock.calls[0][0].href).toBe('cherrystudio://navigate/agents')
-    })
-
-    it('keeps MCP install payloads in Main until installation succeeds', async () => {
-      const servers = [
-        {
-          name: 'remote-server',
-          baseUrl: 'https://example.com/mcp',
-          headers: { Authorization: 'Bearer token' },
-          installSource: 'protocol',
-          isActive: false,
-          isTrusted: false,
-          installedAt: 1
-        }
-      ]
-      handlersMock.parseMcpInstallProtocolUrl.mockReturnValueOnce(servers)
-      await markProtocolHandlingReady()
-
-      ;(service as any).handleProtocolUrl('cherrystudio://mcp/install?servers=secret')
-
-      const path = openSettingsInMainWindowMock.mock.calls[0][0] as string
-      expect(path).toMatch(/^\/settings\/mcp\/servers\?protocolInstallRequestId=[0-9a-f-]+$/)
-      expect(path).not.toContain('Bearer')
-      const [request] = service.listPendingMcpInstallRequests('main-1')
-      expect(request).toEqual({ requestId: expect.any(String), servers })
-      expect(service.listPendingMcpInstallRequests('main-1')).toEqual([request])
-
-      const createdServers = [{ ...servers[0], id: 'created-server' }]
-      mcpServerServiceMock.createMany.mockReturnValueOnce(createdServers)
-      expect(service.installPendingMcpInstallRequest('main-1', request.requestId)).toEqual(createdServers)
-      expect(mcpServerServiceMock.createMany).toHaveBeenCalledWith(servers)
-      expect(service.listPendingMcpInstallRequests('main-1')).toEqual([])
-    })
-
-    it('retains a failed MCP install request until it is cancelled', async () => {
-      const servers = [
-        {
-          name: 'local-server',
-          command: 'node',
-          installSource: 'protocol',
-          isActive: false,
-          isTrusted: false,
-          installedAt: 1
-        }
-      ]
-      handlersMock.parseMcpInstallProtocolUrl.mockReturnValueOnce(servers)
-      mcpServerServiceMock.createMany.mockImplementationOnce(() => {
-        throw new Error('duplicate server')
-      })
-      await markProtocolHandlingReady()
-      ;(service as any).handleProtocolUrl('cherrystudio://mcp/install?servers=duplicate')
-      const [request] = service.listPendingMcpInstallRequests('main-1')
-
-      expect(() => service.installPendingMcpInstallRequest('main-1', request.requestId)).toThrow('duplicate server')
-      expect(service.listPendingMcpInstallRequests('main-1')).toEqual([request])
-
-      service.cancelPendingMcpInstallRequest('main-1', request.requestId)
-      expect(service.listPendingMcpInstallRequests('main-1')).toEqual([])
     })
 
     it('queues URLs again while the main renderer reloads or recovers from a crash', async () => {
@@ -330,13 +250,9 @@ describe('ProtocolService', () => {
 
     it('replays queued URLs in order and continues after an invalid URL', async () => {
       const handledUrls: string[] = []
-      handlersMock.parseMcpInstallProtocolUrl.mockImplementation((url: URL) => {
-        handledUrls.push(url.href)
-        return null
-      })
       handlersMock.handleNavigateProtocolUrl.mockImplementation((url: URL) => handledUrls.push(url.href))
 
-      ;(service as any).handleProtocolUrl('cherrystudio://mcp/install?servers=first')
+      ;(service as any).handleProtocolUrl('cherrystudio://navigate/agents')
       ;(service as any).handleProtocolUrl('not a url')
       ;(service as any).handleProtocolUrl('cherrystudio://navigate/agents')
 
@@ -346,7 +262,7 @@ describe('ProtocolService', () => {
 
       service.onMainRendererReady('main-1')
 
-      expect(handledUrls).toEqual(['cherrystudio://mcp/install?servers=first', 'cherrystudio://navigate/agents'])
+      expect(handledUrls).toEqual(['cherrystudio://navigate/agents', 'cherrystudio://navigate/agents'])
       expect(loggerMock.error).toHaveBeenCalledWith('Failed to handle protocol URL', expect.any(TypeError))
     })
 

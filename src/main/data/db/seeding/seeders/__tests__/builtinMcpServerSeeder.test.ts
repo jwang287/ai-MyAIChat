@@ -29,42 +29,6 @@ describe('BuiltinMcpServerSeeder', () => {
     expect(row.headers).toEqual({ APP: 'Cherry Studio' })
   })
 
-  it('turns an installed in-memory mcp-auto-install row into the npx process it really is', async () => {
-    await insert({
-      name: BuiltinMcpServerNames.mcpAutoInstall,
-      type: 'inMemory',
-      installSource: 'builtin',
-      baseUrl: 'https://stale.example/mcp',
-      headers: { Authorization: 'Bearer stale' }
-    })
-
-    new BuiltinMcpServerSeeder().run(dbh.db)
-
-    const row = await rowFor(BuiltinMcpServerNames.mcpAutoInstall)
-    expect(row.type).toBe('stdio')
-    expect(row.command).toBe('npx')
-    expect(row.args).toEqual(['-y', '@mcpmarket/mcp-auto-install', 'connect', '--json'])
-    expect(row.baseUrl).toBeNull()
-    expect(row.headers).toBeNull()
-  })
-
-  it('migrates the exact mcp-auto-install shape that predates installSource', async () => {
-    await insert({
-      name: BuiltinMcpServerNames.mcpAutoInstall,
-      type: 'inMemory',
-      reference: 'https://docs.cherry-ai.com/advanced-basic/mcp/auto-install',
-      command: 'npx',
-      args: ['-y', '@mcpmarket/mcp-auto-install', 'connect', '--json'],
-      provider: 'CherryAI'
-    })
-
-    new BuiltinMcpServerSeeder().run(dbh.db)
-
-    const row = await rowFor(BuiltinMcpServerNames.mcpAutoInstall)
-    expect(row.type).toBe('stdio')
-    expect(row.installSource).toBe('builtin')
-  })
-
   it('leaves a server the user owns alone even when its name collides with a builtin', async () => {
     await insert({ name: BuiltinMcpServerNames.flomo, type: 'inMemory', installSource: 'manual' })
 
@@ -78,20 +42,10 @@ describe('BuiltinMcpServerSeeder', () => {
 
   it('does not infer builtin ownership from a null installSource and matching name', async () => {
     await insert({ name: BuiltinMcpServerNames.flomo, type: 'inMemory' })
-    await insert({
-      name: BuiltinMcpServerNames.mcpAutoInstall,
-      type: 'inMemory',
-      command: 'npx',
-      args: ['my-edited-package']
-    })
 
     new BuiltinMcpServerSeeder().run(dbh.db)
 
     expect((await rowFor(BuiltinMcpServerNames.flomo)).type).toBe('inMemory')
-    const edited = await rowFor(BuiltinMcpServerNames.mcpAutoInstall)
-    expect(edited.type).toBe('inMemory')
-    expect(edited.args).toEqual(['my-edited-package'])
-    expect(edited.installSource).toBeNull()
   })
 
   it('keeps user edits made after the migration', async () => {

@@ -909,65 +909,6 @@ describe('MessagePartsRenderer', () => {
       expect(screen.getByTestId('mock-markdown').textContent).toContain('https://ex.com')
     })
 
-    it('shares citation display numbers across multiple text parts', () => {
-      renderParts([
-        {
-          type: 'tool-web_search',
-          toolCallId: 'search-1',
-          state: 'output-available',
-          input: { query: 'q' },
-          output: [
-            { id: 'call-1', title: 'First', url: 'https://first.example', content: 'first' },
-            { id: 'call-2', title: 'Second', url: 'https://second.example', content: 'second' }
-          ]
-        },
-        { type: 'text', text: 'Later source first. [cite:call-2]' },
-        { type: 'text', text: 'Earlier source second. [cite:call-1]' }
-      ] as unknown as CherryMessagePart[])
-
-      const [first, second] = screen.getAllByTestId('mock-markdown').map((node) => node.textContent ?? '')
-      expect(first).toContain("data-citation='1'")
-      expect(first).toContain('https://second.example')
-      expect(second).toContain("data-citation='2'")
-      expect(second).toContain('https://first.example')
-    })
-
-    it('renders citations from a deferred agent lookup skeleton', () => {
-      renderParts([
-        {
-          type: 'dynamic-tool',
-          toolName: 'mcp__cherry-tools__web_search',
-          toolCallId: 'search-1',
-          state: 'output-available',
-          input: { query: 'q' },
-          output: {
-            $deferredToolResult: { topicId: 'agent-session:s1', messageId: 'm1', toolCallId: 'search-1' },
-            skeleton: {
-              content: [
-                {
-                  id: '70536f0b-1',
-                  title: 'Entertainment news',
-                  url: 'https://example.com/news',
-                  content: 'summary'
-                }
-              ],
-              metadata: {
-                type: 'mcp',
-                serverName: 'cherry-tools',
-                serverId: 'cherry-tools'
-              }
-            }
-          }
-        },
-        { type: 'text', text: 'Entertainment update. [cite:70536f0b-1]' }
-      ] as unknown as CherryMessagePart[])
-
-      const content = screen.getByTestId('mock-markdown').textContent ?? ''
-      expect(content).toContain("data-citation='1'")
-      expect(content).toContain('https://example.com/news')
-      expect(content).not.toContain('[cite:70536f0b-1]')
-    })
-
     it('renders video and error value parts', async () => {
       renderParts([
         { type: 'data-video', data: { filePath: '/tmp/v.mp4' } },
@@ -1644,43 +1585,6 @@ describe('MessagePartsRenderer', () => {
 
       fireEvent.click(historyTrigger)
       expect(screen.getByText('Searching provider sources')).toBeInTheDocument()
-    })
-
-    it('keeps channel authentication QR tools outside collapsed process history', () => {
-      renderParts([
-        toolPart('read'),
-        {
-          type: 'dynamic-tool',
-          toolCallId: 'channel-auth',
-          toolName: 'mcp__cherry-tools__config',
-          state: 'output-available',
-          input: { action: 'add_channel', type: 'wechat', auth_mode: 'qr' },
-          output: {
-            content: [
-              { type: 'text', text: 'Scan this QR code' },
-              { type: 'image', data: 'BASE64', mimeType: 'image/png' }
-            ],
-            metadata: { type: 'mcp', serverId: 'cherry-tools', serverName: 'cherry-tools' }
-          }
-        }
-      ] as unknown as CherryMessagePart[])
-
-      const historyTrigger = screen.getByTestId('completed-process-trigger')
-      expect(historyTrigger).toHaveAttribute('aria-expanded', 'false')
-
-      const visibleAuthTool = screen.getByTestId('mock-message-tools')
-      expect(visibleAuthTool).toHaveAttribute('data-tool-name', 'mcp__cherry-tools__config')
-      expect(visibleAuthTool.closest('[data-testid="tool-history-content"]')).toBeNull()
-
-      fireEvent.click(historyTrigger)
-      expandCollapsedChildToolGroups()
-
-      expect(screen.getAllByTestId('mock-message-tools')).toHaveLength(2)
-      expect(
-        screen
-          .getAllByTestId('mock-message-tools')
-          .filter((node) => node.getAttribute('data-tool-name') === 'mcp__cherry-tools__config')
-      ).toHaveLength(1)
     })
 
     it('keeps a prepared diagnostic report action outside collapsed process history', () => {

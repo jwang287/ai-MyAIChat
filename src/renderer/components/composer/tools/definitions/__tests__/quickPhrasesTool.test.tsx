@@ -10,7 +10,7 @@ type RuntimeProps = {
 }
 
 function getRuntimeProps(
-  scope: TopicType | 'quick-assistant' | 'painting',
+  scope: TopicType | 'quick-assistant',
   context: { assistantId?: string; agentId?: string }
 ): RuntimeProps {
   const Runtime = quickPhrasesTool.composer?.runtime
@@ -45,13 +45,6 @@ describe('quickPhrasesTool runtime', () => {
     expect(getRuntimeProps(TopicType.Session, { assistantId: 'assistant-id', agentId: 'agent-id' })).toMatchObject({
       assistantId: undefined,
       agentId: 'agent-id'
-    })
-  })
-
-  it('keeps painting scope global', () => {
-    expect(getRuntimeProps('painting', { assistantId: 'assistant-id', agentId: 'agent-id' })).toMatchObject({
-      assistantId: undefined,
-      agentId: undefined
     })
   })
 })

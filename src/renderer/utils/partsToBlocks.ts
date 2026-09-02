@@ -11,21 +11,21 @@
  * `MessagePartsRenderer` to render inline citations from text-part metadata.
  */
 
+import type { CitationSource } from '@renderer/types/citationProvider'
 import type { Citation } from '@renderer/types/message'
-import type { WebSearchSource } from '@renderer/types/webSearchProvider'
 import type { CitationReference, ContentReference } from '@shared/data/types/message'
 import { isKnowledgeCitation, isMemoryCitation, isWebCitation, ReferenceCategory } from '@shared/data/types/message'
 
 export type CitationReferenceView = {
   citationBlockId?: string
-  citationBlockSource?: WebSearchSource
+  citationBlockSource?: CitationSource
 }
 
 /**
  * Convert ContentReference[] (new format) to inline citationReferences shape.
  * The renderer expects `{ citationBlockId?, citationBlockSource? }[]`.
  *
- * Knowledge/memory citations carry no web-search source; their inline `[N]`
+ * Knowledge/memory citations carry no URL source; their inline `[N]`
  * markers resolve through the default plain-bracket normalization branch.
  */
 export function convertReferencesToCitationReferences(
@@ -38,7 +38,7 @@ export function convertReferencesToCitationReferences(
   return citations.map((ref) => ({
     citationBlockId: blockId,
     citationBlockSource: isWebCitation(ref)
-      ? ((ref.content?.source ?? undefined) as WebSearchSource | undefined)
+      ? ((ref.content?.source ?? undefined) as CitationSource | undefined)
       : undefined
   }))
 }

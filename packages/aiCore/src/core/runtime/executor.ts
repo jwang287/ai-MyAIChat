@@ -2,29 +2,24 @@
  * 运行时执行器
  * 专注于插件化的AI调用处理
  */
-import type { ImageModelV3, JSONObject, LanguageModelV3, ProviderV3 } from '@ai-sdk/provider'
+import type { JSONObject, LanguageModelV3, ProviderV3 } from '@ai-sdk/provider'
 import type { LanguageModel } from 'ai'
 import {
   createProviderRegistry,
   embedMany as _embedMany,
-  generateImage as _generateImage,
   generateText as _generateText,
   rerank as _rerank,
   streamText as _streamText,
-  wrapEmbeddingModel,
-  wrapImageModel
+  wrapEmbeddingModel
 } from 'ai'
 
 import { isV3Model } from '../models/utils'
 import { type AiPlugin, definePlugin } from '../plugins'
 import type { CoreProviderSettingsMap, StringKeys } from '../providers/types'
-import { ImageGenerationError, ImageModelResolutionError } from './errors'
 import { PluginEngine } from './pluginEngine'
 import type {
   EmbedManyParams,
   EmbedManyResult,
-  generateImageParams,
-  generateImageResult,
   generateTextParams,
   RerankParams,
   RerankResult,
@@ -75,17 +70,6 @@ export class RuntimeExecutor<
       resolveModel: async (modelId: string) => {
         // 仅负责解析 modelId → model 对象，middleware 由 pluginEngine 统一应用
         return await this.resolveModel(modelId)
-      }
-    })
-  }
-
-  private createResolveImageModelPlugin() {
-    return definePlugin({
-      name: '_internal_resolveImageModel',
-      enforce: 'post',
-
-      resolveModel: async (modelId: string) => {
-        return await this.resolveImageModel(modelId)
       }
     })
   }
@@ -151,64 +135,6 @@ export class RuntimeExecutor<
       params,
       (resolvedModel, transformedParams) => _generateText({ ...transformedParams, model: resolvedModel })
     )
-  }
-
-  /**
-   * 生成图像
-   */
-  async generateImage(params: generateImageParams): Promise<generateImageResult> {
-    try {
-      const { model, onProviderCall, ...providerParams } = params
-
-      // 根据 model 类型决定插件配置
-      if (typeof model === 'string') {
-        this.pluginEngine.usePlugins([this.createResolveImageModelPlugin(), this.createConfigureContextPlugin()])
-      } else {
-        this.pluginEngine.usePlugins([this.createConfigureContextPlugin()])
-      }
-
-      return this.pluginEngine.executeImageWithPlugins(
-        'generateImage',
-        { ...providerParams, model },
-        (resolvedModel, transformedParams) => {
-          const observedModel = onProviderCall
-            ? wrapImageModel({
-                model: resolvedModel,
-                middleware: {
-                  specificationVersion: 'v3',
-                  wrapGenerate: async ({ doGenerate, model: activeModel }) => {
-                    const startedAt = performance.now()
-                    const result = await doGenerate()
-                    emitProviderCall(onProviderCall, {
-                      modality: 'image',
-                      requestId: `ai-core:image:${crypto.randomUUID()}`,
-                      providerId: this.config.providerId,
-                      modelId: activeModel.modelId,
-                      imageCount: result.images.length,
-                      ...(result.usage ? { usage: result.usage } : {}),
-                      metrics: { timeCompletionMs: Math.max(0, Math.round(performance.now() - startedAt)) },
-                      completedAt: Date.now()
-                    })
-                    return result
-                  }
-                }
-              })
-            : resolvedModel
-          return _generateImage({ ...transformedParams, model: observedModel })
-        }
-      )
-    } catch (error) {
-      if (error instanceof Error) {
-        const modelId = typeof params.model === 'string' ? params.model : params.model.modelId
-        throw new ImageGenerationError(
-          `Failed to generate image: ${error.message}`,
-          this.config.providerId,
-          modelId,
-          error
-        )
-      }
-      throw error
-    }
   }
 
   /**
@@ -315,25 +241,6 @@ export class RuntimeExecutor<
         )
       }
       return modelOrId
-    }
-  }
-
-  /**
-   * 解析图像模型：如果是字符串则创建图像模型，如果是模型则直接返回
-   */
-  private async resolveImageModel(modelOrId: ImageModelV3 | string): Promise<ImageModelV3> {
-    try {
-      if (typeof modelOrId === 'string') {
-        return this.registry.imageModel(`${this.config.providerId}:${modelOrId}` as `${string}:${string}`)
-      } else {
-        return modelOrId
-      }
-    } catch (error) {
-      throw new ImageModelResolutionError(
-        typeof modelOrId === 'string' ? modelOrId : modelOrId.modelId,
-        this.config.providerId,
-        error instanceof Error ? error : undefined
-      )
     }
   }
 

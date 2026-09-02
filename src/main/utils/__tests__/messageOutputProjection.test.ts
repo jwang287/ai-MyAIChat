@@ -16,31 +16,6 @@ const TOOL_CALL_ID = 'call-1'
 
 const small = { content: 'x'.repeat(16) }
 const large = { content: 'x'.repeat(DEFER_TOOL_OUTPUT_BYTES + 1) }
-const largeAgentWebSearch = {
-  content: [
-    {
-      id: '70536f0b-1',
-      title: 'Entertainment news',
-      url: 'https://example.com/news',
-      content: 'x'.repeat(DEFER_TOOL_OUTPUT_BYTES + 1)
-    }
-  ],
-  metadata: {
-    type: 'mcp',
-    name: 'web_search',
-    serverName: 'cherry-tools',
-    serverId: 'cherry-tools'
-  }
-}
-const manyAgentWebSearch = {
-  ...largeAgentWebSearch,
-  content: Array.from({ length: 80 }, (_, index) => ({
-    id: `many-${index + 1}`,
-    title: `Result ${index + 1}`,
-    url: `https://example.com/${index + 1}`,
-    content: '测'.repeat(1000)
-  }))
-}
 const largeKnowledgeSearch = [
   {
     id: 'knowledge-1',
@@ -96,16 +71,6 @@ function chunkWith(output: unknown): UIMessageChunk {
   return { type: 'tool-output-available', toolCallId: TOOL_CALL_ID, output } as UIMessageChunk
 }
 
-const blob = (key: string, n: number) => ({
-  key,
-  fileEntryId: `entry-${n}`,
-  vfsFilename: `vfs_${n}.txt`,
-  head: `head-${n}`,
-  tail: `tail-${n}`,
-  totalChars: 1000 * n,
-  totalLines: 10 * n
-})
-
 describe('message tool-output projection', () => {
   it('leaves an output that fits under the threshold untouched', () => {
     const part = partWith(small)
@@ -122,46 +87,6 @@ describe('message tool-output projection', () => {
     expect(isDeferredToolOutput(projected.output)).toBe(true)
     expect(projected.output).toEqual({
       $deferredToolResult: { topicId: TOPIC_ID, messageId: MESSAGE_ID, toolCallId: TOOL_CALL_ID }
-    })
-  })
-
-  it('keeps a bounded citation skeleton for an oversized agent lookup', () => {
-    const projected = projectMessagePartForRenderer(partWith(largeAgentWebSearch), TOPIC_ID, MESSAGE_ID) as unknown as {
-      output: {
-        skeleton?: {
-          content: Array<{ id: string; content: string }>
-          metadata: { name: string; serverId: string }
-        }
-      }
-    }
-
-    expect(projected.output.skeleton?.content[0]).toMatchObject({ id: '70536f0b-1' })
-    expect(projected.output.skeleton?.content[0].content.length).toBeLessThan(
-      largeAgentWebSearch.content[0].content.length
-    )
-    expect(projected.output.skeleton?.metadata).toMatchObject({ name: 'web_search', serverId: 'cherry-tools' })
-  })
-
-  it('keeps a citation skeleton for legacy agent lookup metadata without a tool name', () => {
-    const projected = projectMessagePartForRenderer(
-      partWith({
-        content: largeAgentWebSearch.content,
-        metadata: {
-          type: 'mcp',
-          serverName: 'cherry-tools',
-          serverId: 'cherry-tools'
-        }
-      }),
-      TOPIC_ID,
-      MESSAGE_ID
-    ) as unknown as {
-      output: { skeleton?: { metadata: { name?: string; serverId: string } } }
-    }
-
-    expect(projected.output.skeleton?.metadata).toEqual({
-      type: 'mcp',
-      serverName: 'cherry-tools',
-      serverId: 'cherry-tools'
     })
   })
 
@@ -205,37 +130,10 @@ describe('message tool-output projection', () => {
     expect(joined).toMatch(/^first hit … g+…$/)
   })
 
-  it('does not expose a citation skeleton for a third-party MCP lookup', () => {
-    const projected = projectMessagePartForRenderer(
-      partWith({
-        ...largeAgentWebSearch,
-        metadata: { ...largeAgentWebSearch.metadata, serverName: 'other-server', serverId: 'other-server' }
-      }),
-      TOPIC_ID,
-      MESSAGE_ID
-    ) as unknown as { output: { skeleton?: unknown } }
-
-    expect(projected.output.skeleton).toBeUndefined()
-  })
-
-  it('trims derived citation entities from the tail to fit the transport budget', () => {
-    const projected = projectMessagePartForRenderer(partWith(manyAgentWebSearch), TOPIC_ID, MESSAGE_ID) as unknown as {
-      output: { skeleton?: { content: unknown[] } }
-    }
-
-    expect(isDeferredToolOutput(projected.output)).toBe(true)
-    expect(projected.output.skeleton?.content.length).toBeGreaterThan(0)
-    expect(projected.output.skeleton?.content.length).toBeLessThan(manyAgentWebSearch.content.length)
-    expect(new TextEncoder().encode(JSON.stringify(projected.output)).length).toBeLessThanOrEqual(
-      DEFER_TOOL_OUTPUT_BYTES
-    )
-  })
-
   // The two paths must agree, or a card renders one way while streaming and another after reload.
   it.each([
     ['small', small],
-    ['large', large],
-    ['large agent lookup', largeAgentWebSearch]
+    ['large', large]
   ])('projects a %s output identically through the stored and live paths', (_label, output) => {
     const fromPart = (
       projectMessagePartForRenderer(partWith(output), TOPIC_ID, MESSAGE_ID) as unknown as { output: unknown }
@@ -289,48 +187,5 @@ describe('message tool-output projection', () => {
       $deferredToolResult: { topicId: TOPIC_ID, messageId: MESSAGE_ID, toolCallId: TOOL_CALL_ID },
       excerpt: { head: 'first lines', tail: 'last lines', totalChars: 200_000, totalLines: 5_000 }
     })
-  })
-
-  it('normalizes a persisted citation skeleton through the same bounded projection', () => {
-    const skeleton = [largeAgentWebSearch.content[0]]
-    const persisted = {
-      $persistedToolOutput: {
-        shape: 'entities',
-        skeleton,
-        blobRefs: [blob('/0/content', 1)]
-      }
-    }
-    const projected = projectMessagePartForRenderer(partWith(persisted), TOPIC_ID, MESSAGE_ID) as unknown as {
-      output: { skeleton?: Array<{ id: string; content: string }> }
-    }
-
-    expect(projected.output).toMatchObject({
-      $deferredToolResult: { topicId: TOPIC_ID, messageId: MESSAGE_ID, toolCallId: TOOL_CALL_ID },
-      excerpt: { head: 'head-1', tail: 'tail-1', totalChars: 1000, totalLines: 10 }
-    })
-    expect(projected.output.skeleton?.[0]).toMatchObject({ id: '70536f0b-1' })
-    expect(projected.output.skeleton?.[0].content.length).toBeLessThan(skeleton[0].content.length)
-    expect(new TextEncoder().encode(JSON.stringify(projected.output)).length).toBeLessThanOrEqual(
-      DEFER_TOOL_OUTPUT_BYTES
-    )
-  })
-
-  it('trims persisted citation entities from the tail to fit the transport budget', () => {
-    const persisted = {
-      $persistedToolOutput: {
-        shape: 'entities',
-        skeleton: manyAgentWebSearch.content,
-        blobRefs: [blob('/0/content', 1)]
-      }
-    }
-    const projected = projectMessagePartForRenderer(partWith(persisted), TOPIC_ID, MESSAGE_ID) as unknown as {
-      output: { skeleton?: unknown[] }
-    }
-
-    expect(projected.output.skeleton?.length).toBeGreaterThan(0)
-    expect(projected.output.skeleton?.length).toBeLessThan(manyAgentWebSearch.content.length)
-    expect(new TextEncoder().encode(JSON.stringify(projected.output)).length).toBeLessThanOrEqual(
-      DEFER_TOOL_OUTPUT_BYTES
-    )
   })
 })

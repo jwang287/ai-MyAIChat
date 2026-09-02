@@ -14,7 +14,6 @@
 
 import type { ApiImplementation } from '@shared/data/api/types'
 
-import { agentChannelHandlers } from './agentChannels'
 import { agentHandlers } from './agents'
 import { agentSessionMessageHandlers } from './agentSessionMessages'
 import { agentSessionHandlers } from './agentSessions'
@@ -27,10 +26,7 @@ import { jobHandlers } from './jobs'
 import { knowledgeHandlers } from './knowledges'
 import { mcpServerHandlers } from './mcpServers'
 import { messageHandlers } from './messages'
-import { miniAppHandlers } from './miniApps'
 import { modelHandlers } from './models'
-import { noteHandlers } from './notes'
-import { paintingHandlers } from './paintings'
 import { pinHandlers } from './pins'
 import { promptHandlers } from './prompts'
 import { providerHandlers } from './providers'
@@ -51,13 +47,11 @@ import { translateHandlers } from './translate'
 export const apiHandlers: ApiImplementation = {
   ...agentHandlers,
   ...assistantHandlers,
-  ...agentChannelHandlers,
   ...topicHandlers,
   ...messageHandlers,
   ...fileHandlers,
   ...temporaryChatHandlers,
   ...modelHandlers,
-  ...paintingHandlers,
   ...providerHandlers,
   ...agentSessionHandlers,
   ...agentSessionMessageHandlers,
@@ -65,8 +59,6 @@ export const apiHandlers: ApiImplementation = {
   ...knowledgeHandlers,
   ...translateHandlers,
   ...mcpServerHandlers,
-  ...miniAppHandlers,
-  ...noteHandlers,
   ...tagHandlers,
   ...groupHandlers,
   ...pinHandlers,

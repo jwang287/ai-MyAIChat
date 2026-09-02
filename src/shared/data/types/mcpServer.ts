@@ -11,14 +11,6 @@ import * as z from 'zod'
 // Shared Sub-Schemas
 // ============================================================================
 
-/** MCP server configuration sample */
-export const McpConfigSampleSchema = z.object({
-  command: z.string(),
-  args: z.array(z.string()),
-  env: z.record(z.string(), z.string()).optional()
-})
-export type McpConfigSample = z.infer<typeof McpConfigSampleSchema>
-
 /** MCP Server communication protocol */
 export const McpServerTypeSchema = z.enum(['stdio', 'sse', 'streamableHttp', 'inMemory'])
 export type McpServerType = z.infer<typeof McpServerTypeSchema>
@@ -70,16 +62,8 @@ export const McpServerSchema = z.strictObject({
   longRunning: z.boolean().optional(),
   /** Timeout in seconds */
   timeout: z.number().optional(),
-  /** DXT package version */
-  dxtVersion: z.string().optional(),
-  /** DXT package extracted path */
-  dxtPath: z.string().optional(),
   /** Reference link */
   reference: z.string().optional(),
-  /** Search key */
-  searchKey: z.string().optional(),
-  /** Configuration sample */
-  configSample: McpConfigSampleSchema.optional(),
   /** Disabled tools */
   disabledTools: z.array(z.string()).optional(),
   /** Disabled auto-approve tools */

@@ -94,7 +94,6 @@ vi.mock('@renderer/pages/settings/ModelSettings/ModelSettings', () => ({
     autoFillEmptyModels?: boolean
     modelFilter?: (model: { providerId: string; capabilities: string[] }) => boolean
     onDefaultModelSelected?: (model: { id: string; providerId: string }) => void | Promise<void>
-    showPaintingModel?: boolean
   }) => {
     modelSettingsPropsMock(props)
     return <div data-testid="model-settings" />
@@ -372,7 +371,7 @@ describe('OnboardingPage', () => {
     expect(screen.getByRole('button', { name: /onboarding\.select_model\.start/ })).toBeDisabled()
   })
 
-  it('excludes CherryAI models, hides painting, and rejects built-in selections', async () => {
+  it('excludes CherryAI models and rejects built-in selections', async () => {
     selectedModelsMock.defaultModel = { id: 'cherryai::qwen', providerId: CHERRYAI_PROVIDER_ID, capabilities: [] }
     selectedModelsMock.quickModel = { id: 'cherryai::qwen', providerId: CHERRYAI_PROVIDER_ID, capabilities: [] }
     selectedModelsMock.translateModel = { id: 'cherryai::qwen', providerId: CHERRYAI_PROVIDER_ID, capabilities: [] }
@@ -383,7 +382,6 @@ describe('OnboardingPage', () => {
     const modelSettingsProps = modelSettingsPropsMock.mock.lastCall?.[0]
     expect(modelSettingsProps?.autoFillEmptyModels).toBe(true)
     expect(modelSettingsProps?.onDefaultModelSelected).toBeTypeOf('function')
-    expect(modelSettingsProps?.showPaintingModel).toBe(false)
     expect(modelSettingsProps?.modelFilter?.({ providerId: CHERRYAI_PROVIDER_ID, capabilities: [] })).toBe(false)
     expect(modelSettingsProps?.modelFilter?.({ providerId: 'openai', capabilities: [] })).toBe(true)
     expect(screen.getByRole('button', { name: /onboarding\.select_model\.start/ })).toBeDisabled()

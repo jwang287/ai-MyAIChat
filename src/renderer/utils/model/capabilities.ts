@@ -25,7 +25,7 @@ import {
   isGPT52SeriesModel,
   isSupportVerbosityModel
 } from './openai'
-import { isGenerateImageModel, isTextToImageModel, isVisionModel } from './vision'
+import { isVisionModel } from './vision'
 
 // ── Re-exports (public API preserved) ─────────────────────────────────────
 export const GEMINI_FLASH_MODEL_REGEX = SHARED_GEMINI_FLASH_MODEL_REGEX
@@ -75,8 +75,6 @@ export const isMaxTemperatureOneModel = (model: Model): boolean => sharedIsMaxTe
 
 // ── Collections ─────────────────────────────────────────────────────────
 export const isVisionModels = (models: Model[]): boolean => models.every(isVisionModel)
-
-export const isGenerateImageModels = (models: Model[]): boolean => models.every(isGenerateImageModel)
 
 export const isAudioModels = (models: Model[]): boolean => models.every(isAudioModel)
 
@@ -145,5 +143,5 @@ export const ZHIPU_RESULT_TOKENS = ['<|begin_of_box|>', '<|end_of_box|>'] as con
 
 // ── Agent filter (composes local renderer functions) ─────────────────────
 export const agentModelFilter = (model: Model): boolean => {
-  return !isEmbeddingModel(model) && !isRerankModel(model) && !isTextToImageModel(model)
+  return !isEmbeddingModel(model) && !isRerankModel(model)
 }

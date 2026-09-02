@@ -24,17 +24,13 @@ import {
 import {
   CONFIG_TOOL_NAME,
   CRON_TOOL_NAME,
-  GENERATE_IMAGE_TOOL_NAME,
   KB_LIST_TOOL_NAME,
   KB_MANAGE_TOOL_NAME,
   KB_READ_TOOL_NAME,
   KB_SEARCH_TOOL_NAME,
-  NOTIFY_TOOL_NAME,
   READ_FILE_TOOL_NAME,
   REPORT_ARTIFACTS_TOOL_NAME,
-  TO_MARKDOWN_TOOL_NAME,
-  WEB_FETCH_TOOL_NAME,
-  WEB_SEARCH_TOOL_NAME
+  TO_MARKDOWN_TOOL_NAME
 } from '@shared/ai/builtinTools'
 
 export type BuiltinToolApproval = 'auto' | 'required' | 'runtime'
@@ -76,15 +72,12 @@ function tool(
  * omitting it is fail-closed for auto-approval because every consumer selects explicit entries.
  */
 const BUILTIN_TOOL_POLICIES = {
-  cherryWebSearch: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, WEB_SEARCH_TOOL_NAME, 'auto'),
-  cherryWebFetch: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, WEB_FETCH_TOOL_NAME, 'auto'),
   cherryKnowledgeSearch: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, KB_SEARCH_TOOL_NAME, 'auto'),
   cherryKnowledgeRead: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, KB_READ_TOOL_NAME, 'auto'),
   cherryKnowledgeList: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, KB_LIST_TOOL_NAME, 'auto'),
   cherryKnowledgeManage: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, KB_MANAGE_TOOL_NAME, 'required'),
   cherryReportArtifacts: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, REPORT_ARTIFACTS_TOOL_NAME, 'auto'),
   cherryCron: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, CRON_TOOL_NAME, 'auto'),
-  cherryNotify: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, NOTIFY_TOOL_NAME, 'auto'),
   cherryConfig: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, CONFIG_TOOL_NAME, 'auto'),
   cherrySessionList: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, SESSION_LIST_TOOL_NAME, 'auto'),
   cherrySessionSearch: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, SESSION_SEARCH_TOOL_NAME, 'auto'),
@@ -95,7 +88,6 @@ const BUILTIN_TOOL_POLICIES = {
   cherryCliSearch: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, CLI_SEARCH_TOOL_NAME, 'auto'),
   cherryCliInstall: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, CLI_INSTALL_TOOL_NAME, 'required'),
   cherryToMarkdown: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, TO_MARKDOWN_TOOL_NAME, 'auto'),
-  cherryGenerateImage: tool(CHERRY_MCP_SERVER.CHERRY_TOOLS, GENERATE_IMAGE_TOOL_NAME, 'required'),
 
   agentMemory: tool(CHERRY_MCP_SERVER.AGENT_MEMORY, 'memory', 'auto'),
   searchSkills: tool(CHERRY_MCP_SERVER.SKILLS, 'search_skills', 'auto'),

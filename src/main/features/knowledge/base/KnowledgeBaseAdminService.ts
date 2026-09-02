@@ -225,16 +225,6 @@ export class KnowledgeBaseAdminService {
         })
       }
 
-      if (item.type === 'note') {
-        return KnowledgeAddItemInputSchema.parse({
-          type: 'note',
-          // The snapshot relativePath is intentionally dropped: the content is the
-          // source of truth and re-capturing it into the new base on first index is
-          // free and deterministic, so there is no snapshot file to carry across.
-          data: { source: item.data.source, content: item.data.content }
-        })
-      }
-
       return KnowledgeAddItemInputSchema.parse({
         type: item.type,
         data: item.data

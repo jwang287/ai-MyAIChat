@@ -95,7 +95,7 @@ vi.mock('@renderer/hooks/useAssistant', () => ({
     assistant: {
       id: 'assistant-1',
       knowledgeBaseIds: [],
-      settings: { enableWebSearch: false }
+      settings: {}
     },
     model: undefined,
     setModel: vi.fn()

@@ -157,7 +157,7 @@ export class SubWindowService extends BaseService {
       url,
       title,
       ...(icon && { icon }),
-      type: type === 'route' || type === 'webview' ? type : 'route',
+      type: type === 'route' ? type : 'route',
       isPinned
     }
 

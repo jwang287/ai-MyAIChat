@@ -5,7 +5,7 @@
  * the partial settings patch needed when the model changes, then merge the
  * patch into ONE atomic PATCH that also writes the new modelId. The
  * predecessor effect-driven design (e.g. `useReasoningEffortSync`,
- * `Inputbar`'s `enableWebSearch` reset) watched SWR data and emitted a
+ * input-toolbar setting reset) watched SWR data and emitted a
  * second PATCH out-of-band — every SWR revalidate re-fired the effect,
  * making no-op PATCHes routine and validation failures self-sustaining.
  *
@@ -13,28 +13,15 @@
  * patch needed". Callers compose multiple reconcile fns and only emit a
  * settings patch when at least one returned non-null.
  */
-import type { AssistantSettings } from '@renderer/types/assistant'
 import { resolveReasoningEffortForModel } from '@shared/ai/reasoning'
 import type { Model } from '@shared/data/types/model'
-import type { Provider } from '@shared/data/types/provider'
 import type { ReasoningEffortOption } from '@shared/types/aiSdk'
-import { isBuiltinWebSearchAvailable } from '@shared/utils/provider'
-
-import { isFunctionCallingModel } from './tooluse'
 
 export type ReasoningEffortPatch = {
   reasoning_effort?: ReasoningEffortOption
 }
 
 export { resolveReasoningEffortForModel }
-
-export function hasModelBuiltinWebSearch(model: Model, provider: Provider | undefined): boolean {
-  return !!provider && isBuiltinWebSearchAvailable(model, provider)
-}
-
-export function canModelUseAssistantWebSearch(model: Model, provider: Provider | undefined): boolean {
-  return hasModelBuiltinWebSearch(model, provider) || isFunctionCallingModel(model)
-}
 
 export function reconcileReasoningEffortForModel(
   nextModel: Model,
@@ -43,14 +30,4 @@ export function reconcileReasoningEffortForModel(
   const nextEffort = resolveReasoningEffortForModel(nextModel, currentEffort)
   if (nextEffort === currentEffort) return null
   return { reasoning_effort: nextEffort }
-}
-
-export function reconcileWebSearchForModel(
-  nextModel: Model,
-  current: Pick<AssistantSettings, 'enableWebSearch'>,
-  provider: Provider | undefined
-): { enableWebSearch: false } | null {
-  if (!current.enableWebSearch) return null
-  if (canModelUseAssistantWebSearch(nextModel, provider)) return null
-  return { enableWebSearch: false }
 }

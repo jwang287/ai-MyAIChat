@@ -103,7 +103,7 @@ export async function warmAgentMcpToolCaches(agent: AgentEntity): Promise<McpWar
   const mcpIds = agent.mcps
   if (!mcpIds?.length) return { completedInTime: true, warm: Promise.resolve() }
 
-  const mcpService = application.get('McpCatalogService')
+  const mcpService = application.get('McpToolCacheService')
   const warm = Promise.allSettled(
     mcpIds.flatMap((mcpId) => {
       const server = mcpServerService.findByIdOrName(mcpId)
@@ -129,7 +129,7 @@ export async function buildMcpToolMetadata(
   if (!mcpIds?.length) return undefined
 
   const metadataByName: Record<string, McpToolDisplayMetadata> = {}
-  const mcpService = application.get('McpCatalogService')
+  const mcpService = application.get('McpToolCacheService')
 
   for (const mcpId of mcpIds) {
     try {

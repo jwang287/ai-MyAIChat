@@ -131,8 +131,7 @@ describe('ProviderRegistryUpdaterService.check', () => {
       expect.arrayContaining([
         { endpoint: '/models', kind: 'projection' },
         { endpoint: '/models/:uniqueModelId*' },
-        { endpoint: '/providers/:providerId/models:resolve', kind: 'membership' },
-        { endpoint: '/providers/:providerId/models/:modelId*/image-generation-support' }
+        { endpoint: '/providers/:providerId/models:resolve', kind: 'membership' }
       ])
     )
   })

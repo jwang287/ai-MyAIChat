@@ -207,7 +207,7 @@ export function needsProcessedArtifactReservation(
 
 /**
  * The single source of truth for "which base-relative paths are already occupied":
- * every file's source + indexed-artifact path, and every captured URL/note snapshot
+ * every file's source + indexed-artifact path, and every captured URL snapshot
  * path. The reserved set the snapshot capture, the add-time dedup, and the
  * processed-artifact collision check all build from.
  *
@@ -263,7 +263,7 @@ export async function deleteKnowledgeItemFiles(
     .filter((relativePath): relativePath is string => typeof relativePath === 'string')
   await Promise.all(directoryPrefixes.map((prefix) => removeDir(getKnowledgeBaseFilePath(baseId, prefix))))
 
-  // url/note snapshots and file leaves persist a `raw/{relativePath}` file too, so unlink
+  // URL snapshots and file leaves persist a `raw/{relativePath}` file too, so unlink
   // every stored path (mirroring collectKnowledgeReservedRelativePaths). Directory prefixes
   // are excluded here — `remove` is unlink-only and would EISDIR on a directory; the
   // removeDir above already took their files with them.

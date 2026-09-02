@@ -5,7 +5,7 @@
  * layers can trim bulk content without ever touching citation anchors.
  *
  * - `makeEntitiesCodec` — outputs shaped `[{…identity, [contentKey]: string}]`
- *   (web_search / web_fetch / kb_search results). Each entity's content is one
+ *   (kb_search results). Each entity's content is one
  *   blob keyed `"/<index>/<contentKey>"`; everything else rides the skeleton.
  * - `makeTextFieldCodec` — single-record outputs with one bulk text field
  *   (fs_read / read_file echoes). One blob keyed `"/<textKey>"`.

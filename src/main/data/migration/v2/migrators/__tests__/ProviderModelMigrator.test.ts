@@ -1010,14 +1010,14 @@ describe('ProviderModelMigrator', () => {
 
     it('recognizes provider-exclusive models carried only by provider-model overrides', async () => {
       registryFixtures.providers = [{ id: 'dashscope', name: 'Bailian', endpointConfigs: {} }]
-      registryFixtures.overrides.set('dashscope::qwen-mt-image', {
+      registryFixtures.overrides.set('dashscope::qwen-mt-text', {
         providerId: 'dashscope',
-        modelId: 'qwen-mt-image',
-        name: 'Qwen MT Image',
+        modelId: 'qwen-mt-text',
+        name: 'Qwen MT Text',
         ownedBy: 'alibaba',
-        capabilities: { force: [MODEL_CAPABILITY.IMAGE_GENERATION] },
-        inputModalities: ['image'],
-        outputModalities: ['image']
+        capabilities: { force: [MODEL_CAPABILITY.FUNCTION_CALL] },
+        inputModalities: ['text'],
+        outputModalities: ['text']
       })
       const migrationContext = createContext(dbh.db, {
         llm: {
@@ -1028,7 +1028,7 @@ describe('ProviderModelMigrator', () => {
               type: 'openai',
               enabled: true,
               apiHost: 'https://dashscope.aliyuncs.com/compatible-mode/v1/',
-              models: [{ id: 'qwen-mt-image', name: 'Qwen MT Image' }]
+              models: [{ id: 'qwen-mt-text', name: 'Qwen MT Text' }]
             }
           ]
         }
@@ -1041,9 +1041,9 @@ describe('ProviderModelMigrator', () => {
       const [modelRow] = await dbh.db
         .select()
         .from(userModelTable)
-        .where(eq(userModelTable.id, 'dashscope::qwen-mt-image'))
+        .where(eq(userModelTable.id, 'dashscope::qwen-mt-text'))
       expect(modelRow).toMatchObject({
-        presetModelId: 'qwen-mt-image',
+        presetModelId: 'qwen-mt-text',
         name: null,
         capabilities: null,
         inputModalities: null,

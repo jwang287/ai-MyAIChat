@@ -32,8 +32,6 @@ export const MODEL_ENDPOINT_OPTIONS = [
   { id: ENDPOINT_TYPE.ANTHROPIC_MESSAGES, label: 'endpoint_type.anthropic' },
   { id: ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT, label: 'endpoint_type.gemini' },
   { id: ENDPOINT_TYPE.OPENAI_EMBEDDINGS, label: 'endpoint_type.openai-embeddings' },
-  { id: ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION, label: 'endpoint_type.image-generation' },
-  { id: ENDPOINT_TYPE.OPENAI_IMAGE_EDIT, label: 'endpoint_type.image-edit' },
   { id: ENDPOINT_TYPE.JINA_RERANK, label: 'endpoint_type.jina-rerank' }
 ] as const
 
@@ -97,7 +95,6 @@ export function capsToToggleSet(capabilities: string[]): Set<ModelCapabilityTogg
 }
 
 const MODEL_PRIMARY_TYPE_CAPABILITIES = [
-  MODEL_CAPABILITY.IMAGE_GENERATION,
   MODEL_CAPABILITY.EMBEDDING,
   MODEL_CAPABILITY.RERANK
 ] as const satisfies readonly ModelCapability[]
@@ -115,7 +112,6 @@ const LEGACY_INPUT_MODALITY_CAPABILITIES = [
 ] as const satisfies readonly ModelCapability[]
 
 const PRIMARY_TYPE_TO_CAPABILITY = {
-  image: MODEL_CAPABILITY.IMAGE_GENERATION,
   embedding: MODEL_CAPABILITY.EMBEDDING,
   rerank: MODEL_CAPABILITY.RERANK
 } as const
@@ -134,8 +130,6 @@ export function getInitialModelClassification(model?: Model | null): ModelClassi
     primaryType = 'rerank'
   } else if (capabilities.includes(MODEL_CAPABILITY.EMBEDDING)) {
     primaryType = 'embedding'
-  } else if (capabilities.includes(MODEL_CAPABILITY.IMAGE_GENERATION)) {
-    primaryType = 'image'
   } else if (capabilities.some((capability) => UNEDITABLE_MODEL_TYPE_CAPABILITIES.has(capability))) {
     // These catalog types are intentionally not editable until they have a
     // complete custom-model execution path. Keep the source capability intact.

@@ -41,7 +41,7 @@ The neighbouring-keyword guard that these rules pair the number with (`api|key|t
 
 The general statement is `fetch failed[^\n]{0,20}HTTP \d{3}`: an HTTP status means the request reached the server, so it is not a timeout — whoever sent it. That also enforces the rule's own `devMessage`, which claims only failures "without a specific cause".
 
-The trap runs the other way too. `provider-rate-limited`'s positive fixture deliberately contains a **web-search** throttle, so excluding a whole subsystem to silence one record would delete real findings.
+The trap runs the other way too. `provider-rate-limited`'s positive fixture deliberately contains a provider-specific throttle, so excluding a whole subsystem to silence one record would delete real findings.
 
 ## Every anchor alternative needs an observed error behind it
 

@@ -25,7 +25,7 @@ const WARM_TOOLS_TIMEOUT_MS = 10_000
 /**
  * Race the warm against `WARM_TOOLS_TIMEOUT_MS`; returns `false` on timeout.
  * The underlying refresh is deliberately NOT aborted — it stays single-flighted
- * inside `McpCatalogService` and finishes in the background, so the next
+ * inside `McpToolCacheService` and finishes in the background, so the next
  * request reads a populated cache; this request degrades to whatever the
  * cache-only `listTools` currently holds.
  */
@@ -34,7 +34,7 @@ async function warmToolsCacheWithTimeout(serverId: string): Promise<boolean> {
   try {
     return await Promise.race([
       application
-        .get('McpCatalogService')
+        .get('McpToolCacheService')
         .warmToolsCache(serverId)
         .then(() => true),
       new Promise<boolean>((resolve) => {
@@ -130,7 +130,7 @@ export async function resolveAssistantMcpToolIds(assistantId: string): Promise<s
 
   const perServerResults = await Promise.allSettled(
     servers.map(async (server) => {
-      const catalog = application.get('McpCatalogService')
+      const catalog = application.get('McpToolCacheService')
       // Warm before listing: `listTools` is cache-only, so a cold cache used to
       // resolve to a silent empty tool set (the request then ran without the
       // assistant's MCP tools — same assistant, different turns, different

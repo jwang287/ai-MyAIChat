@@ -1747,7 +1747,7 @@ describe('FileEntryService', () => {
   }
 
   // Seeds a `job` row plus a `job_file_ref` pointing at `fileEntryId` (mirrors
-  // how AiService protects async image-job inputs). Returns the job id so a test
+  // how async job inputs are protected). Returns the job id so a test
   // can delete the job row and assert the FK cascade releases the ref.
   async function seedJobRef(fileEntryId: FileEntryId): Promise<string> {
     const now = Date.now()
@@ -1755,9 +1755,9 @@ describe('FileEntryService', () => {
     const jobId = `44444444-4444-4444-8444-${suffix}`
     await dbh.db.insert(jobTable).values({
       id: jobId,
-      type: 'image-generation.generate',
+      type: 'file-processing.test',
       status: 'running',
-      queue: 'image-generation.test',
+      queue: 'file-processing.test',
       scheduledAt: now,
       input: {}
     })

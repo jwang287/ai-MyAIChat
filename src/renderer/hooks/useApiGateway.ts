@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next'
 
 const API_GATEWAY_PREFERENCE_KEYS = {
   enabled: 'feature.api_gateway.enabled',
-  host: 'feature.api_gateway.host',
   port: 'feature.api_gateway.port',
   apiKey: 'feature.api_gateway.api_key'
 } as const
@@ -30,7 +29,8 @@ const API_GATEWAY_PREFERENCE_KEYS = {
 export const useApiGateway = () => {
   const { t } = useTranslation()
 
-  const [apiGatewayConfig, setApiGatewayConfig] = useMultiplePreferences(API_GATEWAY_PREFERENCE_KEYS)
+  const [preferenceConfig, setApiGatewayConfig] = useMultiplePreferences(API_GATEWAY_PREFERENCE_KEYS)
+  const apiGatewayConfig = { ...preferenceConfig, host: '127.0.0.1' }
 
   const apiGatewayRunning = useSharedCacheValue('feature.api_gateway.running') ?? false
 

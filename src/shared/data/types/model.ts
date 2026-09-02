@@ -11,62 +11,37 @@
  */
 
 import type {
-  CanonicalParamKey,
   Currency,
   EndpointType,
-  ImageGenerationMode,
-  ImageGenerationSupport,
-  ImageModeDef,
   Modality,
   ModelCapability,
-  ReasoningEffort,
-  ServerTool,
-  SupportSpec
+  ReasoningEffort
 } from '@cherrystudio/provider-registry'
 import {
-  CANONICAL_PARAM_KEY,
   CURRENCY,
   ENDPOINT_TYPE,
   endpointImpliedCapability,
-  ImageGenerationModeSchema,
-  ImageGenerationSupportSchema,
   MODALITY,
   MODEL_CAPABILITY,
   objectValues,
   REASONING_EFFORT,
-  ReasoningControlSchema,
-  SERVER_TOOL
+  ReasoningControlSchema
 } from '@cherrystudio/provider-registry'
 import * as z from 'zod'
 
 // Re-export const objects for consumers
 export {
-  CANONICAL_PARAM_KEY,
   CURRENCY,
   ENDPOINT_TYPE,
   endpointImpliedCapability,
-  ImageGenerationModeSchema,
   MODALITY,
   MODEL_CAPABILITY,
   objectValues,
-  REASONING_EFFORT,
-  SERVER_TOOL
+  REASONING_EFFORT
 }
 
 // Re-export types for consumers
-export type {
-  CanonicalParamKey,
-  Currency,
-  EndpointType,
-  ImageGenerationMode,
-  ImageGenerationSupport,
-  ImageModeDef,
-  Modality,
-  ModelCapability,
-  ReasoningEffort,
-  ServerTool,
-  SupportSpec
-}
+export type { Currency, EndpointType, Modality, ModelCapability, ReasoningEffort }
 
 /** Price per token schema */
 export const PricePerTokenSchema = z.object({
@@ -215,7 +190,6 @@ export function parseUniqueModelId(uniqueId: UniqueModelId): {
 /** Capabilities surfaced as filter tags in the UI */
 export const UI_CAPABILITY_TAGS = [
   MODEL_CAPABILITY.IMAGE_RECOGNITION,
-  MODEL_CAPABILITY.IMAGE_GENERATION,
   MODEL_CAPABILITY.AUDIO_RECOGNITION,
   MODEL_CAPABILITY.AUDIO_GENERATION,
   MODEL_CAPABILITY.VIDEO_RECOGNITION,
@@ -226,17 +200,14 @@ export const UI_CAPABILITY_TAGS = [
   MODEL_CAPABILITY.RERANK
 ] as const
 
-/** Provider-native tools surfaced alongside model capability tags. */
-export const UI_SERVER_TOOL_TAGS = [SERVER_TOOL.WEB_SEARCH] as const
-
 /** A capability that is shown as a UI tag */
 export type ModelCapabilityTag = (typeof UI_CAPABILITY_TAGS)[number]
 
 /** All UI-visible model tags: capability-derived + business tags */
-export type ModelTag = ModelCapabilityTag | (typeof UI_SERVER_TOOL_TAGS)[number] | 'free'
+export type ModelTag = ModelCapabilityTag | 'free'
 
 /** All possible ModelTag values (for iteration) */
-export const ALL_MODEL_TAGS: readonly ModelTag[] = [...UI_CAPABILITY_TAGS, ...UI_SERVER_TOOL_TAGS, 'free'] as const
+export const ALL_MODEL_TAGS: readonly ModelTag[] = [...UI_CAPABILITY_TAGS, 'free'] as const
 
 export type ThinkingTokenLimits = z.infer<typeof ThinkingTokenLimitsSchema>
 
@@ -418,15 +389,6 @@ export const ModelSchema = z.object({
   parameterSupport: RuntimeParameterSupportSchema.optional(),
 
   pricing: RuntimeModelPricingSchema.optional(),
-
-  /**
-   * Painting-page metadata (per-mode `supports.*` widget specs).
-   * Sourced from the registry preset at read time — not persisted in
-   * user_model. Lets the painting page render the model's form
-   * (per-vendor sizes, custom-size range) without a side-channel
-   * catalog fetch.
-   */
-  imageGeneration: ImageGenerationSupportSchema.optional(),
 
   // Status
   /** Whether this model is available for use */

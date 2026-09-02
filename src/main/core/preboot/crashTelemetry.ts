@@ -83,7 +83,7 @@ function hardenWebContents(): void {
     // Owns every session's single `onHeadersReceived` slot EXCEPT the ones whose owner
     // installs its own: Electron keeps ONE listener per session, so two registrations are
     // not two policies, they are the later one. The second consumer this comment used to
-    // forbid has appeared (mini apps re-deliver their CSP on this slot), so the two are
+    // forbid has appeared (separately hardened guests own this slot), so the two are
     // separated by session instead of by a coordinator — each is then the only writer on
     // the sessions it owns. `Document-Policy` is for OUR renderers' crash reports anyway.
     if (isSelfHardenedSession(webContents.session)) return

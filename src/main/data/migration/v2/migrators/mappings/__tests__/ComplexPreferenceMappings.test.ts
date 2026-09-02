@@ -74,27 +74,6 @@ describe('ComplexPreferenceMappings', () => {
         targetKeys: ['feature.file_processing.overrides']
       })
     })
-    it('should contain websearch compression flatten mapping', () => {
-      const websearchMapping = COMPLEX_PREFERENCE_MAPPINGS.find((m) => m.id === 'websearch_compression_flatten')
-      expect(websearchMapping).toBeDefined()
-      expect(websearchMapping?.targetKeys).toContain('chat.web_search.compression.method')
-      expect(websearchMapping?.targetKeys.length).toBe(2)
-    })
-
-    it('should contain websearch providers migrate mapping', () => {
-      const providersMapping = COMPLEX_PREFERENCE_MAPPINGS.find((m) => m.id === 'websearch_providers_migrate')
-      expect(providersMapping).toBeDefined()
-      expect(providersMapping?.targetKeys).toContain('chat.web_search.provider_overrides')
-    })
-
-    it('should contain websearch default provider migrate mapping', () => {
-      const defaultProviderMapping = COMPLEX_PREFERENCE_MAPPINGS.find(
-        (m) => m.id === 'websearch_default_provider_migrate'
-      )
-      expect(defaultProviderMapping).toBeDefined()
-      expect(defaultProviderMapping?.targetKeys).toEqual(['chat.web_search.default_search_keywords_provider'])
-    })
-
     it('should migrate legacy onboarding completion into the provider setup status', () => {
       const onboardingMapping = COMPLEX_PREFERENCE_MAPPINGS.find((m) => m.id === 'onboarding_completed_migrate')
 
@@ -122,9 +101,6 @@ describe('ComplexPreferenceMappings', () => {
     })
     it('should return target keys from all mappings', () => {
       const keys = getComplexMappingTargetKeys()
-      expect(keys).toContain('chat.web_search.compression.method')
-      expect(keys).toContain('chat.web_search.provider_overrides')
-      expect(keys).toContain('chat.web_search.default_search_keywords_provider')
       expect(keys).toContain('feature.file_processing.overrides')
       expect(keys).toContain('chat.default_model_id')
       expect(keys).toContain('feature.quick_assistant.model_id')
@@ -170,12 +146,6 @@ describe('ComplexPreferenceMappings', () => {
       expect(mapping).toBeDefined()
       expect(mapping?.targetKeys).toEqual(['feature.file_processing.overrides'])
     })
-    it('should return mapping by id', () => {
-      const mapping = getComplexMappingById('websearch_compression_flatten')
-      expect(mapping).toBeDefined()
-      expect(mapping?.id).toBe('websearch_compression_flatten')
-    })
-
     it('should return undefined for non-existent id', () => {
       const mapping = getComplexMappingById('does_not_exist')
       expect(mapping).toBeUndefined()
@@ -378,56 +348,7 @@ describe('ComplexPreferenceMappings', () => {
       expect(result2).toEqual({})
     })
 
-    it('should handle conditional mapping', () => {
-      const transform: TransformFunction = (sources) => {
-        const result: TransformResult = {}
-
-        if (sources.backupType === 'webdav' && sources.webdavUrl) {
-          result['data.backup.webdav.enabled'] = true
-          result['data.backup.webdav.url'] = sources.webdavUrl
-        }
-
-        if (sources.backupType === 's3' && sources.s3Bucket) {
-          result['data.backup.s3.enabled'] = true
-          result['data.backup.s3.bucket'] = sources.s3Bucket
-        }
-
-        return result
-      }
-
-      // Test webdav backup
-      const result1 = transform({
-        backupType: 'webdav',
-        webdavUrl: 'https://dav.example.com'
-      })
-      expect(result1).toEqual({
-        'data.backup.webdav.enabled': true,
-        'data.backup.webdav.url': 'https://dav.example.com'
-      })
-
-      // Test s3 backup
-      const result2 = transform({
-        backupType: 's3',
-        s3Bucket: 'my-bucket'
-      })
-      expect(result2).toEqual({
-        'data.backup.s3.enabled': true,
-        'data.backup.s3.bucket': 'my-bucket'
-      })
-
-      // Test no backup configured
-      const result3 = transform({
-        backupType: 'none'
-      })
-      expect(result3).toEqual({})
-    })
-  })
-
-  // v1 cloned this into every new assistant, so migrating it onto rows alone
-  // loses the policy for assistants created after the upgrade.
-  describe('default_assistant_context_count_migrate', () => {
-    const transform = () =>
-      COMPLEX_PREFERENCE_MAPPINGS.find((m) => m.id === 'default_assistant_context_count_migrate')!.transform
+    const transform = () => getComplexMappingById('default_assistant_context_count_migrate')!.transform
 
     it('carries the v1 default into the global limit with the +1 offset', () => {
       expect(transform()({ contextCount: 5 })).toEqual({ 'chat.context_settings.max_messages': 6 })

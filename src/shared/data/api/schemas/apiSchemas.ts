@@ -20,7 +20,6 @@
  */
 
 import type { AssertValidSchemas } from '../types'
-import type { AgentChannelSchemas } from './agentChannels'
 import type { AgentSchemas } from './agents'
 import type { AgentSessionMessageSchemas } from './agentSessionMessages'
 import type { AgentSessionSchemas } from './agentSessions'
@@ -33,10 +32,7 @@ import type { JobSchemas } from './jobs'
 import type { KnowledgeSchemas } from './knowledges'
 import type { McpServerSchemas } from './mcpServers'
 import type { MessageSchemas } from './messages'
-import type { MiniAppSchemas } from './miniApps'
 import type { ModelSchemas } from './models'
-import type { NoteSchemas } from './notes'
-import type { PaintingsSchemas } from './paintings'
 import type { PinSchemas } from './pins'
 import type { PromptSchemas } from './prompts'
 import type { ProviderSchemas } from './providers'
@@ -65,13 +61,10 @@ export type ApiSchemas = AssertValidSchemas<
     TemporaryChatSchemas &
     ModelSchemas &
     ProviderSchemas &
-    PaintingsSchemas &
     TranslateSchemas &
     FileSchemas &
     McpServerSchemas &
     KnowledgeSchemas &
-    MiniAppSchemas &
-    NoteSchemas &
     AssistantSchemas &
     TagSchemas &
     PromptSchemas &
@@ -82,7 +75,6 @@ export type ApiSchemas = AssertValidSchemas<
     AgentSessionMessageSchemas &
     AgentSessionSchemas &
     AgentWorkspaceSchemas &
-    AgentChannelSchemas &
     JobSchemas &
     SearchSchemas &
     AiUsageRecordSchemas

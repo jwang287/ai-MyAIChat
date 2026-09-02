@@ -97,7 +97,7 @@ export type AiUsageRecordAuthMethod = z.infer<typeof AiUsageRecordAuthMethodSche
  * What kind of provider request the record describes:
  * - `language`: chat / gateway / one-shot text (token-priced, full breakdown)
  * - `embedding`: embedding calls (token-priced, input only)
- * - `image`: image generation (priced per image via `pricing.perImage`)
+ * - `image`: historic image-generation invocation (priced per image via `pricing.perImage`)
  */
 export const AiUsageRecordModalitySchema = z.enum(['language', 'embedding', 'image', 'rerank'])
 export type AiUsageRecordModality = z.infer<typeof AiUsageRecordModalitySchema>
@@ -106,7 +106,7 @@ export type AiUsageRecordModality = z.infer<typeof AiUsageRecordModalitySchema>
  * User-facing source that produced the usage:
  * - `assistant`: regular chat topic owned by an assistant
  * - `agent`: agent session message
- * - `mini-app`: locally installed mini app
+ * - `mini-app`: historic Mini App invocation
  */
 export const AiUsageRecordSourceTypeSchema = z.enum(['assistant', 'agent', 'mini-app'])
 export type AiUsageRecordSourceType = z.infer<typeof AiUsageRecordSourceTypeSchema>

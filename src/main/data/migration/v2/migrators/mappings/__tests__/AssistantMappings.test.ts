@@ -36,7 +36,7 @@ describe('AssistantMappings', () => {
         // Migrator merges legacy fields onto DEFAULT_ASSISTANT_SETTINGS so the new
         // NOT NULL settings column always sees a complete object. Per-field
         // sanitiser keeps only legacy values that validate against the v2 schema.
-        settings: { ...DEFAULT_ASSISTANT_SETTINGS, temperature: 0.7, mcpMode: 'manual', enableWebSearch: true }
+        settings: { ...DEFAULT_ASSISTANT_SETTINGS, temperature: 0.7, mcpMode: 'manual' }
       })
       expect(result.mcpServers).toStrictEqual([
         { assistantId: 'ast-1', mcpServerId: 'srv-1' },
@@ -152,14 +152,13 @@ describe('AssistantMappings', () => {
         emoji: undefined,
         description: null,
         settings: undefined,
-        mcpMode: null,
-        enableWebSearch: undefined
+        mcpMode: null
       })
 
       expect(result.assistant.prompt).toBe('')
       expect(result.assistant.emoji).toBe('🌟')
       expect(result.assistant.description).toBe('')
-      // mcpMode/enableWebSearch were null/undefined upstream, so settings stays at the default.
+      // mcpMode was null upstream, so settings stays at the default.
       expect(result.assistant.settings).toStrictEqual(DEFAULT_ASSISTANT_SETTINGS)
       expect(result.legacyTagName).toBeNull()
     })
@@ -201,13 +200,11 @@ describe('AssistantMappings', () => {
     it('should build settings from top-level fields when settings object is absent', () => {
       const result = transformAssistant({
         id: 'ast-15',
-        mcpMode: 'auto',
-        enableWebSearch: true
+        mcpMode: 'auto'
       })
       expect(result.assistant.settings).toStrictEqual({
         ...DEFAULT_ASSISTANT_SETTINGS,
-        mcpMode: 'auto',
-        enableWebSearch: true
+        mcpMode: 'auto'
       })
     })
 

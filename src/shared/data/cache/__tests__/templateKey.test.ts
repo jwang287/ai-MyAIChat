@@ -6,7 +6,7 @@ describe('isTemplateKey', () => {
   it('returns true when key contains ${...} placeholder', () => {
     expect(isTemplateKey('scroll.position.${id}')).toBe(true)
     expect(isTemplateKey('entity.cache.${type}_${id}')).toBe(true)
-    expect(isTemplateKey('web_search.provider.last_used_key.${providerId}')).toBe(true)
+    expect(isTemplateKey('ocr.provider.last_used_key.${providerId}')).toBe(true)
   })
 
   it('returns false for plain keys without placeholder', () => {
@@ -39,9 +39,9 @@ describe('templateToRegex', () => {
   })
 
   it('rejects non-ASCII characters in dynamic segment (contract test for [\\w\\-]+)', () => {
-    const regex = templateToRegex('web_search.provider.last_used_key.${providerId}')
-    expect(regex.test('web_search.provider.last_used_key.中文id')).toBe(false)
-    expect(regex.test('web_search.provider.last_used_key.emoji😀')).toBe(false)
+    const regex = templateToRegex('ocr.provider.last_used_key.${providerId}')
+    expect(regex.test('ocr.provider.last_used_key.中文id')).toBe(false)
+    expect(regex.test('ocr.provider.last_used_key.emoji😀')).toBe(false)
   })
 
   it('does not match unrelated keys', () => {
@@ -59,11 +59,11 @@ describe('templateToRegex', () => {
   })
 
   it('placeholder variable name does not affect matching', () => {
-    const a = templateToRegex('web_search.provider.last_used_key.${providerId}')
-    const b = templateToRegex('web_search.provider.last_used_key.${foo}')
+    const a = templateToRegex('ocr.provider.last_used_key.${providerId}')
+    const b = templateToRegex('ocr.provider.last_used_key.${foo}')
     expect(a.source).toBe(b.source)
-    expect(a.test('web_search.provider.last_used_key.google')).toBe(true)
-    expect(b.test('web_search.provider.last_used_key.google')).toBe(true)
+    expect(a.test('ocr.provider.last_used_key.google')).toBe(true)
+    expect(b.test('ocr.provider.last_used_key.google')).toBe(true)
   })
 
   it('escapes regex special characters in the template prefix', () => {
@@ -76,13 +76,10 @@ describe('templateToRegex', () => {
 
 describe('findMatchingSharedCacheSchemaKey', () => {
   it('returns the exact fixed key when it matches a schema entry', () => {
-    expect(findMatchingSharedCacheSchemaKey('chat.web_search.active_searches')).toBe('chat.web_search.active_searches')
+    expect(findMatchingSharedCacheSchemaKey('feature.api_gateway.running')).toBe('feature.api_gateway.running')
   })
 
   it('returns the template pattern when concrete key matches a template entry', () => {
-    expect(findMatchingSharedCacheSchemaKey('web_search.provider.last_used_key.google')).toBe(
-      'web_search.provider.last_used_key.${providerId}'
-    )
     expect(findMatchingSharedCacheSchemaKey('ocr.provider.last_used_key.mistral')).toBe(
       'ocr.provider.last_used_key.${providerId}'
     )
@@ -93,7 +90,7 @@ describe('findMatchingSharedCacheSchemaKey', () => {
 
   it('returns undefined when the key matches nothing', () => {
     expect(findMatchingSharedCacheSchemaKey('unknown.key')).toBeUndefined()
-    expect(findMatchingSharedCacheSchemaKey('web_search.provider.last_used_key.')).toBeUndefined()
+    expect(findMatchingSharedCacheSchemaKey('ocr.provider.last_used_key.')).toBeUndefined()
     expect(findMatchingSharedCacheSchemaKey('agent.session.flow_parts.session-1')).toBeUndefined()
   })
 })

@@ -17,7 +17,6 @@ import { TaskCreateTool, TaskGetTool, TaskListTool, TaskOutputTool, TaskStopTool
 import { TodoWriteTool } from './TodoWriteTool'
 import { ToolSearchTool } from './ToolSearchTool'
 import { WebFetchTool } from './WebFetchTool'
-import { WebSearchTool } from './WebSearchTool'
 import { WorkflowTool } from './WorkflowTool'
 import { WriteTool } from './WriteTool'
 
@@ -33,7 +32,6 @@ export const toolRenderers: ToolRenderersMap = {
   [AgentToolsType.Search]: SearchTool,
   [AgentToolsType.Glob]: GlobTool,
   [AgentToolsType.TodoWrite]: TodoWriteTool,
-  [AgentToolsType.WebSearch]: WebSearchTool,
   [AgentToolsType.Grep]: GrepTool,
   [AgentToolsType.Write]: WriteTool,
   [AgentToolsType.WebFetch]: WebFetchTool,

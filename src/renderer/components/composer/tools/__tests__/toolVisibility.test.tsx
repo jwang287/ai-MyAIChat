@@ -2,14 +2,12 @@ import { getToolsForScope } from '@renderer/components/composer/tools/builtinToo
 import { TopicType } from '@renderer/components/composer/tools/types'
 import { describe, expect, it, vi } from 'vitest'
 
-const { mockIsGenerateImageModel, mockIsReasoningModel, mockIsSupportedToolUse } = vi.hoisted(() => ({
-  mockIsGenerateImageModel: vi.fn(),
+const { mockIsReasoningModel, mockIsSupportedToolUse } = vi.hoisted(() => ({
   mockIsReasoningModel: vi.fn(),
   mockIsSupportedToolUse: vi.fn()
 }))
 
 vi.mock('@renderer/utils/model', () => ({
-  isGenerateImageModel: (...args: unknown[]) => mockIsGenerateImageModel(...args),
   isReasoningModel: (...args: unknown[]) => mockIsReasoningModel(...args)
 }))
 
@@ -23,10 +21,6 @@ vi.mock('@renderer/components/composer/tools/components/KnowledgeBaseButton', ()
 
 vi.mock('@renderer/components/composer/tools/components/QuickPhrasesButton', () => ({
   QuickPhrasesToolRuntime: () => null
-}))
-
-vi.mock('@renderer/components/composer/tools/components/WebSearchButton', () => ({
-  WebSearchToolRuntime: () => null
 }))
 
 vi.mock('@renderer/hooks/agent/useAgent', () => ({
@@ -43,7 +37,6 @@ vi.mock('@renderer/hooks/useMcpServer', () => ({
 
 describe('composer tool visibility', () => {
   it('keeps assistant core capabilities discoverable when the current model cannot enable them', () => {
-    mockIsGenerateImageModel.mockReturnValue(false)
     mockIsReasoningModel.mockReturnValue(false)
     mockIsSupportedToolUse.mockReturnValue(false)
 
@@ -61,7 +54,7 @@ describe('composer tool visibility', () => {
       } as any
     })
 
-    expect(tools.map((tool) => tool.key)).toEqual(expect.arrayContaining(['generate_image', 'knowledge_base']))
+    expect(tools.map((tool) => tool.key)).toContain('knowledge_base')
   })
 
   it('shows MCP status in chat and agent session scopes only', () => {

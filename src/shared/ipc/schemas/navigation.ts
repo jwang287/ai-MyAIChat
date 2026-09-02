@@ -7,7 +7,7 @@ import { defineRoute } from '../define'
  * Runtime form of {@link ConversationNavigationTarget}. The `z.ZodType<…>` annotation binds the
  * two structurally, so adding a field to the type without adding it here — which would silently
  * strip it on the request leg while the event leg carries it — is a compile error (repo
- * convention — see selection.ts / webSearch.ts).
+ * convention — see selection.ts).
  */
 const conversationNavigationTargetSchema: z.ZodType<ConversationNavigationTarget> = z.object({
   conversationType: z.enum(['assistant', 'agent']),

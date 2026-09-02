@@ -430,8 +430,7 @@ describe('CacheCleanupService', () => {
       rootPath('config.json'),
       rootPath('window-state.json'),
       rootPath('miniWindow-state.json'),
-      rootPath('quickAssistant-state.json'),
-      rootPath('Data', 'Files', 'custom-minapps.json')
+      rootPath('quickAssistant-state.json')
     ]
     const legacyDirectories = [rootPath('migration_temp'), rootPath('Home', 'install')]
     const restoreDirectories = [

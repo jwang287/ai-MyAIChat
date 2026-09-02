@@ -17,14 +17,13 @@ export interface SidebarListProps {
 }
 
 /**
- * Renders built-in apps and mini apps as one continuous, drag-reorderable list.
+ * Renders sidebar entries as one continuous, drag-reorderable list.
  * A single `SidebarSortableList` (one dnd-kit context) backs the whole list, so a
- * drag can move an item to any position regardless of type — apps and mini apps
- * freely interleave with no divider between them.
+ * drag can move an item to any position regardless of type.
  *
  * Entries are already resolved to a type-agnostic shape (see
  * `components/app/sidebarVariants`), so this presentation layer never switches on
- * whether a row is an app or a mini app.
+ * a row's entry type.
  */
 export function SidebarList({ layout, ...props }: SidebarListProps) {
   if (layout === 'icon') return <IconList {...props} />

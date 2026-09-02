@@ -444,7 +444,7 @@ export class AiStreamManager extends BaseService {
   }
 
   // ── Write quiesce (backup restore) ───────────────────────────────
-  // Contract shared with JobManager / AgentSessionRuntimeService / ChannelManager
+  // Contract shared with JobManager / AgentSessionRuntimeService
   // (issues #16849/#16850): pause() gates new-turn ADMISSION (before prepareDispatch
   // writes rows) so a restore snapshot sees no new `agent_session_message`/`message`
   // writes; drainInFlight() awaits everything already writing. Prompt streams

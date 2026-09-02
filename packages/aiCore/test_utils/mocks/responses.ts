@@ -190,7 +190,7 @@ export const mockCompleteResponses = {
 }
 
 /**
- * Mock image generation responses
+ * Mock provider responses
  */
 export const mockImageResponses = {
   single: {

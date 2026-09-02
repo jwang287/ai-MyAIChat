@@ -1,8 +1,8 @@
 import type * as CherryUI from '@cherrystudio/ui'
 import type { ReadOnlyComposerFileTokenPreview } from '@renderer/components/composer/tokenView'
+import { CITATION_SOURCE } from '@renderer/types/citationProvider'
 import type { Citation } from '@renderer/types/message'
 import type { Model } from '@renderer/types/model'
-import { WEB_SEARCH_SOURCE } from '@renderer/types/webSearchProvider'
 import type * as CitationUtils from '@renderer/utils/citation'
 import type { ComposerMessageSnapshot } from '@shared/data/types/uiParts'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -1039,9 +1039,9 @@ Hidden answer
           version: 1,
           tokens: [
             {
-              id: 'command:web-search',
+              id: 'command:custom-action',
               kind: 'command',
-              label: 'web-search',
+              label: 'custom-action',
               index: 0,
               textOffset: 0,
               promptText: 'Run'
@@ -1059,7 +1059,7 @@ Hidden answer
       })
 
       const textElement = getRenderedPlainText()!
-      expect(textElement).toHaveTextContent('web-search Docs')
+      expect(textElement).toHaveTextContent('custom-action Docs')
       expect(textElement.querySelector('[data-composer-token-kind="command"]')).toBeInTheDocument()
       expect(textElement.querySelector('[data-composer-token-kind="reference"]')).toBeInTheDocument()
     })
@@ -1161,7 +1161,7 @@ Hidden answer
       const citations: Citation[] = [
         { number: 1, url: 'https://example.com', title: 'Example Citation', content: 'Citation content' }
       ]
-      const citationReferences = [{ citationBlockSource: WEB_SEARCH_SOURCE.OPENAI }]
+      const citationReferences = [{ citationBlockSource: CITATION_SOURCE.OPENAI }]
 
       renderMainTextBlock({
         content: 'Content with citation [1]',
@@ -1171,11 +1171,7 @@ Hidden answer
       })
 
       expect(mockDetermineCitationSource).toHaveBeenCalledWith(citationReferences)
-      expect(mockWithCitationTags).toHaveBeenCalledWith(
-        'Content with citation [1]',
-        citations,
-        WEB_SEARCH_SOURCE.OPENAI
-      )
+      expect(mockWithCitationTags).toHaveBeenCalledWith('Content with citation [1]', citations, CITATION_SOURCE.OPENAI)
       expect(screen.getByText('Markdown: Content with citation [1] [processed-citations]')).toBeInTheDocument()
     })
 

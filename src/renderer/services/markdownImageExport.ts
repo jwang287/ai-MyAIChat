@@ -2,8 +2,7 @@
  * Multimodal image support for Markdown file exports.
  *
  * Two sources of images are collected from message parts: image `FileUIPart`s
- * (user attachments) and `generate_image` tool outputs (whose output items are
- * FileEntry id references). Serialization interleaves images with text in the
+ * (user attachments). Serialization interleaves images with text in the
  * original parts order and produces, per mode, either inline base64 data URIs
  * (`embed`) or `assets/<name>.<ext>` relative links plus a deferred byte-write
  * list (`folder`).
@@ -17,100 +16,41 @@ import type { ExportableMessage } from '@renderer/types/messageExport'
 import { getImageBlobFromSource } from '@renderer/utils/image'
 import { replaceComposerTokenPromptText } from '@renderer/utils/message/composerTokens'
 import { getRenderableTextContent } from '@renderer/utils/message/find'
-import { extractOutputMetadata } from '@renderer/utils/message/toolOutput'
-import { GENERATE_IMAGE_TOOL_NAME } from '@shared/ai/builtinTools'
-import { generateImageOutputSchema } from '@shared/ai/generateImageTool'
-import { isDeferredToolOutput } from '@shared/ai/transport'
 import type { FileUIPart } from '@shared/data/types/message'
 import { readCherryMeta } from '@shared/data/types/uiParts'
 import { type AbsoluteFilePath, AbsoluteFilePathSchema, type FileUrlString } from '@shared/types/file'
 import { createFilePathHandle, fileUrlToPath, toFileUrl } from '@shared/utils/file'
-import { getToolName, isToolUIPart } from 'ai'
 import { v4 as uuidv4 } from 'uuid'
 
 const logger = loggerService.withContext('MarkdownImageExport')
 
 export type ImageExportMode = 'embed' | 'folder' | 'none'
 
-/** Base64 inline payloads beyond this size bloat the .md past ~13 MiB of text. */
-const MAX_EMBED_IMAGE_BYTES = 10 * 1024 * 1024
-
-const AGENT_GENERATE_IMAGE_TOOL_NAME = `mcp__cherry-tools__${GENERATE_IMAGE_TOOL_NAME}`
-
 export type ExportableImageRef = {
-  /** Dedup key: fileEntryId when known, else the part url. */
   key: string
-  /**
-   * Authoritative src (`file://` / `data:` / `https:`). `file://` sources are
-   * stat'd before embed reads and copied in main for folder writes; everything
-   * else resolves through `getImageBlobFromSource`.
-   */
   url: string
   filename?: string
   mime?: string
 }
 
 export type PendingImageWrite = {
-  /** File name inside the `assets/` directory (already unique). */
   fileName: string
   ref: ExportableImageRef
 }
 
 export type ImageSerializationResult = {
-  /** messageId → interleaved text+image markdown, only for messages containing images. */
   overrides: Map<string, string>
-  /** folder mode only: images whose bytes are fetched lazily at write time. */
   pendingWrites: PendingImageWrite[]
-  /** Images skipped during serialization (over the embed limit or unreadable). */
   skippedCount: number
 }
 
 export type CollectResult = {
   refs: ExportableImageRef[]
-  /** Sources that failed to resolve during collection (e.g. cleaned-up FileEntry). */
   unresolvedCount: number
 }
 
-/**
- * Replace deferred `generate_image` outputs with their resolved values.
- * Agent sessions read messages with `deferToolOutputs`, so any output over the
- * transport limit — every inline image payload — arrives as `$deferredToolResult`.
- * Resolve those refs once so collection and serialization below both see the
- * real payload. A ref that cannot be resolved is counted and dropped, never fatal.
- */
-export async function hydrateDeferredImageOutputs(
-  messages: ExportableMessage[]
-): Promise<{ messages: ExportableMessage[]; unresolvedCount: number }> {
-  let unresolvedCount = 0
-  let hydrated: ExportableMessage[] | undefined
-  for (let messageIndex = 0; messageIndex < messages.length; messageIndex += 1) {
-    const parts = messages[messageIndex].parts
-    if (!parts) continue
-    let messageParts: typeof parts | undefined
-    for (let partIndex = 0; partIndex < parts.length; partIndex += 1) {
-      const part = parts[partIndex]
-      if (!isGenerateImageToolPart(part)) continue
-      const output = (part as { output?: unknown }).output
-      if (!isDeferredToolOutput(output)) continue
-      try {
-        const response = await ipcApi.request('ai.tool.get_result', output.$deferredToolResult)
-        if (!response.found) {
-          throw new Error(`Tool result is no longer available: ${output.$deferredToolResult.toolCallId}`)
-        }
-        messageParts ??= [...parts]
-        messageParts[partIndex] = { ...part, output: response.output } as (typeof parts)[number]
-      } catch (error) {
-        unresolvedCount += 1
-        logger.warn('Failed to resolve a deferred generate_image output, skipping it', { error })
-      }
-    }
-    if (messageParts) {
-      hydrated ??= [...messages]
-      hydrated[messageIndex] = { ...messages[messageIndex], parts: messageParts }
-    }
-  }
-  return { messages: hydrated ?? messages, unresolvedCount }
-}
+/** Base64 inline payloads beyond this size bloat the .md past ~13 MiB of text. */
+const MAX_EMBED_IMAGE_BYTES = 10 * 1024 * 1024
 
 const isImageFilePart = (part: FileUIPart): boolean => part.mediaType?.startsWith('image/') ?? false
 
@@ -120,52 +60,6 @@ async function resolvePhysicalPath(id: string): Promise<AbsoluteFilePath> {
   const path = paths[id]
   if (!path) throw new Error(`File entry ${id} has no physical path`)
   return path
-}
-
-function isGenerateImageToolPart(part: unknown): boolean {
-  if (!isToolUIPart(part as never)) return false
-  const toolPart = part as { state?: string }
-  if (toolPart.state !== 'output-available') return false
-  const toolName = getToolName(part as never).trim()
-  return toolName === GENERATE_IMAGE_TOOL_NAME || toolName === AGENT_GENERATE_IMAGE_TOOL_NAME
-}
-
-/**
- * One output item of a `generate_image` tool part, in either persisted shape:
- * FileEntry references (`{id, name}`) or MCP inline content (`content[].image`,
- * base64 payload mirrored into a data URL — same shapes MessageGenerateImage renders).
- */
-type GenerateImageItem = { key: string; entryId?: string; url?: string; filename?: string; mime?: string }
-
-function parseGenerateImageItems(part: unknown): GenerateImageItem[] {
-  const output = (part as { output?: unknown }).output
-  // An error result carries its explanation as content — check before the unwrap,
-  // because extractOutputMetadata may drop the envelope (and its isError flag).
-  if (
-    typeof output === 'object' &&
-    output !== null &&
-    !Array.isArray(output) &&
-    (output as { isError?: unknown }).isError === true
-  ) {
-    return []
-  }
-  const { response } = extractOutputMetadata(output)
-  const parsed = generateImageOutputSchema.safeParse(response)
-  if (parsed.success) {
-    return parsed.data.map((item) => ({ key: item.id, entryId: item.id, filename: item.name }))
-  }
-  // extractOutputMetadata unwraps `{content: [...]}` into the array itself unless
-  // mcp metadata keeps the envelope — accept both shapes.
-  const content = Array.isArray(response) ? response : (response as { content?: unknown } | null | undefined)?.content
-  if (!Array.isArray(content)) return []
-  return content.flatMap((item) => {
-    if (item?.type === 'image' && typeof item.data === 'string' && item.data) {
-      const mime = typeof item.mimeType === 'string' && item.mimeType ? item.mimeType : 'image/png'
-      const url = `data:${mime};base64,${item.data}`
-      return [{ key: url, url, mime }]
-    }
-    return []
-  })
 }
 
 /**
@@ -214,31 +108,6 @@ export async function collectExportableImages(messages: ExportableMessage[]): Pr
               filename: filePart.filename,
               mime: filePart.mediaType
             })
-          }
-        } else if (isGenerateImageToolPart(part)) {
-          for (const item of parseGenerateImageItems(part)) {
-            try {
-              if (item.url) {
-                // MCP inline payload — the data URL is the authoritative bytes already.
-                push({
-                  key: item.key,
-                  url: item.url,
-                  filename: item.filename,
-                  mime: item.mime
-                })
-              } else if (item.entryId) {
-                const physicalPath = await resolvePhysicalPath(item.entryId)
-                push({
-                  key: item.key,
-                  url: toFileUrl(physicalPath),
-                  filename: item.filename
-                })
-              }
-            } catch (error) {
-              // One dead FileEntry drops only its own image, never the siblings.
-              unresolvedCount += 1
-              logger.warn('Failed to resolve a generate_image entry, skipping it', { key: item.key, error })
-            }
           }
         }
       } catch (error) {
@@ -367,16 +236,6 @@ export async function serializeMessagesWithImages(
         if (segment) {
           segments.push(segment)
           hasImage = true
-        }
-      } else if (isGenerateImageToolPart(part)) {
-        for (const item of parseGenerateImageItems(part)) {
-          const ref = refByKey.get(item.key)
-          if (!ref) continue
-          const segment = await renderRef(ref)
-          if (segment) {
-            segments.push(segment)
-            hasImage = true
-          }
         }
       } else {
         const text = getRenderableTextContent(part)

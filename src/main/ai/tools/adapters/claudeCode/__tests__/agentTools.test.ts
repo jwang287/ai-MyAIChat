@@ -55,7 +55,7 @@ describe('createClaudeAgentToolPolicySnapshot — live disabledTools', () => {
     vi.clearAllMocks()
     mocks.findMcpServer.mockReturnValue({ id: 'mcp-1', name: 'server' })
     mocks.applicationGet.mockImplementation((name: string) => {
-      if (name === 'McpCatalogService') return { listTools: mocks.listMcpTools }
+      if (name === 'McpToolCacheService') return { listTools: mocks.listMcpTools }
       throw new Error(`Unexpected application.get(${name})`)
     })
     mocks.listMcpTools.mockReturnValue([])
@@ -80,13 +80,12 @@ describe('createClaudeAgentToolPolicySnapshot — live disabledTools', () => {
     expect(snapshot.isDisabled('Bash')).toBe(true)
   })
 
-  it('honors disabledTools for notify and config autonomy tools', async () => {
+  it('honors disabledTools for cron and config autonomy tools', async () => {
     const snapshot = await createClaudeAgentToolPolicySnapshot(
-      makeAgent(['mcp__cherry-tools__notify', 'mcp__cherry-tools__config'])
+      makeAgent(['mcp__cherry-tools__cron', 'mcp__cherry-tools__config'])
     )
-    expect(snapshot.isDisabled('mcp__cherry-tools__notify')).toBe(true)
+    expect(snapshot.isDisabled('mcp__cherry-tools__cron')).toBe(true)
     expect(snapshot.isDisabled('mcp__cherry-tools__config')).toBe(true)
-    expect(snapshot.isDisabled('mcp__cherry-tools__cron')).toBe(false)
   })
 
   it('keeps prior MCP descriptors when a later server listing fails', async () => {
@@ -187,7 +186,7 @@ describe('createClaudeAgentToolPolicySnapshot — auto-allow prefix + approval e
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.applicationGet.mockImplementation((name: string) => {
-      if (name === 'McpCatalogService') return { listTools: mocks.listMcpTools }
+      if (name === 'McpToolCacheService') return { listTools: mocks.listMcpTools }
       throw new Error(`Unexpected application.get(${name})`)
     })
     mocks.listMcpTools.mockReturnValue([])
@@ -212,14 +211,13 @@ describe('createClaudeAgentToolPolicySnapshot — auto-allow prefix + approval e
   })
 
   it('auto-approves the merged autonomy tools while kb_manage still prompts', async () => {
-    // The former standalone `cherry` server's cron/notify/config now live under cherry-tools and
+    // The former standalone `cherry` server's cron/config tools now live under cherry-tools and
     // must stay auto-approved; the mutating kb_manage carve-out must survive the merge.
     const snapshot = await createClaudeAgentToolPolicySnapshot(makeAgent(), {
       autoAllowRuntimeNamePrefixes: ['mcp__cherry-tools__'],
       autoAllowRuntimeNameExceptions: ['mcp__cherry-tools__kb_manage']
     })
     expect(snapshot.resolve('mcp__cherry-tools__cron')).toMatchObject({ approval: 'auto' })
-    expect(snapshot.resolve('mcp__cherry-tools__notify')).toMatchObject({ approval: 'auto' })
     expect(snapshot.resolve('mcp__cherry-tools__config')).toMatchObject({ approval: 'auto' })
     expect(snapshot.resolve('mcp__cherry-tools__kb_manage')).toMatchObject({ approval: 'prompt' })
   })
@@ -229,7 +227,7 @@ describe('createClaudeAgentToolPolicySnapshot — production approval-gate wirin
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.applicationGet.mockImplementation((name: string) => {
-      if (name === 'McpCatalogService') return { listTools: mocks.listMcpTools }
+      if (name === 'McpToolCacheService') return { listTools: mocks.listMcpTools }
       throw new Error(`Unexpected application.get(${name})`)
     })
     mocks.listMcpTools.mockReturnValue([])

@@ -212,28 +212,6 @@ describe('aiHandlers', () => {
     expect(result).toBe(out)
   })
 
-  it('generate_image unwraps { requestId, payload } into runImageRequest', async () => {
-    const payload = {
-      uniqueModelId: 'openai::img' as const,
-      prompt: 'a fox',
-      paramValues: {},
-      cleanupPolicy: 'delete_when_unreferenced' as const
-    }
-    const out = { files: [] }
-    aiService.runImageRequest.mockResolvedValue(out)
-
-    const result = await aiHandlers['ai.image.generate']({ requestId: 'r1', payload }, ctx)
-
-    expect(aiService.runImageRequest).toHaveBeenCalledWith('r1', payload)
-    expect(result).toBe(out)
-  })
-
-  it('abort_image delegates to AiService.abortImage and resolves void', async () => {
-    const result = await aiHandlers['ai.image.abort']({ requestId: 'r1' }, ctx)
-    expect(aiService.abortImage).toHaveBeenCalledWith('r1')
-    expect(result).toBeUndefined()
-  })
-
   it('list_models forwards the request and returns the models', async () => {
     const models = [{ id: 'openai::gpt-4o' }]
     aiService.listModels.mockResolvedValue(models)

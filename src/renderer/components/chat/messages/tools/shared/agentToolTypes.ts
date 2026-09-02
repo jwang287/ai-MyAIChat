@@ -42,8 +42,6 @@ import type {
   TodoWriteOutput,
   WebFetchInput,
   WebFetchOutput,
-  WebSearchInput,
-  WebSearchOutput,
   WorkflowInput,
   WorkflowOutput
 } from '@anthropic-ai/claude-agent-sdk/sdk-tools'
@@ -63,7 +61,6 @@ export const AgentToolsType = {
   Search: 'Search',
   Glob: 'Glob',
   TodoWrite: 'TodoWrite',
-  WebSearch: 'WebSearch',
   Grep: 'Grep',
   Write: 'Write',
   WebFetch: 'WebFetch',
@@ -130,9 +127,6 @@ export type GlobToolOutput = GlobOutput | string
 export type TodoItem = Omit<TodoWriteInput['todos'][number], 'activeForm'> & { activeForm?: string }
 export type TodoWriteToolInput = { todos: TodoItem[] }
 export type TodoWriteToolOutput = TodoWriteOutput | string | TextOutput[]
-
-export type WebSearchToolInput = WebSearchInput
-export type WebSearchToolOutput = WebSearchOutput | string
 
 export type WebFetchToolInput = WebFetchInput
 export type WebFetchToolOutput = WebFetchOutput | string
@@ -294,7 +288,6 @@ export type ToolInput =
   | SearchToolInput
   | GlobToolInput
   | TodoWriteToolInput
-  | WebSearchToolInput
   | GrepToolInput
   | WriteToolInput
   | WebFetchToolInput
@@ -327,7 +320,6 @@ export type ToolOutput =
   | BashToolOutput
   | GlobToolOutput
   | TodoWriteToolOutput
-  | WebSearchToolOutput
   | GrepToolOutput
   | WriteToolOutput
   | WebFetchToolOutput
@@ -362,7 +354,6 @@ export interface ToolInputMap {
   [AgentToolsType.Search]: SearchToolInput
   [AgentToolsType.Glob]: GlobToolInput
   [AgentToolsType.TodoWrite]: TodoWriteToolInput
-  [AgentToolsType.WebSearch]: WebSearchToolInput
   [AgentToolsType.Grep]: GrepToolInput
   [AgentToolsType.Write]: WriteToolInput
   [AgentToolsType.WebFetch]: WebFetchToolInput
@@ -398,7 +389,6 @@ export interface ToolOutputMap {
   [AgentToolsType.Search]: SearchToolOutput
   [AgentToolsType.Glob]: GlobToolOutput
   [AgentToolsType.TodoWrite]: TodoWriteToolOutput
-  [AgentToolsType.WebSearch]: WebSearchToolOutput
   [AgentToolsType.Grep]: GrepToolOutput
   [AgentToolsType.Write]: WriteToolOutput
   [AgentToolsType.WebFetch]: WebFetchToolOutput

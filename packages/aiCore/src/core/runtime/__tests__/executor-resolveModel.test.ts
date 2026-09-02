@@ -1,15 +1,14 @@
 /**
  * RuntimeExecutor.resolveModel Comprehensive Tests
- * Tests the private resolveModel and resolveImageModel methods through public APIs
+ * Tests the private resolveModel method through public APIs
  * Covers model resolution, middleware application, and type validation
  */
 
-import type { ImageModelV3, LanguageModelV3 } from '@ai-sdk/provider'
-import { createMockImageModel, createMockLanguageModel, createMockProviderV3, mockProviderConfigs } from '@test-utils'
-import { generateImage, generateText, streamText } from 'ai'
+import type { LanguageModelV3 } from '@ai-sdk/provider'
+import { createMockLanguageModel, createMockProviderV3, mockProviderConfigs } from '@test-utils'
+import { generateText, streamText } from 'ai'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ImageModelResolutionError } from '../errors'
 import { RuntimeExecutor } from '../executor'
 
 // Mock AI SDK
@@ -19,7 +18,6 @@ vi.mock('ai', async (importOriginal) => {
     ...actual,
     generateText: vi.fn(),
     streamText: vi.fn(),
-    generateImage: vi.fn(),
     wrapLanguageModel: vi.fn((config: any) => ({
       ...config.model,
       _middlewareApplied: true,
@@ -31,7 +29,6 @@ vi.mock('ai', async (importOriginal) => {
 describe('RuntimeExecutor - Model Resolution', () => {
   let executor: RuntimeExecutor
   let mockLanguageModel: LanguageModelV3
-  let mockImageModel: ImageModelV3
   let mockProvider: any
 
   beforeEach(() => {
@@ -43,16 +40,9 @@ describe('RuntimeExecutor - Model Resolution', () => {
       modelId: 'gpt-4'
     })
 
-    mockImageModel = createMockImageModel({
-      specificationVersion: 'v3',
-      provider: 'openai',
-      modelId: 'dall-e-3'
-    })
-
     mockProvider = createMockProviderV3({
       provider: 'openai',
-      languageModel: vi.fn(() => mockLanguageModel),
-      imageModel: vi.fn(() => mockImageModel)
+      languageModel: vi.fn(() => mockLanguageModel)
     })
 
     executor = RuntimeExecutor.create('openai', mockProvider, mockProviderConfigs.openai)
@@ -66,14 +56,6 @@ describe('RuntimeExecutor - Model Resolution', () => {
       textStream: (async function* () {
         yield 'test'
       })()
-    } as any)
-    vi.mocked(generateImage).mockResolvedValue({
-      image: {
-        base64: 'test-image',
-        uint8Array: new Uint8Array([1, 2, 3]),
-        mimeType: 'image/png'
-      },
-      warnings: []
     } as any)
   })
 
@@ -173,94 +155,6 @@ describe('RuntimeExecutor - Model Resolution', () => {
           model: directModel
         })
       )
-    })
-  })
-
-  describe('Image Model Resolution', () => {
-    it('should resolve string image modelId through provider', async () => {
-      await executor.generateImage({
-        model: 'dall-e-3',
-        prompt: 'A beautiful sunset'
-      })
-
-      expect(mockProvider.imageModel).toHaveBeenCalledWith('dall-e-3')
-    })
-
-    it('should accept direct ImageModelV3 object', async () => {
-      const directImageModel: ImageModelV3 = createMockImageModel({
-        specificationVersion: 'v3',
-        provider: 'openai',
-        modelId: 'dall-e-3'
-      })
-
-      await executor.generateImage({
-        model: directImageModel,
-        prompt: 'Test image'
-      })
-
-      expect(mockProvider.imageModel).not.toHaveBeenCalled()
-      expect(generateImage).toHaveBeenCalledWith(
-        expect.objectContaining({
-          model: directImageModel
-        })
-      )
-    })
-
-    it('should resolve namespaced image model ID', async () => {
-      await executor.generateImage({
-        model: 'aihubmix|openai|dall-e-3',
-        prompt: 'Namespaced image'
-      })
-
-      expect(mockProvider.imageModel).toHaveBeenCalledWith('aihubmix|openai|dall-e-3')
-    })
-
-    it('should throw ImageModelResolutionError on resolution failure', async () => {
-      mockProvider.imageModel.mockImplementation(() => {
-        throw new Error('Model not found')
-      })
-
-      await expect(
-        executor.generateImage({
-          model: 'invalid-model',
-          prompt: 'Test'
-        })
-      ).rejects.toThrow(ImageModelResolutionError)
-    })
-
-    it('should include modelId and providerId in ImageModelResolutionError', async () => {
-      mockProvider.imageModel.mockImplementation(() => {
-        throw new Error('Not found')
-      })
-
-      try {
-        await executor.generateImage({
-          model: 'invalid-model',
-          prompt: 'Test'
-        })
-        expect.fail('Should have thrown ImageModelResolutionError')
-      } catch (error) {
-        expect(error).toBeInstanceOf(ImageModelResolutionError)
-        const imgError = error as ImageModelResolutionError
-        expect(imgError.message).toContain('invalid-model')
-        expect(imgError.providerId).toBe('openai')
-      }
-    })
-
-    it('should extract modelId from direct model object in error', async () => {
-      const directModel = createMockImageModel({
-        modelId: 'direct-model',
-        doGenerate: vi.fn().mockRejectedValue(new Error('Generation failed'))
-      })
-
-      vi.mocked(generateImage).mockRejectedValue(new Error('Generation failed'))
-
-      await expect(
-        executor.generateImage({
-          model: directModel,
-          prompt: 'Test'
-        })
-      ).rejects.toThrow()
     })
   })
 

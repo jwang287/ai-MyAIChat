@@ -44,11 +44,7 @@ import { buildFilePartsForAttachments, withComposerFilePartMeta } from '@rendere
 import { getComposerShortcutLabel, resolveSendShortcut } from '@renderer/utils/input'
 import type { ComposerAttachment } from '@renderer/utils/message/composerAttachment'
 import { canEditAssistantMessageParts } from '@renderer/utils/message/partsHelpers'
-import {
-  isGPT5SeriesReasoningModel,
-  isOpenAIWebSearchModel,
-  resolveReasoningEffortForModel
-} from '@renderer/utils/model'
+import { resolveReasoningEffortForModel } from '@renderer/utils/model'
 import type { ComposerChatTarget, ComposerQueuedMessagePayload } from '@shared/ai/transport'
 import type { KnowledgeBase } from '@shared/data/types/knowledge'
 import type { CherryMessagePart } from '@shared/data/types/message'
@@ -556,7 +552,6 @@ const ChatComposerInner = ({
   const { railGutterPx } = useChatLayoutMode()
   const { available: topBarPortalAvailable, iconOnly: topBarPortalIconOnly } = useConversationTopBarPortalLayout()
   const composerOverridden = useActiveComposerOverride() !== null
-  const [searching, setSearching] = useCache('chat.web_search.searching')
   const [isMultiSelectMode] = useCache('chat.multi_select_mode')
   const { t } = useTranslation()
   const chatWrite = useChatWrite()
@@ -726,9 +721,6 @@ const ChatComposerInner = ({
         value: nextReasoningEffort ?? 'default',
         version
       })
-      // No web-search reconciliation here: `setModel` already runs `reconcileWebSearchForModel`
-      // with the provider data owned by that operation. Repeating it here would duplicate the
-      // state transition against the composer's presentation-oriented provider list.
       const extraSettings: {
         reasoning_effort?: ReasoningEffortOption
       } = {}
@@ -894,16 +886,6 @@ const ChatComposerInner = ({
   const handleReasoningEffortChange = useCallback(
     (option: ReasoningEffortOption) => {
       if (!selectedAssistantId) return
-      if (
-        option === 'minimal' &&
-        effectiveSubmittedModel &&
-        isOpenAIWebSearchModel(effectiveSubmittedModel) &&
-        isGPT5SeriesReasoningModel(effectiveSubmittedModel) &&
-        assistant?.settings.enableWebSearch
-      ) {
-        toast.warning(t('chat.web_search.warning.openai'))
-        return
-      }
       const version = ++reasoningMutationVersionRef.current
       setReasoningOverride({
         assistantId: selectedAssistantId,
@@ -919,7 +901,7 @@ const ChatComposerInner = ({
           logger.warn('Failed to persist reasoning effort', { error })
         })
     },
-    [assistant?.settings.enableWebSearch, effectiveSubmittedModel, selectedAssistantId, t, updateAssistantSettings]
+    [selectedAssistantId, updateAssistantSettings]
   )
   const handleReasoningSummaryChange = useCallback(
     (summary: ReasoningSummary) => {
@@ -1870,7 +1852,7 @@ const ChatComposerInner = ({
           onTokensChange={handleTokensChange}
           suggestionSources={entityReferenceSources}
           resolveKnowledgeBaseMarker={resolveKnowledgeBaseMarker}
-          placeholder={searching ? t('chat.input.translating') : placeholderText}
+          placeholder={placeholderText}
           sendMessageShortcut={sendMessageShortcut}
           sendDisabled={
             (text.trim().length === 0 && files.length === 0) ||
@@ -1878,7 +1860,6 @@ const ChatComposerInner = ({
             isSavingEdit ||
             isDirectSending ||
             sendDisabled ||
-            searching ||
             runtimeModelPending ||
             hasPendingReference ||
             !!missingAssistantMessage ||
@@ -1940,11 +1921,10 @@ const ChatComposerInner = ({
           quickPanelEnabled={config.enableQuickPanel ?? true}
           enableDragDrop={config.enableDragDrop ?? true}
           enableSpellCheck={enableSpellCheck}
-          editable={!searching && !isDirectSending}
+          editable={!isDirectSending}
           fontSize={fontSize}
           narrowMode={forceNarrowLayout || narrowMode}
           railGutterPx={railGutterPx}
-          onFocus={() => setSearching(false)}
           onActionsChange={handleSurfaceActionsChange}
           isInputHistoryActive={isInputHistoryActive}
           onInputHistoryNavigate={handleInputHistoryNavigate}

@@ -47,17 +47,12 @@ export async function prepareAntigravityLaunch(input: NormalRunInput): Promise<A
   let model = input.model
 
   if (input.gateway) {
-    const {
-      host,
-      port,
-      apiKey: gatewayApiKey
-    } = application.get('PreferenceService').getMultiple({
-      host: 'feature.api_gateway.host',
+    const { port, apiKey: gatewayApiKey } = application.get('PreferenceService').getMultiple({
       port: 'feature.api_gateway.port',
       apiKey: 'feature.api_gateway.api_key'
     })
     apiKey = gatewayApiKey
-    baseUrl = gatewayClientOrigin(host, port)
+    baseUrl = gatewayClientOrigin('127.0.0.1', port)
     // Only this path form is ambiguous about the separator: the route splits on the first
     // one, so a provider id carrying it would address the wrong provider.
     if (input.providerId.includes(ANTIGRAVITY_MODEL_PATH_SEPARATOR)) {

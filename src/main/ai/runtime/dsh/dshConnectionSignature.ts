@@ -80,7 +80,7 @@ export async function captureDshConnectionSnapshot(
     mcpServerSnapshots.set(idOrName, server)
     return server ?? { idOrName }
   })
-  const catalog = application.get('McpCatalogService')
+  const catalog = application.get('McpToolCacheService')
   const mcpTools = mcpServers.flatMap((server) =>
     'id' in server ? [{ serverId: server.id, tools: catalog.listTools(server.id, { includeDisabled: false }) }] : []
   )

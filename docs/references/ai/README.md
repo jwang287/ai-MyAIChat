@@ -51,7 +51,6 @@ renderer-side transport that connects to them.
 
 > **Scope of the focused docs.** The reference documents in this folder map
 > the **chat / stream pipeline** (dispatch → stream manager → runtime →
-> tools → persistence → renderer transport). The `channels/`, `skills/`, and
 > `mcp/` subsystems are mapped in the tree below but do not yet have dedicated
 > deep-dive docs.
 
@@ -66,7 +65,6 @@ src/main/ai/
 ├── agentSession/                 ← agent-session topic host
 │   └── AgentSessionRuntimeService.ts
 ├── agents/                       ← AgentJobsService, AgentTaskJobHandler, runAgentTask, prompt, heartbeat, builtin/
-├── channels/                     ← ChannelManager + IM adapters (discord/feishu/qq/slack/telegram/wechat) + security/
 ├── streamManager/                ← AiStreamManager + listeners + persistence backends
 │   ├── AiStreamManager.ts        ← active-stream registry and dispatch owner
 │   ├── context/                  ← ChatContextProvider implementations + dispatch
@@ -80,7 +78,7 @@ src/main/ai/
 │   ├── endpoint.ts               ← resolveEffectiveEndpoint + adapterFamily routing
 │   ├── extensions.ts             ← ProviderExtension registrations
 │   └── listModels.ts             ← per-provider model listing
-├── mcp/                          ← McpRuntimeService / McpCatalogService, oauth/, built-in servers
+├── mcp/                          ← McpRuntimeService / McpToolCacheService, oauth/, built-in servers
 │   └── servers/                  ← in-memory MCP server implementations (browser, filesystem)
 ├── skills/                       ← SkillService, SkillInstaller
 ├── contextBuild/                 ← context-window policy, compression, persisted tool output
@@ -95,7 +93,7 @@ src/main/ai/
 ├── observability/                ← AI trace adapters (aiSdk / claudeCode), local projection, sinks
 ├── messages/                     ← UI part → AI SDK part conversion
 ├── types/                        ← AppProviderId, merged extension types, request types
-└── utils/                        ← reasoning / model parameters / options / websearch helpers
+└── utils/                        ← reasoning / model parameters / options helpers
 ```
 
 ## How a chat turn flows

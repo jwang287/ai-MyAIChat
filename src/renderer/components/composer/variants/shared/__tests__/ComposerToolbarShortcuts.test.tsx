@@ -103,11 +103,11 @@ const thinkingLauncher = {
   sources: ['popover'],
   active: true
 }
-const webSearchLauncher = {
-  id: 'web-search',
+const testCommandLauncher = {
+  id: 'test-command',
   kind: 'command',
-  label: 'web-search-label',
-  icon: <span data-testid="icon-web-search" />,
+  label: 'test-command-label',
+  icon: <span data-testid="icon-test-command" />,
   sources: ['popover'],
   active: false
 }
@@ -137,7 +137,7 @@ const thinkingManifest = {
 const renderShortcuts = (overrides: Partial<Parameters<typeof ComposerToolbarShortcuts>[0]> = {}) => {
   const props = {
     scope: TopicType.Chat,
-    pinnedIds: ['thinking', 'ghost', 'web-search'],
+    pinnedIds: ['thinking', 'ghost', 'test-command'],
     onPinnedIdsChange: vi.fn(),
     onResetPinnedIds: vi.fn(),
     isDefault: false,
@@ -152,7 +152,7 @@ const renderShortcuts = (overrides: Partial<Parameters<typeof ComposerToolbarSho
 
 describe('ComposerToolbarShortcuts', () => {
   beforeEach(() => {
-    mocks.launchers = [thinkingLauncher, webSearchLauncher, knowledgeLauncher]
+    mocks.launchers = [thinkingLauncher, testCommandLauncher, knowledgeLauncher]
     mocks.manifests = []
     mocks.resolveLaunchers.mockReset()
     mocks.resolveLaunchers.mockImplementation(() => mocks.launchers)
@@ -166,16 +166,16 @@ describe('ComposerToolbarShortcuts', () => {
     renderShortcuts()
 
     const thinkingButton = screen.getByRole('button', { name: 'thinking-label' })
-    const webSearchButton = screen.getByRole('button', { name: 'web-search-label' })
+    const testCommandButton = screen.getByRole('button', { name: 'test-command-label' })
 
-    expect(thinkingButton.compareDocumentPosition(webSearchButton)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(thinkingButton.compareDocumentPosition(testCommandButton)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
     expect(thinkingButton).toHaveAttribute('data-active', 'true')
     // group/panel launchers announce a menu popup and are not toggles.
     expect(thinkingButton).toHaveAttribute('aria-haspopup', 'menu')
     expect(thinkingButton).not.toHaveAttribute('aria-pressed')
     // command launchers are toggles: aria-pressed, no popup.
-    expect(webSearchButton).toHaveAttribute('aria-pressed', 'false')
-    expect(webSearchButton).not.toHaveAttribute('aria-haspopup')
+    expect(testCommandButton).toHaveAttribute('aria-pressed', 'false')
+    expect(testCommandButton).not.toHaveAttribute('aria-haspopup')
     // Unpinned and unknown ids stay off the bar.
     expect(screen.queryByRole('button', { name: 'kb-label' })).not.toBeInTheDocument()
   })
@@ -184,20 +184,20 @@ describe('ComposerToolbarShortcuts', () => {
     mocks.launchers = []
     mocks.manifests = [
       {
-        id: 'web-search',
+        id: 'test-command',
         kind: 'command',
         order: 30,
-        label: 'web-search-label',
-        icon: <span data-testid="icon-web-search-fallback" />
+        label: 'test-command-label',
+        icon: <span data-testid="icon-test-command-fallback" />
       }
     ]
 
-    renderShortcuts({ pinnedIds: ['web-search'] })
+    renderShortcuts({ pinnedIds: ['test-command'] })
 
-    const webSearchButton = screen.getByRole('button', { name: 'web-search-label' })
-    expect(webSearchButton).toBeDisabled()
-    expect(webSearchButton).not.toHaveAttribute('aria-pressed')
-    expect(within(webSearchButton).getByTestId('icon-web-search-fallback')).toBeInTheDocument()
+    const testCommandButton = screen.getByRole('button', { name: 'test-command-label' })
+    expect(testCommandButton).toBeDisabled()
+    expect(testCommandButton).not.toHaveAttribute('aria-pressed')
+    expect(within(testCommandButton).getByTestId('icon-test-command-fallback')).toBeInTheDocument()
   })
 
   it('routes every shortcut click to the shared model-required toast when no model is available', () => {
@@ -340,22 +340,22 @@ describe('ComposerToolbarShortcuts', () => {
       searchText: 'thinking-label'
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'web-search-label' }))
-    expect(mocks.dispatchLauncher).toHaveBeenCalledWith(webSearchLauncher, {
+    fireEvent.click(screen.getByRole('button', { name: 'test-command-label' }))
+    expect(mocks.dispatchLauncher).toHaveBeenCalledWith(testCommandLauncher, {
       source: 'popover',
       inputAdapter: props.inputAdapter
     })
   })
 
   it('disables panel-kind launchers when the unified panel is unavailable and honors launcher disabled', () => {
-    mocks.launchers = [thinkingLauncher, { ...webSearchLauncher, disabled: true }]
+    mocks.launchers = [thinkingLauncher, { ...testCommandLauncher, disabled: true }]
     renderShortcuts({
-      pinnedIds: ['thinking', 'web-search'],
+      pinnedIds: ['thinking', 'test-command'],
       unifiedPanelControl: { available: false, open: vi.fn() }
     })
 
     expect(screen.getByRole('button', { name: 'thinking-label' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'web-search-label' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'test-command-label' })).toBeDisabled()
   })
 
   it('runs custom tools through their own onSelect', () => {
@@ -383,10 +383,10 @@ describe('ComposerToolbarShortcuts', () => {
     expect(unpinnedSwitch).not.toBeChecked()
 
     fireEvent.click(pinnedSwitch)
-    expect(props.onPinnedIdsChange).toHaveBeenCalledWith(['ghost', 'web-search'])
+    expect(props.onPinnedIdsChange).toHaveBeenCalledWith(['ghost', 'test-command'])
 
     fireEvent.click(unpinnedSwitch)
-    expect(props.onPinnedIdsChange).toHaveBeenCalledWith(['thinking', 'ghost', 'web-search', 'knowledge-base'])
+    expect(props.onPinnedIdsChange).toHaveBeenCalledWith(['thinking', 'ghost', 'test-command', 'knowledge-base'])
   })
 
   it('treats non-panel custom actions like ordinary configurable toolbar tools', () => {
@@ -475,19 +475,19 @@ describe('ComposerToolbarShortcuts', () => {
     expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual([
       'thinking',
       'ghost',
-      'web-search',
+      'test-command',
       'knowledge-base'
     ])
     expect(mocks.reorderableProps.visibleItems.map((row: any) => row.id)).toEqual([
       'thinking',
-      'web-search',
+      'test-command',
       'knowledge-base'
     ])
 
     act(() => {
       mocks.reorderableProps.onReorder([...mocks.reorderableProps.items].reverse())
     })
-    expect(props.onPinnedIdsChange).toHaveBeenCalledWith(['web-search', 'ghost', 'thinking'])
+    expect(props.onPinnedIdsChange).toHaveBeenCalledWith(['test-command', 'ghost', 'thinking'])
   })
 
   it('retains a reordered unpinned row without rewriting the pinned preference', () => {
@@ -508,7 +508,7 @@ describe('ComposerToolbarShortcuts', () => {
       'thinking',
       'ghost',
       'knowledge-base',
-      'web-search'
+      'test-command'
     ])
   })
 
@@ -527,7 +527,7 @@ describe('ComposerToolbarShortcuts', () => {
   it('drops the local drag order before restoring defaults and toggling another tool', () => {
     const { rerender, props } = renderShortcuts({
       customizeOpen: true,
-      pinnedIds: ['thinking', 'web-search']
+      pinnedIds: ['thinking', 'test-command']
     })
 
     act(() => {
@@ -537,19 +537,19 @@ describe('ComposerToolbarShortcuts', () => {
         mocks.reorderableProps.items[0]
       ])
     })
-    expect(props.onPinnedIdsChange).toHaveBeenLastCalledWith(['web-search', 'thinking'])
+    expect(props.onPinnedIdsChange).toHaveBeenLastCalledWith(['test-command', 'thinking'])
 
     fireEvent.click(screen.getByRole('button', { name: 'chat.input.toolbar.restore_default' }))
-    rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['thinking', 'web-search']} isDefault />)
+    rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['thinking', 'test-command']} isDefault />)
 
     fireEvent.click(within(screen.getByTestId('popover-content')).getByLabelText('kb-label'))
-    expect(props.onPinnedIdsChange).toHaveBeenLastCalledWith(['thinking', 'web-search', 'knowledge-base'])
+    expect(props.onPinnedIdsChange).toHaveBeenLastCalledWith(['thinking', 'test-command', 'knowledge-base'])
   })
 
   it('rebuilds the customize order after an external pinned preference update', () => {
     const { rerender, props } = renderShortcuts({
       customizeOpen: true,
-      pinnedIds: ['thinking', 'web-search']
+      pinnedIds: ['thinking', 'test-command']
     })
 
     act(() => {
@@ -559,19 +559,27 @@ describe('ComposerToolbarShortcuts', () => {
         mocks.reorderableProps.items[0]
       ])
     })
-    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual(['web-search', 'knowledge-base', 'thinking'])
+    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual([
+      'test-command',
+      'knowledge-base',
+      'thinking'
+    ])
 
     mocks.committedCustomizeOrders = []
     rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['knowledge-base', 'thinking']} />)
 
-    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual(['knowledge-base', 'thinking', 'web-search'])
-    expect(mocks.committedCustomizeOrders).toEqual([['knowledge-base', 'thinking', 'web-search']])
+    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual([
+      'knowledge-base',
+      'thinking',
+      'test-command'
+    ])
+    expect(mocks.committedCustomizeOrders).toEqual([['knowledge-base', 'thinking', 'test-command']])
   })
 
   it('rebuilds the customize order after an optimistic preference rollback', () => {
     const { rerender, props } = renderShortcuts({
       customizeOpen: true,
-      pinnedIds: ['thinking', 'web-search']
+      pinnedIds: ['thinking', 'test-command']
     })
 
     act(() => {
@@ -582,11 +590,19 @@ describe('ComposerToolbarShortcuts', () => {
       ])
     })
 
-    rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['web-search', 'thinking']} />)
-    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual(['web-search', 'knowledge-base', 'thinking'])
+    rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['test-command', 'thinking']} />)
+    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual([
+      'test-command',
+      'knowledge-base',
+      'thinking'
+    ])
 
-    rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['thinking', 'web-search']} />)
-    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual(['thinking', 'web-search', 'knowledge-base'])
+    rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['thinking', 'test-command']} />)
+    expect(mocks.reorderableProps.items.map((row: any) => row.id)).toEqual([
+      'thinking',
+      'test-command',
+      'knowledge-base'
+    ])
   })
 
   it('names the customize dialog via aria-labelledby referencing the visible title', () => {
@@ -600,28 +616,30 @@ describe('ComposerToolbarShortcuts', () => {
   })
 
   it('keeps a launchers tooltip on the pinned button, falling back disabledReason -> tooltip -> label', () => {
-    // attachment stays clickable but carries a hint (e.g. "image not supported"); web-search has no tooltip.
-    mocks.launchers = [{ ...attachmentLauncher, tooltip: 'attachment-hint' }, webSearchLauncher]
-    renderShortcuts({ pinnedIds: ['attachment', 'web-search'] })
+    // attachment stays clickable but carries a hint (e.g. "image not supported"); commands fall back to their label.
+    mocks.launchers = [{ ...attachmentLauncher, tooltip: 'attachment-hint' }, testCommandLauncher]
+    renderShortcuts({ pinnedIds: ['attachment', 'test-command'] })
 
     expect(screen.getByRole('button', { name: 'attachment-label' }).closest('[data-tooltip]')).toHaveAttribute(
       'data-tooltip',
       'attachment-hint'
     )
     // No tooltip -> falls back to the label.
-    expect(screen.getByRole('button', { name: 'web-search-label' }).closest('[data-tooltip]')).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'test-command-label' }).closest('[data-tooltip]')).toHaveAttribute(
       'data-tooltip',
-      'web-search-label'
+      'test-command-label'
     )
   })
 
   it('shows a disabled launchers disabledReason ahead of its tooltip', () => {
-    mocks.launchers = [{ ...webSearchLauncher, disabled: true, disabledReason: 'ws-disabled', tooltip: 'ws-hint' }]
-    renderShortcuts({ pinnedIds: ['web-search'] })
+    mocks.launchers = [
+      { ...testCommandLauncher, disabled: true, disabledReason: 'command-disabled', tooltip: 'command-hint' }
+    ]
+    renderShortcuts({ pinnedIds: ['test-command'] })
 
-    expect(screen.getByRole('button', { name: 'web-search-label' }).closest('[data-tooltip]')).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'test-command-label' }).closest('[data-tooltip]')).toHaveAttribute(
       'data-tooltip',
-      'ws-disabled'
+      'command-disabled'
     )
   })
 
@@ -629,22 +647,22 @@ describe('ComposerToolbarShortcuts', () => {
     const onPinnedIdsChange = vi.fn()
     const { rerender, props } = renderShortcuts({
       customizeOpen: true,
-      pinnedIds: ['thinking', 'web-search'],
+      pinnedIds: ['thinking', 'test-command'],
       onPinnedIdsChange
     })
 
-    // Unpin web-search from the pinned list.
-    const webSearchSwitch = within(screen.getByTestId('popover-content')).getByLabelText('web-search-label')
-    webSearchSwitch.focus()
-    fireEvent.click(webSearchSwitch)
+    // Unpin the command from the pinned list.
+    const testCommandSwitch = within(screen.getByTestId('popover-content')).getByLabelText('test-command-label')
+    testCommandSwitch.focus()
+    fireEvent.click(testCommandSwitch)
     expect(onPinnedIdsChange).toHaveBeenCalledWith(['thinking'])
 
     // Parent applies the new pinned list; the unified row stays mounted and keeps focus.
     rerender(<ComposerToolbarShortcuts {...props} pinnedIds={['thinking']} />)
 
-    const movedSwitch = document.querySelector('[data-tool-toggle-id="web-search"]')
+    const movedSwitch = document.querySelector('[data-tool-toggle-id="test-command"]')
     expect(movedSwitch).not.toBeNull()
-    expect(movedSwitch).toBe(webSearchSwitch)
+    expect(movedSwitch).toBe(testCommandSwitch)
     expect(document.activeElement).toBe(movedSwitch)
   })
 })

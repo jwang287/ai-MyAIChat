@@ -46,7 +46,6 @@ vi.mock('react-i18next', () => ({
         'agent.settings.toolsMcp.mcp.tab': 'MCP',
         'selection.name': '划词助手',
         'settings.appearance.title': '外观',
-        'settings.channels.title': '频道',
         'settings.dependencies.title': '环境依赖',
         'settings.dependencies.localModels.title': '本地模型',
         'settings.general.common.title': zhCN['settings.general.common.title'],
@@ -136,7 +135,7 @@ describe('SettingsPage', () => {
     expect(screen.getByText('效率')).toBeInTheDocument()
     expect(screen.queryByText('快捷入口')).not.toBeInTheDocument()
 
-    const efficiencyItems = ['频道', '定时任务', '快捷键', '快捷助手', '划词助手', '截图'].map((name) =>
+    const efficiencyItems = ['定时任务', '快捷键', '快捷助手', '划词助手', '截图'].map((name) =>
       screen.getByRole('button', { name })
     )
     const menuItems = screen.getAllByTestId('menu-item')

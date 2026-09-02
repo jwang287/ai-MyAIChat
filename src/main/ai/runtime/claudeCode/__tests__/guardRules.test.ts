@@ -199,7 +199,7 @@ describe('CLAUDE_TOOL_GUARD_RULES', () => {
 
       for (const mode of ['default', 'bypassPermissions'] as const) {
         const decision = await evaluate(
-          makeCtx({ toolName: 'Skill', permissionMode: mode, input: { skill: 'parallel-web-search' } })
+          makeCtx({ toolName: 'Skill', permissionMode: mode, input: { skill: 'parallel-task-search' } })
         )
         expect(decision).toEqual({
           effect: 'deny',
@@ -230,7 +230,7 @@ describe('CLAUDE_TOOL_GUARD_RULES', () => {
           makeCtx({
             toolName: configTool,
             permissionMode: mode,
-            input: { action: 'add_channel' },
+            input: { action: 'rename' },
             interaction: { currentTurn: 'headless', userResponse: 'stream' }
           })
         )
@@ -249,7 +249,7 @@ describe('CLAUDE_TOOL_GUARD_RULES', () => {
         )
       ).resolves.toBeUndefined()
       await expect(
-        evaluate(makeCtx({ toolName: configTool, input: { action: 'add_channel' } }))
+        evaluate(makeCtx({ toolName: configTool, input: { action: 'rename', name: 'Agent' } }))
       ).resolves.toBeUndefined()
     })
   })

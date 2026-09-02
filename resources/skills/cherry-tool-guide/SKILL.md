@@ -59,7 +59,6 @@ parameter names, enums, and required fields. Read it before every call.
 | Recall a past fact, correction, or preference | `mcp__agent-memory__memory` (`search`) before re-asking | [memory.md](references/memory.md) |
 | Save durable knowledge vs. a one-off event | `mcp__agent-memory__memory` (`update` vs. `append`) | [memory.md](references/memory.md) |
 | Schedule a recurring / future task | `mcp__cherry-tools__cron` (Cherry scheduling only) | [autonomy.md](references/autonomy.md) |
-| Proactively message the user or send a file | `mcp__cherry-tools__notify` | [autonomy.md](references/autonomy.md) |
 | Inspect / connect / repair IM channels, rename agent | `mcp__cherry-tools__config` | [autonomy.md](references/autonomy.md) |
 | Find, create, message, or inspect work across Agent Sessions | `mcp__cherry-tools__session_list` / `session_search` / `session_create` / `session_send` / `session_deliveries` | [sessions.md](references/sessions.md) |
 | Generate an image | `mcp__cherry-tools__generate_image` (needs a painting model) | [outputs.md](references/outputs.md) |
@@ -78,7 +77,6 @@ Two different situations, don't confuse them:
   agent). Explain what's missing and what the user can do; don't work around it with
   shell/file tools. The reference for that domain says exactly when it can be absent.
 - **The tool is listed but reports a missing dependency** → e.g.
-  `mcp__cherry-tools__notify` with no connected channel, or
   `mcp__cherry-tools__generate_image` with no painting model. It stays listed and
   returns a note; relay the note and point the user at configuration — don't retry
   blindly or fake success.

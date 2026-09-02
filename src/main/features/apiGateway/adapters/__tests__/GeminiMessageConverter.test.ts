@@ -102,14 +102,14 @@ describe('GeminiMessageConverter.toUIMessages', () => {
     const msgs = converter.toUIMessages(
       request({
         contents: [
-          { role: 'model', parts: [{ functionCall: { id: 'c1', name: 'generate_image', args: {} } }] },
+          { role: 'model', parts: [{ functionCall: { id: 'c1', name: 'mcp__local-tools__render_image', args: {} } }] },
           {
             role: 'user',
             parts: [
               {
                 functionResponse: {
                   id: 'c1',
-                  name: 'generate_image',
+                  name: 'mcp__local-tools__render_image',
                   response: { status: 'done' },
                   parts: [
                     { inlineData: { mimeType: 'image/png', data: 'AAAA' } },
@@ -217,8 +217,8 @@ describe('GeminiMessageConverter.toUIMessages', () => {
           {
             role: 'model',
             parts: [
-              { functionCall: { id: 'c1', name: 'generate_image', args: { prompt: 'first' } } },
-              { functionCall: { id: 'c2', name: 'generate_image', args: { prompt: 'second' } } }
+              { functionCall: { id: 'c1', name: 'mcp__local-tools__render_image', args: { prompt: 'first' } } },
+              { functionCall: { id: 'c2', name: 'mcp__local-tools__render_image', args: { prompt: 'second' } } }
             ]
           },
           {
@@ -227,14 +227,14 @@ describe('GeminiMessageConverter.toUIMessages', () => {
               {
                 functionResponse: {
                   id: 'c2',
-                  name: 'generate_image',
+                  name: 'mcp__local-tools__render_image',
                   parts: [{ inlineData: { mimeType: 'image/png', data: 'BBBB' } }]
                 }
               },
               {
                 functionResponse: {
                   id: 'c1',
-                  name: 'generate_image',
+                  name: 'mcp__local-tools__render_image',
                   parts: [{ inlineData: { mimeType: 'image/png', data: 'AAAA' } }]
                 }
               }

@@ -1,10 +1,10 @@
 import * as z from 'zod'
 
-export type ModelType = 'text' | 'vision' | 'embedding' | 'reasoning' | 'function_calling' | 'web_search' | 'rerank'
+export type ModelType = 'text' | 'vision' | 'embedding' | 'reasoning' | 'function_calling' | 'rerank'
 
 export type ModelTag = Exclude<ModelType, 'text'> | 'free'
 
-// "image-generation" is also openai endpoint, but specifically for image generation.
+// Retained for legacy provider config deserialization.
 export const EndPointTypeSchema = z.enum([
   'openai',
   'openai-response',

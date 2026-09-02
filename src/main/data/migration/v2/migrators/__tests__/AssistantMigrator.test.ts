@@ -400,20 +400,6 @@ describe('AssistantMigrator', () => {
       expect(merged.settings?.temperature).toBe(0.5)
     })
 
-    it('preserves boolean false on primary (explicit user choice)', () => {
-      const primary: OldAssistant = { id: 'default', enableWebSearch: false }
-      const secondary: OldAssistant = { id: 'default', enableWebSearch: true }
-      const merged = mergeOldAssistants(primary, secondary)
-      expect(merged.enableWebSearch).toBe(false)
-    })
-
-    it('falls through to secondary when primary boolean is undefined', () => {
-      const primary: OldAssistant = { id: 'default' }
-      const secondary: OldAssistant = { id: 'default', enableWebSearch: true }
-      const merged = mergeOldAssistants(primary, secondary)
-      expect(merged.enableWebSearch).toBe(true)
-    })
-
     it('shallow-merges settings per-key (first non-empty wins)', () => {
       const primary: OldAssistant = {
         id: 'default',

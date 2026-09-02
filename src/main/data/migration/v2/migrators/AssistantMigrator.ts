@@ -81,7 +81,6 @@ export function mergeOldAssistants(primary: OldAssistant, secondary: OldAssistan
     mcpMode: pickPrimaryThen('mcpMode'),
     mcpServers: pickPrimaryThen('mcpServers'),
     knowledge_bases: pickPrimaryThen('knowledge_bases'),
-    enableWebSearch: pickPrimaryThen('enableWebSearch'),
     tags: pickPrimaryThen('tags')
   }
 }
@@ -102,7 +101,6 @@ const _MERGE_RULES_COVERED = {
   mcpMode: 'pickPrimary',
   mcpServers: 'pickPrimary',
   knowledge_bases: 'pickPrimary',
-  enableWebSearch: 'pickPrimary',
   tags: 'pickPrimary'
 } as const satisfies Record<keyof OldAssistant, 'identity' | 'pickPrimary' | 'shallowMerge'>
 void _MERGE_RULES_COVERED

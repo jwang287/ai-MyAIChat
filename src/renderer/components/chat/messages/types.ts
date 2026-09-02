@@ -75,11 +75,6 @@ export interface MessageMenuExportOptions {
   image: boolean
   markdown: boolean
   markdown_reason: boolean
-  notion: boolean
-  yuque: boolean
-  joplin: boolean
-  obsidian: boolean
-  siyuan: boolean
   docx: boolean
   plain_text: boolean
 }
@@ -94,11 +89,6 @@ export const defaultMessageMenuExportOptions: MessageMenuExportOptions = {
   image: false,
   markdown: false,
   markdown_reason: false,
-  notion: false,
-  yuque: false,
-  joplin: false,
-  obsidian: false,
-  siyuan: false,
   docx: false,
   plain_text: false
 }
@@ -342,13 +332,7 @@ export interface MessageListActions {
   saveImage?: (fileName: string, dataUrl: string) => boolean | Promise<boolean>
   saveToKnowledge?: (message: MessageExportView) => void | Promise<void>
   exportMessageAsMarkdown?: (message: MessageExportView, includeReasoning?: boolean) => void | Promise<void>
-  exportToNotes?: (message: MessageExportView) => void | Promise<void>
   exportToWord?: (markdown: string, title: string) => void | Promise<void>
-  exportToNotion?: (message: MessageExportView) => void | Promise<void>
-  exportToYuque?: (message: MessageExportView) => void | Promise<void>
-  exportToObsidian?: (message: MessageExportView) => void | Promise<void>
-  exportToJoplin?: (message: MessageExportView) => void | Promise<void>
-  exportToSiyuan?: (message: MessageExportView) => void | Promise<void>
   openArtifactFile?: (path: string) => void | Promise<void>
   openDiagnosticReport?: (description?: string) => void
   resolvePath?: (path: string) => string

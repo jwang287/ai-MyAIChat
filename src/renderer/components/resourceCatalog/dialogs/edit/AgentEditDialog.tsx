@@ -110,16 +110,14 @@ const CATEGORY_LABEL_KEYS: Record<ClaudeToolCategory, string> = {
   shell: 'library.config.agent.section.tools.category.shell',
   search: 'library.config.agent.section.tools.category.search',
   context: 'library.config.agent.section.tools.category.context',
-  orchestration: 'library.config.agent.section.tools.category.orchestration',
-  media: 'library.config.agent.section.tools.category.media'
+  orchestration: 'library.config.agent.section.tools.category.orchestration'
 }
 const CATEGORY_LABEL_FALLBACKS: Record<ClaudeToolCategory, string> = {
   file: 'File',
   shell: 'Shell',
   search: 'Search',
   context: 'Context',
-  orchestration: 'Orchestration',
-  media: 'Media'
+  orchestration: 'Orchestration'
 }
 
 function isToolTab(value: string): value is ToolTab {

@@ -109,7 +109,7 @@ interface ClaudeCodeRuntimeRoute extends ClaudeCodeRouteFacts {
   internalRequestToken?: string
 }
 
-/** The gateway is local even when it binds a non-default loopback address such as 127.0.0.2. */
+/** The gateway always binds 127.0.0.1, which must bypass a configured proxy. */
 function gatewayBypassRule(route: Pick<ClaudeCodeRouteFacts, 'branch' | 'baseUrl'>): string | undefined {
   if (route.branch !== 'gateway' || !route.baseUrl) return undefined
 

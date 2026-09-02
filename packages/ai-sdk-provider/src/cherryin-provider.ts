@@ -72,10 +72,7 @@ export interface CherryInProviderSettings {
    * Optional static headers applied to every request.
    */
   headers?: HeadersInput
-  /**
-   * Optional endpoint type to distinguish different endpoint behaviors.
-   * "image-generation" is also openai endpoint, but specifically for image generation.
-   */
+  /** Optional endpoint type to distinguish provider endpoint behaviors. */
   endpointType?:
     | 'openai'
     | 'openai-response'

@@ -139,7 +139,7 @@ A `*Utils` suffix is used only when the file lives outside any `utils/` director
 |---|---|---|
 | Top-level meta docs at repo root | `UPPERCASE.md` | `README.md`, `CLAUDE.md`, `DESIGN.md`, `CONTRIBUTING.md` |
 | Per-directory README | `README.md` (always uppercase) | `src/main/core/paths/README.md` |
-| All other docs (under `docs/`, `packages/*/docs/`, etc.) | `kebab-case.md` | `database-testing.md`, `lan-transfer-protocol.md` |
+| All other docs (under `docs/`, `packages/*/docs/`, etc.) | `kebab-case.md` | `database-testing.md`, `api-gateway-overview.md` |
 
 ### 3.7 JSON / YAML / TOML
 
@@ -258,7 +258,7 @@ Choose number based on what the directory **conceptually contains**, not on whic
 |---|---|---|
 | **Collection bucket** — holds many items of the same kind | **plural** | `services/`, `utils/`, `hooks/`, `components/`, `pages/`, `types/`, `models/`, `shortcuts/`, `agents/` |
 | **Namespace / theme** — represents one subject area, not a collection | **singular** | `config/`, `data/`, `auth/`, `api/`, `ipc/`, `file/` |
-| **Business / domain module** — named action or concept | **singular** (default) | `apiServer/`, `fileProcessing/`, `webSearch/`, `bootConfig/` |
+| **Business / domain module** — named action or concept | **singular** (default) | `apiServer/`, `fileProcessing/`, `modelRouting/`, `bootConfig/` |
 | **Component directory** (dir = component) | follows the **component name** | `Avatar/`, `CodeEditor/` (singular component); `SearchResults/` (component representing a group) |
 
 Decision rule: ask "does this directory hold **many of X**?" — yes → plural; no → singular. When two readings both make sense, pick the one that matches the directory's **default import name** (e.g. `import { ... } from './config'` reads naturally with `config/` singular).

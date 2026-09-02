@@ -36,7 +36,7 @@ export function buildPiMcpToolName(serverName: string, toolName: string): string
 
 /** Warm user-configured MCP catalogs before their in-process bridge takes its initial tool snapshot. */
 export async function warmMcpToolCatalogs(mcpIds: readonly string[]): Promise<void> {
-  const catalog = application.get('McpCatalogService')
+  const catalog = application.get('McpToolCacheService')
   const serverIds = new Set<string>()
   for (const idOrName of mcpIds) {
     const server = mcpServerService.findByIdOrName(idOrName)

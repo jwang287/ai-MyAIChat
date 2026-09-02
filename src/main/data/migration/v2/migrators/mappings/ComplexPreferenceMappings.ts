@@ -23,11 +23,6 @@ import { DefaultPreferences } from '@shared/data/preference/preferenceSchemas'
 import { markV1CustomCss } from '@shared/utils/customCssMigration'
 
 import { type LegacyModelRef, legacyModelToUniqueId } from '../transformers/ModelTransformers'
-import {
-  flattenCompressionConfig,
-  migrateWebSearchProviders,
-  normalizeWebSearchDefaultProvider
-} from '../transformers/PreferenceTransformers'
 import { contextCountToMaxMessages } from './AssistantMappings'
 import { mergeFileProcessingOverrides } from './FileProcessingOverrideMappings'
 import { transformLlmModelIds } from './LlmModelTransforms'
@@ -137,39 +132,6 @@ export const COMPLEX_PREFERENCE_MAPPINGS: ComplexMapping[] = [
     },
     targetKeys: ['chat.context_settings.max_messages'],
     transform: transformDefaultAssistantContextCount
-  },
-
-  // WebSearch default provider normalization
-  {
-    id: 'websearch_default_provider_migrate',
-    description: 'Normalize legacy websearch default provider into the v2 keyword-search default provider key',
-    sources: {
-      defaultProvider: { source: 'redux', category: 'websearch', key: 'defaultProvider' }
-    },
-    targetKeys: ['chat.web_search.default_search_keywords_provider'],
-    transform: normalizeWebSearchDefaultProvider
-  },
-
-  // WebSearch provider overrides migration
-  {
-    id: 'websearch_providers_migrate',
-    description: 'Migrate websearch providers array into provider overrides',
-    sources: {
-      providers: { source: 'redux', category: 'websearch', key: 'providers' }
-    },
-    targetKeys: ['chat.web_search.provider_overrides'],
-    transform: migrateWebSearchProviders
-  },
-
-  // WebSearch compression config flattening
-  {
-    id: 'websearch_compression_flatten',
-    description: 'Flatten websearch compressionConfig object into separate preference keys',
-    sources: {
-      compressionConfig: { source: 'redux', category: 'websearch', key: 'compressionConfig' }
-    },
-    targetKeys: ['chat.web_search.compression.method', 'chat.web_search.compression.cutoff_limit'],
-    transform: flattenCompressionConfig
   },
 
   {

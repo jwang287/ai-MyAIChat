@@ -5,10 +5,8 @@ import type { IpcHandlersFor } from '@shared/ipc/types'
 
 /**
  * MCP request handlers. Delegation spans three services: McpRuntimeService (server
- * lifecycle + queries), McpCatalogService (server.refresh_tools), and McpPackageService
- * (package upload). The former NonEmptyString guards now live in the route schemas. Upload
- * receives the file as an ArrayBuffer (the renderer does `file.arrayBuffer()`);
- * McpPackageService stages it to a temp file and installs it. The server.added /
+ * lifecycle + queries) and McpToolCacheService (server.refresh_tools). The former
+ * NonEmptyString guards now live in the route schemas. The server.added /
  * tool.call_progress / server.log events are emitted by the services, not here.
  */
 export const mcpHandlers: IpcHandlersFor<typeof mcpRequestSchemas> = {
@@ -23,7 +21,7 @@ export const mcpHandlers: IpcHandlersFor<typeof mcpRequestSchemas> = {
     await application.get('McpRuntimeService').stopServer(serverId)
   },
   'mcp.server.refresh_tools': async ({ serverId }) => {
-    await application.get('McpCatalogService').refreshTools(serverId)
+    await application.get('McpToolCacheService').refreshTools(serverId)
   },
   'mcp.server.list_prompts': async ({ serverId }) => application.get('McpRuntimeService').listPrompts(serverId),
   'mcp.server.list_resources': async ({ serverId }) => application.get('McpRuntimeService').listResources(serverId),
@@ -35,20 +33,6 @@ export const mcpHandlers: IpcHandlersFor<typeof mcpRequestSchemas> = {
     application.get('McpRuntimeService').checkMcpConnectivity(serverId),
   'mcp.server.get_version': async ({ serverId }) => application.get('McpRuntimeService').getServerVersion(serverId),
   'mcp.server.get_logs': async ({ serverId }) => application.get('McpRuntimeService').getServerLogs(serverId),
-  'mcp.protocol_install.list_pending': async (_input, { senderId }) =>
-    senderId ? application.get('ProtocolService').listPendingMcpInstallRequests(senderId) : [],
-  'mcp.protocol_install.install': async ({ requestId }, { senderId }) => {
-    if (!senderId) throw new Error('MCP protocol install request not found')
-    return application.get('ProtocolService').installPendingMcpInstallRequest(senderId, requestId)
-  },
-  'mcp.protocol_install.cancel': async ({ requestId }, { senderId }) => {
-    if (senderId) application.get('ProtocolService').cancelPendingMcpInstallRequest(senderId, requestId)
-  },
   // In-flight tool-call control.
-  'mcp.tool.abort_call': async ({ callId, scope }) => application.get('McpRuntimeService').abortTool(callId, scope),
-  // Package upload.
-  'mcp.package.upload_dxt': async ({ buffer, fileName }) =>
-    application.get('McpPackageService').uploadDxt(buffer, fileName),
-  'mcp.package.upload_mcpb': async ({ buffer, fileName }) =>
-    application.get('McpPackageService').uploadMcpb(buffer, fileName)
+  'mcp.tool.abort_call': async ({ callId, scope }) => application.get('McpRuntimeService').abortTool(callId, scope)
 }

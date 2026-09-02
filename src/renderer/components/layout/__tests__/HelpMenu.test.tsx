@@ -10,8 +10,7 @@ const mocks = vi.hoisted(() => ({
   ipcRequest: vi.fn(),
   language: 'en-US',
   openFeedback: vi.fn(),
-  openReleaseNotes: vi.fn(),
-  openSmartMiniApp: vi.fn()
+  openReleaseNotes: vi.fn()
 }))
 
 vi.mock('@cherrystudio/ui', async (importOriginal) => importOriginal<typeof CherryStudioUi>())
@@ -22,10 +21,6 @@ vi.mock('@logger', () => ({
 
 vi.mock('@renderer/hooks/useOpenReleaseNotes', () => ({
   useOpenReleaseNotes: () => mocks.openReleaseNotes
-}))
-
-vi.mock('@renderer/hooks/useMiniAppPopup', () => ({
-  useMiniAppPopup: () => ({ openSmartMiniApp: mocks.openSmartMiniApp })
 }))
 
 vi.mock('@renderer/ipc', () => ({
@@ -111,22 +106,14 @@ describe('HelpMenu', () => {
     ['zh-CN', 'https://docs.cherryai.com.cn/'],
     ['zh-TW', 'https://docs.cherryai.com.cn/'],
     ['en-US', 'https://docs.cherryai.com.cn/docs/en-us']
-  ])('opens the language-specific guide in app content for %s', async (language, expectedUrl) => {
+  ])('opens the language-specific guide externally for %s', async (language, expectedUrl) => {
     mocks.language = language
     render(<HelpMenu layout="full" onFeedbackClick={mocks.openFeedback} />)
     const user = await openMenu()
 
     await user.click(screen.getByRole('button', { name: 'help.guide' }))
 
-    await waitFor(() =>
-      expect(mocks.openSmartMiniApp).toHaveBeenCalledWith(
-        expect.objectContaining({
-          appId: 'cherrystudio-guide',
-          name: 'help.guide',
-          url: expectedUrl
-        })
-      )
-    )
+    await waitFor(() => expect(mocks.ipcRequest).toHaveBeenCalledWith('system.shell.open_website', expectedUrl))
   })
 
   it('requests the feedback dialog from the secondary menu action', async () => {
@@ -150,7 +137,6 @@ describe('HelpMenu', () => {
         'https://github.com/CherryHQ/cherry-studio'
       )
     )
-    expect(mocks.openSmartMiniApp).not.toHaveBeenCalled()
   })
 
   it('supports keyboard activation from the focused first action', async () => {

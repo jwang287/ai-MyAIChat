@@ -214,7 +214,7 @@ describe('DshStreamAdapter', () => {
     const { adapter, chunks } = makeAdapter()
     const results = [{ id: 'dsh-1', url: 'https://a.com/x', title: 'A', content: 'a' }]
     adapter.handleEvent(
-      envelope('tool/call', { turn: 1, step: 1, callId: callId('c1'), name: 'web_search', arguments: '{}' })
+      envelope('tool/call', { turn: 1, step: 1, callId: callId('c1'), name: 'kb_search', arguments: '{}' })
     )
     adapter.handleEvent(
       envelope('tool/result', {
@@ -234,14 +234,14 @@ describe('DshStreamAdapter', () => {
         turn: 1,
         step: 1,
         callId: callId('c1'),
-        name: 'mcp__cherry-tools__web_search',
+        name: 'mcp__cherry-tools__kb_search',
         arguments: '{}'
       })
     )
 
     expect(chunks[0]).toMatchObject({
       providerMetadata: {
-        cherry: { tool: { type: 'mcp', name: 'web_search', serverId: 'cherry-tools', serverName: 'cherry-tools' } }
+        cherry: { tool: { type: 'mcp', name: 'kb_search', serverId: 'cherry-tools', serverName: 'cherry-tools' } }
       }
     })
   })

@@ -144,14 +144,6 @@ export const PRESETS_BINARY_TOOLS: BinaryToolPreset[] = [
     homepage: 'https://cli.github.com'
   },
   {
-    name: 'ntn',
-    displayName: 'Notion CLI',
-    tool: 'npm:ntn',
-    icon: 'simple-icons:notion',
-    repoUrl: 'https://github.com/makenotion/cli',
-    homepage: 'https://ntn.dev'
-  },
-  {
     name: BABELDOC_TOOL_NAME,
     displayName: 'BabelDOC Stream',
     tool: 'pipx:babeldoc-stream',

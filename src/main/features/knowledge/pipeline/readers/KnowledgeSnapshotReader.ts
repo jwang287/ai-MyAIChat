@@ -6,8 +6,7 @@ import { getKnowledgeBaseFilePath } from '../../pathStorage'
 import { stripOkfFrontmatter } from '../sources/okfFrontmatter'
 
 /**
- * Read a url or note item from its captured on-disk snapshot — never the network
- * or the inline content. The indexing job's ensure-snapshot step fetches/writes
+ * Read a URL item from its captured on-disk snapshot. The indexing job fetches/writes
  * the snapshot (and its `relativePath`) before this runs, so a missing
  * `relativePath` here is a contract violation, not a "capture it now" fallback.
  *
@@ -17,13 +16,9 @@ import { stripOkfFrontmatter } from '../sources/okfFrontmatter'
  * file text → canonical `content.text` must be exact, so the stored index can
  * be reconciled against the file by content hash instead of re-embedding.
  *
- * `kind` only labels the contract-violation error (url and note are otherwise
- * byte-identical to read).
+ * `kind` labels the contract-violation error.
  */
-export async function loadSnapshotDocuments(
-  item: KnowledgeItemOf<'url'> | KnowledgeItemOf<'note'>,
-  kind: 'URL' | 'note'
-): Promise<Document[]> {
+export async function loadSnapshotDocuments(item: KnowledgeItemOf<'url'>, kind: 'URL'): Promise<Document[]> {
   if (!item.data.relativePath) {
     throw new Error(`Knowledge ${kind} item ${item.id} has no captured snapshot to read`)
   }

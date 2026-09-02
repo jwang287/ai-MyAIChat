@@ -127,13 +127,12 @@ describe('useConfigMetadata.makeModelFilter (gateway)', () => {
     expect(filter(model('openai', 'gpt-4o'))).toBe(true)
   })
 
-  it('excludes embedding / rerank / image-generation models (the gateway cannot chat-route them)', () => {
+  it('excludes embedding and rerank models (the gateway cannot chat-route them)', () => {
     const { result } = renderHook(() => useConfigMetadata(CodeCli.CLAUDE_CODE, []))
     const filter = result.current.makeModelFilter(CLI_API_GATEWAY_PROVIDER_ID)
 
     expect(filter(model('openai', 'text-embedding-3', [MODEL_CAPABILITY.EMBEDDING]))).toBe(false)
     expect(filter(model('jina', 'reranker', [MODEL_CAPABILITY.RERANK]))).toBe(false)
-    expect(filter(model('openai', 'dall-e-3', [MODEL_CAPABILITY.IMAGE_GENERATION]))).toBe(false)
   })
 
   it('excludes the CherryAI managed default model (not routable through the gateway)', () => {

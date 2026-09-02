@@ -9,23 +9,6 @@ describe('useSidebarFavorites', () => {
     MockUsePreferenceUtils.resetMocks()
   })
 
-  it('should skip removing a mini app that is not favorited', () => {
-    const setFavorites = vi.fn().mockResolvedValue(undefined)
-    MockUsePreferenceUtils.mockPreferenceReturn(
-      'ui.sidebar.favorites',
-      [{ type: 'mini_app', id: 'other-app' }],
-      setFavorites
-    )
-
-    const { result } = renderHook(() => useSidebarFavorites())
-
-    act(() => {
-      result.current.removeMiniApp('missing-app')
-    })
-
-    expect(setFavorites).not.toHaveBeenCalled()
-  })
-
   describe('entity favorites (agents / assistants)', () => {
     it('toggles an agent favorite on and exposes it in agentFavoriteIds', () => {
       const setFavorites = vi.fn().mockResolvedValue(undefined)
@@ -61,8 +44,7 @@ describe('useSidebarFavorites', () => {
     it('segregates agent and assistant favorite ids by type', () => {
       MockUsePreferenceUtils.mockPreferenceReturn('ui.sidebar.favorites', [
         { type: 'agent', id: 'agent-1' },
-        { type: 'assistant', id: 'assistant-1' },
-        { type: 'mini_app', id: 'calculator' }
+        { type: 'assistant', id: 'assistant-1' }
       ])
 
       const { result } = renderHook(() => useSidebarFavorites())

@@ -179,7 +179,7 @@ export class ApiGatewayService extends BaseService implements Activatable {
       logger.warn('Refusing API Gateway restart while a lease is active', error)
       throw error
     }
-    // Re-create the server (e.g. to apply a new host/port) as a stop→start through the same single
+    // Re-create the server (e.g. to apply a new port) as a stop→start through the same single
     // reconciler. A re-bind is not an intent change, so the persisted preference is left alone.
     await this.converge(false)
     // Re-read the intent before re-activating: another window may have persisted a stop while this
@@ -272,12 +272,11 @@ export class ApiGatewayService extends BaseService implements Activatable {
   getCurrentConfig(): ApiGatewayConfig {
     const config = application.get('PreferenceService').getMultiple({
       enabled: 'feature.api_gateway.enabled',
-      host: 'feature.api_gateway.host',
       port: 'feature.api_gateway.port',
       apiKey: 'feature.api_gateway.api_key'
-    }) as ApiGatewayConfig
+    })
 
-    return config
+    return { ...config, host: '127.0.0.1' }
   }
 
   async ensureValidApiKey(): Promise<string> {

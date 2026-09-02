@@ -123,7 +123,6 @@ export interface OldAssistant {
   mcpMode?: string | null
   mcpServers?: OldMcpServer[] | null
   knowledge_bases?: OldKnowledgeBase[] | null
-  enableWebSearch?: boolean | null
   tags?: unknown[] | null
 }
 
@@ -236,7 +235,6 @@ export function transformAssistant(source: OldAssistant): AssistantTransformResu
   const legacySettings: Record<string, unknown> = source.settings ? { ...source.settings } : {}
   // Migrate top-level fields into settings (skip null/undefined)
   if (source.mcpMode != null) legacySettings.mcpMode = source.mcpMode
-  if (source.enableWebSearch != null) legacySettings.enableWebSearch = source.enableWebSearch
 
   // Migrator bypasses AssistantService.create(), so it mirrors the same defaults that the
   // service would supply: '🌟' for emoji, DEFAULT_ASSISTANT_SETTINGS for settings, and the

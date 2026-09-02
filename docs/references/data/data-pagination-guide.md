@@ -33,8 +33,8 @@ offset path (the path generic is constrained via `OffsetPaginatedPath` /
 `CursorPaginatedPath`, both derived from `InferPaginationMode`).
 
 **Choosing offset vs cursor.** Prefer **cursor** for anything that grows without
-bound or is read newest-first while being written to (messages, sessions,
-translate/painting history) — offset's `page * limit` window silently skips or
+bound or is read newest-first while being written to (messages, sessions, and
+translation history) — offset's `page * limit` window silently skips or
 repeats rows when items are inserted between requests. Prefer **offset** when the
 UI shows discrete page controls or needs an exact total (assistants and MCP
 servers). A cursor response may still carry `total` when the UI needs both

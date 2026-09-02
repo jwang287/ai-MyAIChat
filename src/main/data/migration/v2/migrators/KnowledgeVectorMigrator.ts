@@ -5,7 +5,6 @@ import { knowledgeBaseTable, knowledgeItemTable } from '@data/db/schemas/knowled
 import { loggerService } from '@logger'
 import {
   assertSafeKnowledgeRelativePath,
-  buildNoteSnapshotFile,
   buildUrlSnapshotFile,
   collectKnowledgeReservedRelativePaths,
   createKnowledgeIndexStoreAtPath,
@@ -43,11 +42,11 @@ const logger = loggerService.withContext('KnowledgeVectorMigrator')
 // (CHERRY_META_DIR / VECTOR_STORE_FILE / MATERIAL_ROOT_DIR). Runtime opens
 // {knowledgeBaseDir}/{baseId}/.cherry/index.sqlite by the migrated (new) base id, and resolves
 // every material's bytes at {knowledgeBaseDir}/{baseId}/raw/{relativePath}, so the migrator must
-// write the rebuilt store and any materialized url/note snapshot to those same nested paths.
+// write the rebuilt store and any materialized URL snapshot to those same nested paths.
 const KNOWLEDGE_META_DIR = '.cherry'
 const KNOWLEDGE_VECTOR_STORE_FILE = 'index.sqlite'
 const KNOWLEDGE_MATERIAL_ROOT_DIR = 'raw'
-const INDEXABLE_KNOWLEDGE_ITEM_TYPES = new Set<KnowledgeItemType>(['file', 'url', 'note'])
+const INDEXABLE_KNOWLEDGE_ITEM_TYPES = new Set<KnowledgeItemType>(['file', 'url'])
 const SKIP_WARNING_SAMPLE_LIMIT = 3
 // fs.rm options that survive a transient Windows lock (an open index.sqlite handle / AV / indexer)
 // on the index.sqlite family; `recursive` is required for fs.rm to honor the retries.
@@ -188,7 +187,7 @@ function isNestedStringMap(value: unknown): value is Map<string, Map<string, str
 
 /** Narrow a migrated row to the indexable subset the material-field helpers expect. */
 function toMaterialFieldSource(item: MigratedKnowledgeItemForVector): MaterialFieldSource | null {
-  if (item.type !== 'file' && item.type !== 'url' && item.type !== 'note') {
+  if (item.type !== 'file' && item.type !== 'url') {
     return null
   }
   // type/data correlation is guaranteed by the migration that wrote `data` per type;
@@ -877,7 +876,7 @@ export class KnowledgeVectorMigrator extends BaseMigrator {
             fileProcessorId: base.fileProcessorId
           })
           for (const [itemId, materialItem] of materialItemById) {
-            if (materialItem.type !== 'url' && materialItem.type !== 'note') {
+            if (materialItem.type !== 'url') {
               continue
             }
             const rows = reader.loadTextRowsByRowids(rowidsByItemId.get(itemId) ?? [])
@@ -885,10 +884,7 @@ export class KnowledgeVectorMigrator extends BaseMigrator {
             // buildUrlSnapshotFile is the same OKF-frontmatter + slug derivation the runtime's
             // captureUrlSnapshotFile uses, so a migrated url snapshot is byte-identical to a natively
             // captured one (the snapshot reader strips the frontmatter to round-trip the body).
-            const snapshot =
-              materialItem.type === 'url'
-                ? buildUrlSnapshotFile(materialItem.data.url, contentText, this.capturedAt)
-                : buildNoteSnapshotFile(materialItem.data.source, contentText, this.capturedAt)
+            const snapshot = buildUrlSnapshotFile(materialItem.data.url, contentText, this.capturedAt)
             const relativePath =
               materialItem.data.relativePath ??
               reserveImportedFileRelativePath(`${snapshot.slug}.md`, false, reservedPaths)
@@ -1160,7 +1156,7 @@ export class KnowledgeVectorMigrator extends BaseMigrator {
             const contentText = pageContents.join(DOCUMENT_SEPARATOR)
 
             let relativePath: string
-            if (materialItem.type === 'url' || materialItem.type === 'note') {
+            if (materialItem.type === 'url') {
               // prepare() decided this exactly once; reusing it here (rather than re-deriving via
               // reserveImportedFileRelativePath) keeps the store's material row in sync with whatever
               // path validate() and any cross-base uniqueness check already accounted for.
@@ -1171,10 +1167,7 @@ export class KnowledgeVectorMigrator extends BaseMigrator {
                 )
               }
               relativePath = plannedRelativePath
-              const fileText =
-                materialItem.type === 'url'
-                  ? buildUrlSnapshotFile(materialItem.data.url, contentText, this.capturedAt).fileText
-                  : buildNoteSnapshotFile(materialItem.data.source, contentText, this.capturedAt).fileText
+              const fileText = buildUrlSnapshotFile(materialItem.data.url, contentText, this.capturedAt).fileText
               // Materialize the snapshot file NOW, while this item's text is resident (overwriting a
               // previous partial run's copy), instead of buffering every snapshot's fileText until
               // the base finishes — that buffer regrew the base-wide peak this migrator bounds to

@@ -88,10 +88,10 @@ export const agentSessionMessageFileRefTable = sqliteTable(
 )
 
 /**
- * Painting file references.
+ * Historical painting file references.
  *
- * Replaces the old polymorphic `file_ref` rows with `sourceType='painting'`.
- * Deleting a painting or file entry cascades its association rows.
+ * Existing rows remain to protect their files from cleanup after paintings were
+ * removed from the active application.
  */
 export const paintingFileRefTable = sqliteTable(
   'painting_file_ref',
@@ -119,10 +119,8 @@ export const paintingFileRefTable = sqliteTable(
  *
  * Links a FileEntry to a `job` row so the generic job system's persisted
  * inputs are visible to the cleanup anti-join (file-entry-cleanup.md §5.1).
- * Today only the async image-generation job holds refs here (its input images
- * / mask). Deleting the job row (terminal-row pruning) cascades the ref, so
- * the inputs become reclaimable exactly when the job record is gone; deleting
- * the file entry cascades too.
+ * Historical image-generation jobs may hold refs here. Deleting the job row
+ * cascades the ref; deleting the file entry cascades too.
  */
 export const jobFileRefTable = sqliteTable(
   'job_file_ref',

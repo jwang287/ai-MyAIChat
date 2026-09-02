@@ -420,7 +420,6 @@ export class AiSdkSpanAdapter {
         return 'PROVIDER-STREAM'
       case 'ai.toolCall':
         return 'TOOL-CALL'
-      case 'ai.generateImage':
         return 'IMAGE'
       case 'ai.embed':
         return 'EMBEDDING'
@@ -428,9 +427,6 @@ export class AiSdkSpanAdapter {
         // Fallback logic: based on the span name.
         if (name.includes('generateText') || name.includes('streamText')) {
           return 'LLM'
-        }
-        if (name.includes('generateImage')) {
-          return 'IMAGE'
         }
         if (name.includes('embed')) {
           return 'EMBEDDING'

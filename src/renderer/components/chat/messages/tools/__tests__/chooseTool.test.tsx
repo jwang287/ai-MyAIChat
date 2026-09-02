@@ -11,14 +11,8 @@ vi.mock('../meta/MessageMetaTool', () => ({
 vi.mock('../knowledge/MessageKnowledgeSearch', () => ({
   MessageKnowledgeSearchToolTitle: () => <div data-testid="kb-card" />
 }))
-vi.mock('../webSearch/MessageWebSearch', () => ({
-  MessageWebSearchToolTitle: () => <div data-testid="web-card" />
-}))
 vi.mock('../agent/AgentExecutionTimeline', () => ({
   AgentExecutionTimeline: () => <div data-testid="agent-card" />
-}))
-vi.mock('../painting/MessageGenerateImage', () => ({
-  MessageGenerateImageToolTitle: () => <div data-testid="image-card" />
 }))
 // Empty enum → isAgentTool only matches the `mcp__` prefix, not our builtin names.
 vi.mock('../shared/agentToolTypes', () => ({ AgentToolsType: {}, isAskUserQuestionToolName: () => false }))
@@ -44,39 +38,9 @@ describe('chooseTool', () => {
     expect(await testIdOf(chooseTool(resp('kb_manage')))).toBe('agent-card')
   })
 
-  it('routes the web_search wire name to its title card', async () => {
-    expect(await testIdOf(chooseTool(resp('web_search')))).toBe('web-card')
-  })
-
   it('routes cross-session tools to their dedicated agent cards', async () => {
     expect(await testIdOf(chooseTool(resp('session_create')))).toBe('agent-card')
     expect(await testIdOf(chooseTool(resp('session_send')))).toBe('agent-card')
-  })
-
-  it('routes provider-executed web search wire names to the web card', async () => {
-    expect(await testIdOf(chooseTool(resp('web_search', 'provider')))).toBe('web-card')
-    expect(await testIdOf(chooseTool(resp('webSearch', 'provider')))).toBe('web-card')
-  })
-
-  it('routes chat and agent generate_image responses to the image card', async () => {
-    expect(await testIdOf(chooseTool(resp('generate_image')))).toBe('image-card')
-    expect(await testIdOf(chooseTool(resp('generate_image', 'mcp')))).toBe('image-card')
-    expect(await testIdOf(chooseTool(resp('mcp__cherry-tools__generate_image')))).toBe('image-card')
-  })
-
-  it('keeps an AI SDK dynamic generate_image part on the builtin image-card path', async () => {
-    const part = {
-      type: 'dynamic-tool',
-      toolCallId: 'image-call',
-      toolName: 'generate_image',
-      state: 'output-available',
-      input: { prompt: 'a cat' },
-      output: [{ id: 'file-1', name: 'cat.png' }]
-    } as unknown as CherryMessagePart
-
-    const response = buildToolResponseFromPart(part)
-    expect(response?.tool.type).toBe('builtin')
-    expect(await testIdOf(chooseTool(response as NormalToolResponse))).toBe('image-card')
   })
 
   it('routes pi runtime built-ins to the generic agent card', async () => {

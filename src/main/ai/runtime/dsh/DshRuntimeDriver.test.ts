@@ -14,7 +14,7 @@ vi.mock('@data/services/McpServerService', () => ({
 vi.mock('@application', () => ({
   application: {
     get: (name: string) => {
-      if (name === 'McpCatalogService') return { listTools: mocks.listTools }
+      if (name === 'McpToolCacheService') return { listTools: mocks.listTools }
       throw new Error(`unexpected service ${name}`)
     }
   }
@@ -58,16 +58,12 @@ describe('DshRuntimeDriver.listAvailableTools', () => {
     ])
   })
 
-  it('auto-approves safe Cherry tools but keeps sensitive Cherry tools prompt-gated', async () => {
+  it('keeps sensitive Cherry tools prompt-gated', async () => {
     mocks.findByIdOrName.mockReturnValue({ id: 'cherry-id', name: 'cherry-tools' } as McpServer)
-    mocks.listTools.mockReturnValue([
-      { name: 'web_search', description: 'Search the web' } as McpTool,
-      { name: 'kb_manage', description: 'Manage knowledge' } as McpTool
-    ])
+    mocks.listTools.mockReturnValue([{ name: 'kb_manage', description: 'Manage knowledge' } as McpTool])
 
     const tools = await new DshRuntimeDriver().listAvailableTools(['cherry-id'])
 
-    expect(tools.find((tool) => tool.id === 'mcp__cherry-tools__web_search')?.approval).toBe('auto')
     expect(tools.find((tool) => tool.id === 'mcp__cherry-tools__kb_manage')?.approval).toBe('prompt')
   })
 

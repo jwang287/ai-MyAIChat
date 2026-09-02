@@ -173,7 +173,6 @@ export const ScheduledTaskEntitySchema = z.strictObject({
   reuseSession: z.boolean(),
   /** The sticky session bound by the last fire; null until the first fire (or while `reuseSession` is off). */
   reuseSessionId: z.string().nullable(),
-  channelIds: z.array(z.string()).optional(),
   nextRun: z.string().nullable().optional(),
   lastRun: z.string().nullable().optional(),
   /** Live enable/disable flag — pause/resume flips this. */

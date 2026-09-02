@@ -23,8 +23,7 @@ interface SidebarSortableListProps<T> {
 }
 
 /**
- * Renders resolved sidebar entries as one generic sortable list. The caller
- * decides whether the entries are built-in apps, mini apps, or future item types.
+ * Renders resolved sidebar entries as one generic sortable list.
  */
 export function SidebarSortableList<T>({
   items,

@@ -43,8 +43,6 @@ function createAssistant(overrides: Partial<Assistant> = {}): Assistant {
       mcpMode: 'auto',
       maxToolCalls: 20,
       enableMaxToolCalls: true,
-      enableWebSearch: false,
-      enableGenerateImage: false,
       customParameters: []
     },
     modelId: 'openai::gpt-4o',

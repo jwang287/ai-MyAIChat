@@ -25,18 +25,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
-import { ProviderImageEndpointFields } from '../components/ProviderImageEndpointFields'
 import { useProviderModelSync } from '../hooks/useProviderModelSync'
 import ProviderActions from '../primitives/ProviderActions'
 import ProviderSettingsDrawer from '../primitives/ProviderSettingsDrawer'
 import { customHeaderDrawerClasses, drawerClasses, fieldClasses } from '../primitives/ProviderSettingsPrimitives'
-import {
-  findInvalidProviderImageEndpointDraft,
-  mergeProviderImageEndpointDraft,
-  type ProviderImageEndpointDraft,
-  type ProviderImageEndpointDraftField,
-  readProviderImageEndpointDraft
-} from '../utils/providerImageEndpoints'
 
 const logger = loggerService.withContext('ProviderCustomHeaderDrawer')
 
@@ -60,11 +52,6 @@ const ENDPOINT_TYPE_LABEL_KEYS: Partial<Record<EndpointType, string>> = {
   [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: 'settings.provider.more_endpoints.gemini',
   [ENDPOINT_TYPE.OPENAI_RESPONSES]: 'settings.provider.more_endpoints.openai_responses'
 }
-
-const IMAGE_ENDPOINT_TYPES = new Set<EndpointType>([
-  ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION,
-  ENDPOINT_TYPE.OPENAI_IMAGE_EDIT
-])
 
 const DEFAULT_CHAT_ENDPOINT_TYPES = new Set<EndpointType>([
   ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS,
@@ -148,8 +135,8 @@ export function resolveEndpointTypes(
   primary: EndpointType
 ): EndpointType[] {
   const configured = Object.keys(provider?.endpointConfigs ?? {}) as EndpointType[]
-  const others = configured.filter((type) => type !== primary && !IMAGE_ENDPOINT_TYPES.has(type)).sort()
-  return IMAGE_ENDPOINT_TYPES.has(primary) ? others : [primary, ...others]
+  const others = configured.filter((type) => type !== primary).sort()
+  return [primary, ...others]
 }
 
 export interface EndpointDraft {
@@ -220,12 +207,6 @@ export default function ProviderCustomHeaderDrawer({ providerId, open, onClose }
   const [rows, setRows] = useState<HeaderRow[]>([])
   const [endpointDrafts, setEndpointDrafts] = useState<Record<string, EndpointDraft>>({})
   const [defaultChatEndpoint, setDefaultChatEndpoint] = useState<EndpointType>(primaryEndpoint)
-  const [imageEndpointDraft, setImageEndpointDraft] = useState<ProviderImageEndpointDraft>(() =>
-    readProviderImageEndpointDraft(undefined)
-  )
-  const [invalidImageEndpointField, setInvalidImageEndpointField] = useState<ProviderImageEndpointDraftField | null>(
-    null
-  )
   const [visibleEndpointTypes, setVisibleEndpointTypes] = useState<EndpointType[]>([])
   const [addEndpointOpen, setAddEndpointOpen] = useState(false)
   const [headersUiMode, setHeadersUiMode] = useState<HeadersUiMode>('list')
@@ -248,8 +229,6 @@ export default function ProviderCustomHeaderDrawer({ providerId, open, onClose }
     }
     setEndpointDrafts(drafts)
     setDefaultChatEndpoint(primaryEndpoint)
-    setImageEndpointDraft(readProviderImageEndpointDraft(provider?.endpointConfigs))
-    setInvalidImageEndpointField(null)
     setVisibleEndpointTypes(endpointTypes)
     setAddEndpointOpen(false)
     setRows(headersObjectToRows(sourceHeaders))
@@ -302,15 +281,7 @@ export default function ProviderCustomHeaderDrawer({ providerId, open, onClose }
       return
     }
 
-    const invalidImageEndpoint = findInvalidProviderImageEndpointDraft(imageEndpointDraft)
-    if (invalidImageEndpoint) {
-      setInvalidImageEndpointField(invalidImageEndpoint)
-      toast.error(t('settings.provider.api_host_no_valid'))
-      return
-    }
-
-    const textEndpointConfigs = mergeEndpointConfigs(provider.endpointConfigs, endpointDrafts)
-    const nextEndpointConfigs = mergeProviderImageEndpointDraft(textEndpointConfigs, imageEndpointDraft)
+    const nextEndpointConfigs = mergeEndpointConfigs(provider.endpointConfigs, endpointDrafts)
     const previousDefaultBaseUrl = trim(provider.endpointConfigs?.[primaryEndpoint]?.baseUrl ?? '')
     const defaultEndpointChanged = defaultChatEndpoint !== primaryEndpoint
 
@@ -359,7 +330,6 @@ export default function ProviderCustomHeaderDrawer({ providerId, open, onClose }
     defaultChatEndpoint,
     endpointDrafts,
     headersUiMode,
-    imageEndpointDraft,
     jsonDraft,
     onClose,
     primaryEndpoint,
@@ -484,15 +454,6 @@ export default function ProviderCustomHeaderDrawer({ providerId, open, onClose }
             </PopoverContent>
           </Popover>
         )}
-
-        <ProviderImageEndpointFields
-          value={imageEndpointDraft}
-          invalidField={invalidImageEndpointField}
-          onChange={(value) => {
-            setImageEndpointDraft(value)
-            setInvalidImageEndpointField(null)
-          }}
-        />
 
         <div className="space-y-2.5">
           <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">

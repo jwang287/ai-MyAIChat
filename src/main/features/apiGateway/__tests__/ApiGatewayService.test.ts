@@ -19,7 +19,8 @@ const { mockStart, mockStop, mockSetShared, mockGetActiveUsageContext, mockPrefe
     mockPreferenceSet: vi.fn(async () => {}),
     captured: {
       prefHandler: undefined as ((enabled: boolean) => void) | undefined,
-      enabledPreference: false
+      enabledPreference: false,
+      hostPreference: '127.0.0.1'
     }
   })
 )
@@ -39,7 +40,7 @@ vi.mock('@application', async () => {
       get: vi.fn((key: string) => (key.endsWith('api_key') ? 'existing-key' : false)),
       getMultiple: vi.fn(() => ({
         enabled: captured.enabledPreference,
-        host: '127.0.0.1',
+        host: captured.hostPreference,
         port: 23333,
         apiKey: 'existing-key'
       })),
@@ -59,6 +60,7 @@ beforeEach(() => {
   BaseService.resetInstances()
   captured.prefHandler = undefined
   captured.enabledPreference = false
+  captured.hostPreference = '127.0.0.1'
   mockPreferenceSet.mockReset()
   mockPreferenceSet.mockResolvedValue(undefined)
   startResolvers = []
@@ -80,6 +82,12 @@ beforeEach(() => {
 })
 
 describe('ApiGatewayService reconcile', () => {
+  it('uses loopback when a historic host preference requests network exposure', () => {
+    captured.hostPreference = '0.0.0.0'
+
+    expect(new ApiGatewayService().getCurrentConfig().host).toBe('127.0.0.1')
+  })
+
   it('recognizes an internal agent request when the process-local token matches', () => {
     const service = new ApiGatewayService()
     const headers = new Headers(service.getAgentSessionUsageHeaders('session-1'))

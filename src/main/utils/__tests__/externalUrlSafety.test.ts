@@ -17,10 +17,6 @@ describe('isSafeExternalUrl', () => {
     expect(isSafeExternalUrl('mailto:user@example.com')).toBe(true)
   })
 
-  it('allows obsidian:// protocol', () => {
-    expect(isSafeExternalUrl('obsidian://new?file=test&vault=myvault&clipboard')).toBe(true)
-  })
-
   it('allows code-editor file-open deep-links on Unix paths', () => {
     expect(isSafeExternalUrl('vscode://file/C%3A/Users/foo/bar.ts?windowId=_blank')).toBe(true)
     expect(isSafeExternalUrl('vscode-insiders://file/C%3A/Users/foo/bar.ts')).toBe(true)

@@ -49,12 +49,7 @@ import { toolApprovalRegistry } from '@main/ai/toolApproval/ToolApprovalRegistry
 import { type ClaudeToolContext, resolveDisallowedTools } from '@main/ai/tools/adapters/claudeCode/toolConditions'
 import { resolveKnowledgeBaseScope } from '@main/ai/utils/knowledgeScope'
 import { AGENT_RUNTIME_CAPABILITIES } from '@shared/ai/agentRuntimeCapabilities'
-import {
-  KB_READ_TOOL_NAME,
-  KB_SEARCH_TOOL_NAME,
-  WEB_FETCH_TOOL_NAME,
-  WEB_SEARCH_TOOL_NAME
-} from '@shared/ai/builtinTools'
+import { KB_READ_TOOL_NAME, KB_SEARCH_TOOL_NAME } from '@shared/ai/builtinTools'
 import { claudeToolRequiresUserInteraction } from '@shared/ai/claudecode/toolRegistry'
 import type { AgentEntity } from '@shared/data/api/schemas/agents'
 import type { AgentSessionEntity } from '@shared/data/api/schemas/agentSessions'
@@ -77,7 +72,7 @@ import {
   HEADLESS_INTERACTIVE_TOOL_DENIAL
 } from './guardRules'
 import { buildClaudeCodeHooks, surfaceExitPlanModeInput } from './hooks'
-import { buildMcpServers, buildMcpToolMetadata, warmAgentMcpToolCaches } from './mcpCatalog'
+import { buildMcpServers, buildMcpToolMetadata, warmAgentMcpToolCaches } from './mcpToolCache'
 import { buildPluginDirectoryIndex } from './skillDependencies'
 import { decisionToPermissionResult } from './ToolApprovalRegistry'
 import type { ClaudeCodeSettings, McpToolDisplayMetadata } from './types'
@@ -354,7 +349,7 @@ export const assertClaudeCodeWorkspaceDirectory = assertAgentSessionWorkspaceDir
 // Historical import paths for consumers inside the claudeCode boundary; implementations moved to
 // their responsibility modules.
 export { getClaudeCodeLoginShellEnvironment, resolveClaudeExecutablePath } from './environment'
-export { buildMcpServers } from './mcpCatalog'
+export { buildMcpServers } from './mcpToolCache'
 
 /**
  * Compute the SDK `Options.skills` whitelist for a session.
@@ -444,7 +439,7 @@ async function buildToolPermissions(
   const toolPolicySnapshot = await sessionState().ensureToolPolicySnapshot(session.id, agent, {
     // cherry-tools is injected for every session. Auto-allowing these explicit tools (no per-call
     // approval) is a deliberate decision (matches feat/chat-page): the READ tools have no side
-    // effects in the main process — web_search/web_fetch read the network,
+    // effects in the main process — network-reading tools,
     // kb_search/kb_read/kb_list read the user's knowledge bases, report_artifacts only records a
     // declaration. The autonomy tools (cron/notify/config) also stay auto-approved — they were
     // blanket-allowed as the standalone `cherry` server before the merge. Keep this an explicit
@@ -592,7 +587,6 @@ export async function buildSystemPrompt(
   const unavailableTools = new Set(disallowedTools)
   const isLookupEnabled = (toolName: string) => !unavailableTools.has(toCherryBuiltinRuntimeName(toolName))
   const citationsGuidance = buildCitationsGuidance({
-    web: isLookupEnabled(WEB_SEARCH_TOOL_NAME) || isLookupEnabled(WEB_FETCH_TOOL_NAME),
     kb:
       (canReadAllKnowledgeBases || knowledgeBaseIds.length > 0) &&
       (isLookupEnabled(KB_SEARCH_TOOL_NAME) || isLookupEnabled(KB_READ_TOOL_NAME))

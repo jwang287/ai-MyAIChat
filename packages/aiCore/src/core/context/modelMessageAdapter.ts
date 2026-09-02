@@ -114,7 +114,7 @@ export function fromModelMessages(messages: ModelMessage[]): ModelMessageIR[] {
       if (typeof msg.content === 'string') {
         textParts.push(msg.content)
       } else {
-        // Provider-executed tools (web search, code exec) carry their tool-result
+        // Provider-executed tools (for example, code execution) carry their tool-result
         // INLINE in the same assistant message. Such calls are self-answered and
         // must not appear as open IR tool_calls — otherwise ensureValidHistory
         // injects a spurious placeholder, duplicating the inline result on

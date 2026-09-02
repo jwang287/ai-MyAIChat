@@ -1,6 +1,6 @@
 /**
  * Auto-generated preference mappings from classification.json
- * Generated at: 2026-09-01T16:49:43.016Z
+ * Generated at: 2026-09-02T12:29:18.063Z
  *
  * This file contains pure mapping relationships without default values.
  * Default values are managed in src/shared/data/preferences.ts
@@ -271,42 +271,6 @@ export const REDUX_STORE_MAPPINGS = {
       targetKey: 'data.backup.general.skip_backup_file'
     },
     {
-      originalKey: 'webdavHost',
-      targetKey: 'data.backup.webdav.host'
-    },
-    {
-      originalKey: 'webdavUser',
-      targetKey: 'data.backup.webdav.user'
-    },
-    {
-      originalKey: 'webdavPass',
-      targetKey: 'data.backup.webdav.pass'
-    },
-    {
-      originalKey: 'webdavPath',
-      targetKey: 'data.backup.webdav.path'
-    },
-    {
-      originalKey: 'webdavAutoSync',
-      targetKey: 'data.backup.webdav.auto_sync'
-    },
-    {
-      originalKey: 'webdavSyncInterval',
-      targetKey: 'data.backup.webdav.sync_interval'
-    },
-    {
-      originalKey: 'webdavMaxBackups',
-      targetKey: 'data.backup.webdav.max_backups'
-    },
-    {
-      originalKey: 'webdavSkipBackupFile',
-      targetKey: 'data.backup.webdav.skip_backup_file'
-    },
-    {
-      originalKey: 'webdavDisableStream',
-      targetKey: 'data.backup.webdav.disable_stream'
-    },
-    {
       originalKey: 'translateModelPrompt',
       targetKey: 'feature.translate.model_prompt'
     },
@@ -347,18 +311,6 @@ export const REDUX_STORE_MAPPINGS = {
       targetKey: 'feature.quick_assistant.read_clipboard_at_startup'
     },
     {
-      originalKey: 'notionDatabaseID',
-      targetKey: 'data.integration.notion.database_id'
-    },
-    {
-      originalKey: 'notionApiKey',
-      targetKey: 'data.integration.notion.api_key'
-    },
-    {
-      originalKey: 'notionPageNameKey',
-      targetKey: 'data.integration.notion.page_name_key'
-    },
-    {
       originalKey: 'markdownExportPath',
       targetKey: 'data.export.markdown.path'
     },
@@ -383,72 +335,12 @@ export const REDUX_STORE_MAPPINGS = {
       targetKey: 'chat.message.thought.auto_collapse'
     },
     {
-      originalKey: 'notionExportReasoning',
-      targetKey: 'data.integration.notion.export_reasoning'
-    },
-    {
       originalKey: 'excludeCitationsInExport',
       targetKey: 'data.export.markdown.exclude_citations'
     },
     {
       originalKey: 'standardizeCitationsInExport',
       targetKey: 'data.export.markdown.standardize_citations'
-    },
-    {
-      originalKey: 'yuqueToken',
-      targetKey: 'data.integration.yuque.token'
-    },
-    {
-      originalKey: 'yuqueUrl',
-      targetKey: 'data.integration.yuque.url'
-    },
-    {
-      originalKey: 'yuqueRepoId',
-      targetKey: 'data.integration.yuque.repo_id'
-    },
-    {
-      originalKey: 'joplinToken',
-      targetKey: 'data.integration.joplin.token'
-    },
-    {
-      originalKey: 'joplinUrl',
-      targetKey: 'data.integration.joplin.url'
-    },
-    {
-      originalKey: 'joplinExportReasoning',
-      targetKey: 'data.integration.joplin.export_reasoning'
-    },
-    {
-      originalKey: 'defaultObsidianVault',
-      targetKey: 'data.integration.obsidian.default_vault'
-    },
-    {
-      originalKey: 'siyuanApiUrl',
-      targetKey: 'data.integration.siyuan.api_url'
-    },
-    {
-      originalKey: 'siyuanToken',
-      targetKey: 'data.integration.siyuan.token'
-    },
-    {
-      originalKey: 'siyuanBoxId',
-      targetKey: 'data.integration.siyuan.box_id'
-    },
-    {
-      originalKey: 'siyuanRootPath',
-      targetKey: 'data.integration.siyuan.root_path'
-    },
-    {
-      originalKey: 'maxKeepAliveMinapps',
-      targetKey: 'feature.mini_app.max_keep_alive'
-    },
-    {
-      originalKey: 'minappsOpenLinkExternal',
-      targetKey: 'feature.mini_app.open_link_external'
-    },
-    {
-      originalKey: 'minAppRegion',
-      targetKey: 'feature.mini_app.region'
     },
     {
       originalKey: 'privacyPolicyVersion',
@@ -477,26 +369,6 @@ export const REDUX_STORE_MAPPINGS = {
     {
       originalKey: 'exportMenuOptions.markdown_reason',
       targetKey: 'data.export.menus.markdown_reason'
-    },
-    {
-      originalKey: 'exportMenuOptions.notion',
-      targetKey: 'data.export.menus.notion'
-    },
-    {
-      originalKey: 'exportMenuOptions.yuque',
-      targetKey: 'data.export.menus.yuque'
-    },
-    {
-      originalKey: 'exportMenuOptions.joplin',
-      targetKey: 'data.export.menus.joplin'
-    },
-    {
-      originalKey: 'exportMenuOptions.obsidian',
-      targetKey: 'data.export.menus.obsidian'
-    },
-    {
-      originalKey: 'exportMenuOptions.siyuan',
-      targetKey: 'data.export.menus.siyuan'
     },
     {
       originalKey: 'exportMenuOptions.docx',
@@ -537,50 +409,6 @@ export const REDUX_STORE_MAPPINGS = {
     {
       originalKey: 'localBackupSkipBackupFile',
       targetKey: 'data.backup.local.skip_backup_file'
-    },
-    {
-      originalKey: 'defaultPaintingProvider',
-      targetKey: 'feature.paintings.default_provider'
-    },
-    {
-      originalKey: 's3.endpoint',
-      targetKey: 'data.backup.s3.endpoint'
-    },
-    {
-      originalKey: 's3.region',
-      targetKey: 'data.backup.s3.region'
-    },
-    {
-      originalKey: 's3.bucket',
-      targetKey: 'data.backup.s3.bucket'
-    },
-    {
-      originalKey: 's3.accessKeyId',
-      targetKey: 'data.backup.s3.access_key_id'
-    },
-    {
-      originalKey: 's3.secretAccessKey',
-      targetKey: 'data.backup.s3.secret_access_key'
-    },
-    {
-      originalKey: 's3.root',
-      targetKey: 'data.backup.s3.root'
-    },
-    {
-      originalKey: 's3.autoSync',
-      targetKey: 'data.backup.s3.auto_sync'
-    },
-    {
-      originalKey: 's3.syncInterval',
-      targetKey: 'data.backup.s3.sync_interval'
-    },
-    {
-      originalKey: 's3.maxBackups',
-      targetKey: 'data.backup.s3.max_backups'
-    },
-    {
-      originalKey: 's3.skipBackupFile',
-      targetKey: 'data.backup.s3.skip_backup_file'
     },
     {
       originalKey: 'navbarPosition',
@@ -659,32 +487,6 @@ export const REDUX_STORE_MAPPINGS = {
       targetKey: 'feature.quick_assistant.assistant_id'
     }
   ],
-  nutstore: [
-    {
-      originalKey: 'nutstoreToken',
-      targetKey: 'data.backup.nutstore.token'
-    },
-    {
-      originalKey: 'nutstorePath',
-      targetKey: 'data.backup.nutstore.path'
-    },
-    {
-      originalKey: 'nutstoreAutoSync',
-      targetKey: 'data.backup.nutstore.auto_sync'
-    },
-    {
-      originalKey: 'nutstoreSyncInterval',
-      targetKey: 'data.backup.nutstore.sync_interval'
-    },
-    {
-      originalKey: 'nutstoreSkipBackupFile',
-      targetKey: 'data.backup.nutstore.skip_backup_file'
-    },
-    {
-      originalKey: 'nutstoreMaxBackups',
-      targetKey: 'data.backup.nutstore.max_backups'
-    }
-  ],
   preprocess: [
     {
       originalKey: 'defaultProvider',
@@ -697,62 +499,10 @@ export const REDUX_STORE_MAPPINGS = {
       targetKey: 'feature.translate.page.auto_copy'
     }
   ],
-  websearch: [
-    {
-      originalKey: 'maxResults',
-      targetKey: 'chat.web_search.max_results'
-    },
-    {
-      originalKey: 'excludeDomains',
-      targetKey: 'chat.web_search.exclude_domains'
-    }
-  ],
   ocr: [
     {
       originalKey: 'imageProviderId',
       targetKey: 'feature.file_processing.default_image_to_text'
-    }
-  ],
-  note: [
-    {
-      originalKey: 'settings.isFullWidth',
-      targetKey: 'feature.notes.full_width'
-    },
-    {
-      originalKey: 'settings.fontFamily',
-      targetKey: 'feature.notes.font_family'
-    },
-    {
-      originalKey: 'settings.fontSize',
-      targetKey: 'feature.notes.font_size'
-    },
-    {
-      originalKey: 'settings.showTableOfContents',
-      targetKey: 'feature.notes.show_table_of_contents'
-    },
-    {
-      originalKey: 'settings.defaultViewMode',
-      targetKey: 'feature.notes.default_view_mode'
-    },
-    {
-      originalKey: 'settings.defaultEditMode',
-      targetKey: 'feature.notes.default_edit_mode'
-    },
-    {
-      originalKey: 'settings.showTabStatus',
-      targetKey: 'feature.notes.show_tab_status'
-    },
-    {
-      originalKey: 'settings.showWorkspace',
-      targetKey: 'feature.notes.show_workspace'
-    },
-    {
-      originalKey: 'notesPath',
-      targetKey: 'feature.notes.path'
-    },
-    {
-      originalKey: 'sortType',
-      targetKey: 'feature.notes.sort_type'
     }
   ]
 } as const
@@ -807,11 +557,11 @@ export const LOCALSTORAGE_MAPPINGS: ReadonlyArray<{ originalKey: string; targetK
 /**
  * 映射统计:
  * - ElectronStore项: 2
- * - Redux Store项: 176
- * - Redux分类: settings, selectionStore, llm, nutstore, preprocess, translate, websearch, ocr, note
+ * - Redux Store项: 115
+ * - Redux分类: settings, selectionStore, llm, preprocess, translate, ocr
  * - DexieSettings项: 5
  * - localStorage项: 0
- * - 总配置项: 183
+ * - 总配置项: 122
  *
  * 使用说明:
  * 1. ElectronStore读取: configManager.get(mapping.originalKey)

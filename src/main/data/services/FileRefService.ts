@@ -2,7 +2,7 @@
  * FileRefService — cross-source read facade.
  *
  * Persistent business refs are owned by their source domains and stored in
- * FK-constrained association tables (`chat_message_file_ref`, `painting_file_ref`,
+ * FK-constrained association tables (`chat_message_file_ref`, historic `painting_file_ref`,
  * `job_file_ref`, …). This service does not create, copy, or replace those
  * persistent relationships; source services/migrators write their own tables. It
  * only aggregates a unified FileRef projection across sources, because File
@@ -49,7 +49,7 @@ export interface FileRefService {
   /** All refs pointing at a given file_entry. */
   findByEntryId(fileEntryId: FileEntryId): FileRef[]
 
-  /** All refs owned by a business source (chat message, painting, job, translate history, logo). */
+  /** All refs owned by a business source, including historical painting rows. */
   findBySource(source: FileRefSourceKey): FileRef[]
 
   /** Ref-count aggregation for a batch of entry ids. */

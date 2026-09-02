@@ -23,11 +23,11 @@ describe('useComposerToolbarPinnedTools', () => {
 
   it('exposes the preference value and persists updates', async () => {
     const setPreference = vi.fn().mockResolvedValue(undefined)
-    MockUsePreferenceUtils.mockPreferenceReturn('chat.input.toolbar.pinned_tools', ['web-search'], setPreference)
+    MockUsePreferenceUtils.mockPreferenceReturn('chat.input.toolbar.pinned_tools', ['test-command'], setPreference)
 
     const { result } = renderHook(() => useComposerToolbarPinnedTools('chat.input.toolbar.pinned_tools'))
 
-    expect(result.current.pinnedIds).toEqual(['web-search'])
+    expect(result.current.pinnedIds).toEqual(['test-command'])
 
     act(() => {
       result.current.setPinnedIds([])
@@ -38,7 +38,7 @@ describe('useComposerToolbarPinnedTools', () => {
 
   it('resets to the preference default and reports whether the list is already default', () => {
     const setPreference = vi.fn().mockResolvedValue(undefined)
-    // getDefaultValue includes the persistent new-conversation action first.
+    // getDefaultValue includes the persistent new-conversation action.
     MockUsePreferenceUtils.mockPreferenceReturn('chat.input.toolbar.pinned_tools', [], setPreference)
 
     const { result } = renderHook(() => useComposerToolbarPinnedTools('chat.input.toolbar.pinned_tools'))
@@ -48,14 +48,11 @@ describe('useComposerToolbarPinnedTools', () => {
     act(() => {
       result.current.resetPinnedIds()
     })
-    expect(setPreference).toHaveBeenCalledWith(['composer:new-conversation', 'web-search'])
+    expect(setPreference).toHaveBeenCalledWith(['composer:new-conversation'])
   })
 
   it('reports isDefault when the pinned list equals the default', () => {
-    MockUsePreferenceUtils.mockPreferenceReturn('chat.input.toolbar.pinned_tools', [
-      'composer:new-conversation',
-      'web-search'
-    ])
+    MockUsePreferenceUtils.mockPreferenceReturn('chat.input.toolbar.pinned_tools', ['composer:new-conversation'])
 
     const { result } = renderHook(() => useComposerToolbarPinnedTools('chat.input.toolbar.pinned_tools'))
 

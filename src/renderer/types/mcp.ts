@@ -1,4 +1,3 @@
-import { McpConfigSampleSchema } from '@shared/data/types/mcpServer'
 import { isBuiltinMcpServerName } from '@shared/utils/mcp'
 import * as z from 'zod'
 
@@ -127,30 +126,10 @@ export const McpServerConfigSchema = z
       }, z.number().optional())
       .describe('Timeout in seconds for requests to this server'),
     /**
-     * DXT包版本号
-     * 可选。用于标识DXT包的版本。
-     */
-    dxtVersion: z.string().optional().describe('Version of the DXT package'),
-    /**
-     * DXT包解压路径
-     * 可选。指定DXT包解压后的存放路径。
-     */
-    dxtPath: z.string().optional().describe('Path where the DXT package was extracted'),
-    /**
      * 参考链接
      * 可选。服务器的文档或主页链接。
      */
     reference: z.string().optional().describe('Reference link for the server'),
-    /**
-     * 搜索关键字
-     * 可选。用于服务器搜索的关键字。
-     */
-    searchKey: z.string().optional().describe('Search key for the server'),
-    /**
-     * 配置示例
-     * 可选。服务器配置的示例。
-     */
-    configSample: McpConfigSampleSchema.optional().describe('Configuration sample for the server'),
     /**
      * 禁用的工具列表
      * 可选。用于指定该服务器上禁用的工具。

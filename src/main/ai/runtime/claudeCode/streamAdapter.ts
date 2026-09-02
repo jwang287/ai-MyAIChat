@@ -800,7 +800,6 @@ export class ClaudeCodeStreamAdapter {
         this.handleToolUseBlockStart(block, event.index, sdkParentToolUseId, ctx)
         return
       case 'mcp_tool_result':
-      case 'web_search_tool_result':
       case 'web_fetch_tool_result':
       case 'code_execution_tool_result':
       case 'bash_code_execution_tool_result':
@@ -1653,7 +1652,6 @@ export class ClaudeCodeStreamAdapter {
       switch (block.type) {
         case 'tool_result':
         case 'mcp_tool_result':
-        case 'web_search_tool_result':
         case 'web_fetch_tool_result':
         case 'code_execution_tool_result':
         case 'bash_code_execution_tool_result':
@@ -1845,8 +1843,6 @@ export class ClaudeCodeStreamAdapter {
     switch (type) {
       case 'mcp_tool_result':
         return 'mcp_tool'
-      case 'web_search_tool_result':
-        return 'web_search'
       case 'web_fetch_tool_result':
         return 'web_fetch'
       case 'code_execution_tool_result':

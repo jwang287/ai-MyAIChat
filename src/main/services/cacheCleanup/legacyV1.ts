@@ -82,7 +82,6 @@ function getCleanupPaths() {
     migrationTemp: application.getPath('app.userdata', 'migration_temp'),
     legacyAgents: application.getPath('app.userdata.data', 'agents.db'),
     rootLegacyAgents: application.getPath('app.userdata', 'agents.db'),
-    customMiniApps: application.getPath('feature.files.data', 'custom-minapps.json'),
     rootLegacyMemory: application.getPath('app.userdata', 'memories.db')
   }
 }
@@ -399,7 +398,6 @@ async function collectLegacyCleanupPlan(): Promise<LegacyCleanupPlan> {
         kind: 'file'
       })
     ),
-    { item: 'legacy_custom_mini_apps', path: paths.customMiniApps, kind: 'file' },
     { item: 'legacy_migration_temp', path: paths.migrationTemp, kind: 'directory' },
     { item: 'legacy_cli_install', path: paths.legacyCliInstall, kind: 'directory' },
     { item: 'legacy_database', path: paths.legacyDatabase, kind: 'file' },

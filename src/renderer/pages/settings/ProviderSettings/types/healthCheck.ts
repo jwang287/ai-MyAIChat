@@ -39,7 +39,7 @@ export type ApiKeyWithStatus = ApiKeyConnectivity & {
   credential: ModelCheckCredential
 }
 
-export type ModelHealthCheckGenerationOutput = 'image' | 'video' | 'audio'
+export type ModelHealthCheckGenerationOutput = 'video' | 'audio'
 
 export type ModelHealthCheckSkipReason =
   | {

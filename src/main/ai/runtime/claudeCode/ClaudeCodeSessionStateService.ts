@@ -21,7 +21,7 @@ import { toolApprovalRegistry } from '@main/ai/toolApproval/ToolApprovalRegistry
 import { createClaudeAgentToolPolicySnapshot } from '@main/ai/tools/adapters/claudeCode/agentTools'
 import { BaseService, Injectable, Phase, ServicePhase } from '@main/core/lifecycle'
 
-import { buildMcpToolMetadata } from './mcpCatalog'
+import { buildMcpToolMetadata } from './mcpToolCache'
 import type { McpToolDisplayMetadata, SteerHolder, ToolApprovalEmitterHolder } from './types'
 
 const logger = loggerService.withContext('ClaudeCodeSessionStateService')
@@ -141,7 +141,7 @@ export class ClaudeCodeSessionStateService extends BaseService {
       metadata,
       refreshSequence: 0
     }
-    state.subscription = application.get('McpCatalogService').onToolsCacheUpdated(({ serverId }) => {
+    state.subscription = application.get('McpToolCacheService').onToolsCacheUpdated(({ serverId }) => {
       if (!state.serverIds.has(serverId)) return
       void this.refreshMcpSessionCatalogState(sessionId).catch((error) => {
         logger.warn('Failed to refresh live MCP session catalog', { sessionId, serverId, error })

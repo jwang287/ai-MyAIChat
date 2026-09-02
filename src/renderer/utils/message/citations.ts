@@ -2,13 +2,12 @@
  * Citation registry — resolves a message's inline citations directly from its
  * own parts, with no persisted reference metadata:
  *
- * - `tool-web_search` / `tool-web_fetch` / `tool-kb_search` / `tool-kb_read`
- *   results (assistant runtime), including the same tools called through
+ * - `tool-kb_search` / `tool-kb_read` results, including the same tools called through
  *   `tool_invoke` (deferred)
  *   or the `cherry-tools` in-process MCP server (agent runtime, `dynamic-tool`
  *   parts). Result ids ("3f2a1b9c-2") are minted per lookup call in the main
  *   process (`citationIds.ts`) and echoed back by the model as `[cite:id]`.
- * - `source-url` parts from provider-native web search, keyed by their
+ * - `source-url` parts from provider-native citations, keyed by their
  *   provider-assigned numbers so plain `[N]` markers resolve.
  *
  * This lives in `utils/` rather than beside the chat blocks because the markers
@@ -22,8 +21,8 @@
  * prefers that path whenever reference metadata is present.
  */
 
+import { CITATION_SOURCE } from '@renderer/types/citationProvider'
 import type { Citation } from '@renderer/types/message'
-import { WEB_SEARCH_SOURCE } from '@renderer/types/webSearchProvider'
 import {
   CITATION_MARKER_PATTERN,
   mapCitationMarksToTags,
@@ -37,10 +36,7 @@ import {
   KB_SEARCH_TOOL_NAME,
   kbGrepOutputSchema,
   kbReadOutputSchema,
-  kbSearchOutputSchema,
-  WEB_FETCH_TOOL_NAME,
-  WEB_SEARCH_TOOL_NAME,
-  webSearchOutputSchema
+  kbSearchOutputSchema
 } from '@shared/ai/builtinTools'
 import { PI_TOOL_CALL_TOOL_NAME } from '@shared/ai/piBuiltinTools'
 import { parseFunctionCallToolName } from '@shared/ai/tools/mcpToolName'
@@ -68,12 +64,7 @@ export interface MessageCitations {
 
 const EMPTY_MESSAGE_CITATIONS: MessageCitations = { byId: new Map(), byMarkerNumber: new Map(), all: [] }
 
-const CITABLE_TOOL_NAMES: ReadonlySet<string> = new Set([
-  WEB_SEARCH_TOOL_NAME,
-  WEB_FETCH_TOOL_NAME,
-  KB_SEARCH_TOOL_NAME,
-  KB_READ_TOOL_NAME
-])
+const CITABLE_TOOL_NAMES: ReadonlySet<string> = new Set([KB_SEARCH_TOOL_NAME, KB_READ_TOOL_NAME])
 const CHERRY_TOOLS_MCP_SERVER = 'cherry-tools'
 const TOOL_INVOKE_TOOL_NAME = 'tool_invoke'
 
@@ -100,7 +91,6 @@ function sourceIdToNumber(sourceId: unknown): number | undefined {
   return Number.isFinite(value) && value >= 0 ? value + 1 : undefined
 }
 
-/** `mcp__cherry-tools__web_search` → `web_search`; null for any other server or tool. */
 function citableCherryToolName(wireName: string): string | null {
   const parsed = parseFunctionCallToolName(wireName)
   if (!parsed || parsed.serverPart !== CHERRY_TOOLS_MCP_SERVER) return null
@@ -109,7 +99,7 @@ function citableCherryToolName(wireName: string): string | null {
 
 /**
  * The builtin lookup tool a part's completed output belongs to, across all
- * four wire shapes (static AI-SDK part, tool_invoke wrapper, cherry-tools
+ * supported wire shapes (static AI-SDK part, tool_invoke wrapper, cherry-tools
  * MCP dynamic-tool, pi's tool_call wrapper). Third-party MCP tools that happen
  * to share a name are deliberately excluded.
  */
@@ -297,35 +287,6 @@ export function resolveMessageCitations(parts: readonly CherryMessagePart[]): Me
       addKnowledgeCitation(item)
       continue
     }
-
-    const parsed = webSearchOutputSchema.safeParse(output)
-    if (!parsed.success || parsed.data.length === 0) continue
-    lookupCallCount += 1
-    for (const item of parsed.data) {
-      const key = String(item.id)
-      if (byId.has(key)) continue
-      const existing = item.url ? byUrl.get(item.url) : undefined
-      if (existing) {
-        // Same URL surfaced by another call — alias this id to the first citation.
-        byId.set(key, existing)
-        continue
-      }
-      const citation: Citation = {
-        number: nextNumber++,
-        url: item.url,
-        title: item.title || toHostOrUrl(item.url),
-        content: item.content,
-        showFavicon: true,
-        type: 'websearch'
-      }
-      byId.set(key, citation)
-      if (item.url) byUrl.set(item.url, citation)
-      all.push(citation)
-      const markerNumber = markerNumberOfId(item.id)
-      if (markerNumber !== undefined && !toolMarkerCandidates.has(markerNumber)) {
-        toolMarkerCandidates.set(markerNumber, citation)
-      }
-    }
   }
 
   if (lookupCallCount === 1) {
@@ -398,7 +359,7 @@ function canonicalizeMarkers(content: string): string {
 function normalizeMarkerContent(content: string, markerNumberMap: Map<number, Citation>): string {
   const canonical = canonicalizeMarkers(content)
   return markerNumberMap.size > 0
-    ? normalizeCitationMarks(canonical, markerNumberMap, WEB_SEARCH_SOURCE.AISDK)
+    ? normalizeCitationMarks(canonical, markerNumberMap, CITATION_SOURCE.AISDK)
     : canonical
 }
 

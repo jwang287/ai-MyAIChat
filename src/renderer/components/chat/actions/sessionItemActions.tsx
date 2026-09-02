@@ -11,7 +11,6 @@ import {
   ExternalLink,
   FileText,
   Image,
-  NotebookPen,
   PanelLeft,
   PinIcon,
   PinOffIcon,
@@ -19,19 +18,7 @@ import {
   UploadIcon
 } from 'lucide-react'
 
-export type SessionExportMenuOptions = Record<
-  | 'docx'
-  | 'image'
-  | 'joplin'
-  | 'markdown'
-  | 'markdown_reason'
-  | 'notion'
-  | 'obsidian'
-  | 'plain_text'
-  | 'siyuan'
-  | 'yuque',
-  boolean
->
+export type SessionExportMenuOptions = Record<'docx' | 'image' | 'markdown' | 'markdown_reason' | 'plain_text', boolean>
 
 export interface SessionActionContext {
   exportMenuOptions?: Partial<SessionExportMenuOptions>
@@ -43,18 +30,12 @@ export interface SessionActionContext {
   onCopyPlainText?: () => void | Promise<void>
   onDelete: () => void
   onExportImage?: () => void | Promise<void>
-  onExportJoplin?: () => void | Promise<void>
   onExportMarkdown?: () => void | Promise<void>
   onExportMarkdownReason?: () => void | Promise<void>
-  onExportNotion?: () => void | Promise<void>
-  onExportObsidian?: () => void | Promise<void>
-  onExportSiyuan?: () => void | Promise<void>
   onExportWord?: () => void | Promise<void>
-  onExportYuque?: () => void | Promise<void>
   onOpenInNewTab?: () => void
   onOpenInNewWindow?: () => void
   onSaveToKnowledge?: () => void | Promise<void>
-  onSaveToNotes?: () => void | Promise<void>
   onSetPanePosition?: (position: TopicTabPosition) => void | Promise<void>
   onTogglePin?: () => void
   panePosition?: TopicTabPosition
@@ -69,24 +50,14 @@ const sessionActionRegistry = createActionRegistry<SessionActionContext>()
 const hasExportOption = ({
   exportMenuOptions,
   onExportImage,
-  onExportJoplin,
   onExportMarkdown,
   onExportMarkdownReason,
-  onExportNotion,
-  onExportObsidian,
-  onExportSiyuan,
-  onExportWord,
-  onExportYuque
+  onExportWord
 }: SessionActionContext) =>
   (exportMenuOptions?.image && !!onExportImage) ||
   (exportMenuOptions?.markdown && !!onExportMarkdown) ||
   (exportMenuOptions?.markdown_reason && !!onExportMarkdownReason) ||
-  (exportMenuOptions?.docx && !!onExportWord) ||
-  (exportMenuOptions?.notion && !!onExportNotion) ||
-  (exportMenuOptions?.yuque && !!onExportYuque) ||
-  (exportMenuOptions?.obsidian && !!onExportObsidian) ||
-  (exportMenuOptions?.joplin && !!onExportJoplin) ||
-  (exportMenuOptions?.siyuan && !!onExportSiyuan)
+  (exportMenuOptions?.docx && !!onExportWord)
 
 const hasCopyOption = ({ exportMenuOptions, onCopyImage, onCopyMarkdown, onCopyPlainText }: SessionActionContext) =>
   !!onCopyMarkdown ||
@@ -133,15 +104,6 @@ sessionActionRegistry.registerCommand({
 })
 
 sessionActionRegistry.registerCommand({
-  id: 'session.save-notes',
-  availability: ({ onSaveToNotes }) => ({
-    visible: !!onSaveToNotes,
-    enabled: !!onSaveToNotes
-  }),
-  run: ({ onSaveToNotes }) => onSaveToNotes?.()
-})
-
-sessionActionRegistry.registerCommand({
   id: 'session.save-knowledge',
   availability: ({ onSaveToKnowledge }) => ({ visible: !!onSaveToKnowledge, enabled: !!onSaveToKnowledge }),
   run: ({ onSaveToKnowledge }) => onSaveToKnowledge?.()
@@ -181,51 +143,6 @@ sessionActionRegistry.registerCommand({
     enabled: !!exportMenuOptions?.docx && !!onExportWord
   }),
   run: ({ onExportWord }) => onExportWord?.()
-})
-
-sessionActionRegistry.registerCommand({
-  id: 'session.export.notion',
-  availability: ({ exportMenuOptions, onExportNotion }) => ({
-    visible: !!exportMenuOptions?.notion && !!onExportNotion,
-    enabled: !!exportMenuOptions?.notion && !!onExportNotion
-  }),
-  run: ({ onExportNotion }) => onExportNotion?.()
-})
-
-sessionActionRegistry.registerCommand({
-  id: 'session.export.yuque',
-  availability: ({ exportMenuOptions, onExportYuque }) => ({
-    visible: !!exportMenuOptions?.yuque && !!onExportYuque,
-    enabled: !!exportMenuOptions?.yuque && !!onExportYuque
-  }),
-  run: ({ onExportYuque }) => onExportYuque?.()
-})
-
-sessionActionRegistry.registerCommand({
-  id: 'session.export.obsidian',
-  availability: ({ exportMenuOptions, onExportObsidian }) => ({
-    visible: !!exportMenuOptions?.obsidian && !!onExportObsidian,
-    enabled: !!exportMenuOptions?.obsidian && !!onExportObsidian
-  }),
-  run: ({ onExportObsidian }) => onExportObsidian?.()
-})
-
-sessionActionRegistry.registerCommand({
-  id: 'session.export.joplin',
-  availability: ({ exportMenuOptions, onExportJoplin }) => ({
-    visible: !!exportMenuOptions?.joplin && !!onExportJoplin,
-    enabled: !!exportMenuOptions?.joplin && !!onExportJoplin
-  }),
-  run: ({ onExportJoplin }) => onExportJoplin?.()
-})
-
-sessionActionRegistry.registerCommand({
-  id: 'session.export.siyuan',
-  availability: ({ exportMenuOptions, onExportSiyuan }) => ({
-    visible: !!exportMenuOptions?.siyuan && !!onExportSiyuan,
-    enabled: !!exportMenuOptions?.siyuan && !!onExportSiyuan
-  }),
-  run: ({ onExportSiyuan }) => onExportSiyuan?.()
 })
 
 sessionActionRegistry.registerCommand({
@@ -346,22 +263,12 @@ sessionActionRegistry.registerAction({
 })
 
 sessionActionRegistry.registerAction({
-  id: 'session.save-notes',
-  commandId: 'session.save-notes',
-  label: ({ t }) => t('notes.save'),
-  icon: () => <NotebookPen size={14} />,
-  group: 'share',
-  order: 50,
-  surface: 'menu'
-})
-
-sessionActionRegistry.registerAction({
   id: 'session.save-knowledge',
   commandId: 'session.save-knowledge',
   label: ({ t }) => t('chat.save.topic.knowledge.menu_title'),
   icon: () => <Database size={14} />,
   group: 'share',
-  order: 60,
+  order: 50,
   surface: 'menu'
 })
 
@@ -400,41 +307,6 @@ sessionActionRegistry.registerAction({
       commandId: 'session.export.word',
       label: ({ t }) => t('chat.topics.export.word'),
       order: 40,
-      surface: 'menu'
-    },
-    {
-      id: 'session.export.notion',
-      commandId: 'session.export.notion',
-      label: ({ t }) => t('chat.topics.export.notion'),
-      order: 50,
-      surface: 'menu'
-    },
-    {
-      id: 'session.export.yuque',
-      commandId: 'session.export.yuque',
-      label: ({ t }) => t('chat.topics.export.yuque'),
-      order: 60,
-      surface: 'menu'
-    },
-    {
-      id: 'session.export.obsidian',
-      commandId: 'session.export.obsidian',
-      label: ({ t }) => t('chat.topics.export.obsidian'),
-      order: 70,
-      surface: 'menu'
-    },
-    {
-      id: 'session.export.joplin',
-      commandId: 'session.export.joplin',
-      label: ({ t }) => t('chat.topics.export.joplin'),
-      order: 80,
-      surface: 'menu'
-    },
-    {
-      id: 'session.export.siyuan',
-      commandId: 'session.export.siyuan',
-      label: ({ t }) => t('chat.topics.export.siyuan'),
-      order: 90,
       surface: 'menu'
     }
   ]

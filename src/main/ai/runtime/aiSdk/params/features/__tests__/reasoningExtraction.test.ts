@@ -4,7 +4,7 @@ import type { LanguageModelMiddleware } from 'ai'
 import { wrapLanguageModel } from 'ai'
 import { describe, expect, it } from 'vitest'
 
-import { createOllamaWithImageModel } from '../../../../../provider/custom/ollama/ollamaProvider'
+import { createOllamaProvider } from '../../../../../provider/custom/ollama/ollamaProvider'
 import { reasoningExtractionFeature } from '../reasoningExtraction'
 
 const PROMPT: LanguageModelV3CallOptions['prompt'] = [
@@ -49,7 +49,7 @@ async function streamOllama(chunks: string[]): Promise<LanguageModelV3StreamPart
         headers: { 'content-type': 'application/x-ndjson' }
       })
     )
-  const baseModel = createOllamaWithImageModel({ baseURL: 'https://ollama.example/api', fetch }).languageModel(
+  const baseModel = createOllamaProvider({ baseURL: 'https://ollama.example/api', fetch }).languageModel(
     'qwen3.6:27b-mtp-q8_0'
   )
   const middlewares = await getOllamaReasoningMiddleware()

@@ -62,29 +62,11 @@ describe('custom provider creation', () => {
     )
   })
 
-  it('includes independent image generation and editing URLs', () => {
-    const payload = buildCustomProviderCreationPayload({
-      endpointUrls: {
-        [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: 'https://api.example.com',
-        [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: ' https://images.example.com ',
-        [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT]: ' https://edits.example.com '
-      }
-    })
-
-    expect(payload.endpointConfigs).toEqual({
-      [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: { baseUrl: 'https://api.example.com' },
-      [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: { baseUrl: 'https://images.example.com' },
-      [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT]: { baseUrl: 'https://edits.example.com' }
-    })
-  })
-
   it.each([
     [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS, 'https://api.example.com/v1/chat/completions'],
     [ENDPOINT_TYPE.OPENAI_RESPONSES, 'https://api.example.com/v1/responses'],
     [ENDPOINT_TYPE.ANTHROPIC_MESSAGES, 'https://api.example.com/v1/messages'],
-    [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT, 'https://api.example.com/v1/models/{model}:generateContent'],
-    [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION, 'https://api.example.com/v1/images/generations'],
-    [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT, 'https://api.example.com/v1/images/edits']
+    [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT, 'https://api.example.com/v1/models/{model}:generateContent']
   ] as const)('builds the %s request path preview', (endpointType, expectedPreview) => {
     expect(buildCustomProviderEndpointPreview('https://api.example.com/v1/', endpointType)).toBe(expectedPreview)
   })
@@ -95,32 +77,22 @@ describe('custom provider creation', () => {
     ).toBe('https://api.example.com/custom/v2/chat/completions')
   })
 
-  it('requires at least one text endpoint even when an image endpoint is configured', () => {
-    expect(
-      findInvalidCustomProviderCreationUrl({
-        endpointUrls: {
-          [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: 'https://images.example.com'
-        }
-      })
-    ).toEqual({ field: 'textEndpointRequired' })
-  })
-
   it('identifies the invalid endpoint URL and suppresses its preview', () => {
     const input = {
       endpointUrls: {
         [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]: 'https://api.example.com',
-        [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT]: 'ftp://edits.example.com'
+        [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: 'ftp://messages.example.com'
       }
     }
 
     expect(findInvalidCustomProviderCreationUrl(input)).toEqual({
       field: 'endpointUrl',
-      endpointType: ENDPOINT_TYPE.OPENAI_IMAGE_EDIT
+      endpointType: ENDPOINT_TYPE.ANTHROPIC_MESSAGES
     })
     expect(
       buildCustomProviderEndpointPreview(
-        input.endpointUrls[ENDPOINT_TYPE.OPENAI_IMAGE_EDIT],
-        ENDPOINT_TYPE.OPENAI_IMAGE_EDIT
+        input.endpointUrls[ENDPOINT_TYPE.ANTHROPIC_MESSAGES],
+        ENDPOINT_TYPE.ANTHROPIC_MESSAGES
       )
     ).toBe('')
   })
@@ -129,11 +101,11 @@ describe('custom provider creation', () => {
     expect(findInvalidCustomProviderEndpointUrl({})).toBeNull()
     expect(
       findInvalidCustomProviderEndpointUrl({
-        [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT]: 'not-a-url'
+        [ENDPOINT_TYPE.OPENAI_RESPONSES]: 'not-a-url'
       })
     ).toEqual({
       field: 'endpointUrl',
-      endpointType: ENDPOINT_TYPE.OPENAI_IMAGE_EDIT
+      endpointType: ENDPOINT_TYPE.OPENAI_RESPONSES
     })
   })
 
@@ -142,8 +114,7 @@ describe('custom provider creation', () => {
       findInvalidCustomProviderCreationUrl({
         endpointUrls: {
           [ENDPOINT_TYPE.OPENAI_RESPONSES]: 'https://api.example.com',
-          [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: 'https://anthropic.example.com',
-          [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: 'https://images.example.com'
+          [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: 'https://anthropic.example.com'
         }
       })
     ).toBeNull()

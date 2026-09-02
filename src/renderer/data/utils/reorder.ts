@@ -14,7 +14,7 @@
  * Identity field:
  * Both helpers identify items by a string-valued field. By default they read
  * `item.id`. Callers whose primary key is exposed under a different name
- * (e.g. miniapp's `appId`) pass `idKey: 'appId'` as the final argument — the
+ * (e.g. `resourceId`) pass its name as `idKey` — the
  * argument flows through from `useReorder`'s `idKey` option and stays
  * consistent across `reorderLocally` and `computeMinimalMoves`.
  */

@@ -53,6 +53,7 @@ import {
   isNull,
   lt,
   lte,
+  ne,
   or,
   type SQL,
   sql,
@@ -500,8 +501,19 @@ function toStatsGroupIdentity(row: GroupIdentityRow, groupBy: AiUsageRecordGroup
   }
 }
 
+function visibleUsageRecordConditions(): SQL[] {
+  return [
+    or(isNull(aiUsageRecordTable.sourceType), ne(aiUsageRecordTable.sourceType, 'mini-app'))!,
+    ne(aiUsageRecordTable.modality, 'image')
+  ]
+}
+
 function rangeConditions(query: { from: number; to: number }): SQL[] {
-  return [gte(aiUsageRecordTable.createdAt, query.from), lte(aiUsageRecordTable.createdAt, query.to)]
+  return [
+    gte(aiUsageRecordTable.createdAt, query.from),
+    lte(aiUsageRecordTable.createdAt, query.to),
+    ...visibleUsageRecordConditions()
+  ]
 }
 
 function scopedCostSum(currency: Currency | undefined): SQL<number> {
@@ -606,6 +618,7 @@ function listAiUsageRecords(query: AiUsageRecordListServiceQuery): AiUsageRecord
   const sortOrder = query.sortOrder ?? 'desc'
 
   const filterConditions: SQL[] = []
+  filterConditions.push(...visibleUsageRecordConditions())
   if (query.from !== undefined) filterConditions.push(gte(aiUsageRecordTable.createdAt, query.from))
   if (query.to !== undefined) filterConditions.push(lte(aiUsageRecordTable.createdAt, query.to))
   if (query.messageKind !== undefined && query.messageId !== undefined) {

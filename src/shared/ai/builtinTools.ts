@@ -1,5 +1,4 @@
 import { KnowledgeItemStatusSchema } from '@shared/data/types/knowledge'
-import { isHttpUrl } from '@shared/utils/url'
 import * as z from 'zod'
 
 /**
@@ -27,8 +26,8 @@ export const CITATION_SNIPPET_MAX_CHARS = 300
 // four strict tools at once (kb_search / kb_list / kb_read / kb_manage, all `defer: 'never'`, so
 // none could even be deferred) and broke every message, including "hi".
 //
-// The web/file tools that were also strict (web_search / web_fetch / read_file — 5 properties
-// between them) would not have blown that budget on their own. They lost `strict` for the reason
+// The file tools that were also strict (read_file) would not have blown that budget on their own.
+// They lost `strict` for the reason
 // below instead: on schemas this small it buys almost nothing, and it is not free.
 //
 // Dropping `strict` also removes what forced several of these schemas into a second, sentinel-valued
@@ -325,7 +324,7 @@ export type KbTreeOutput = z.infer<typeof kbTreeOutputSchema>
 export const KB_MANAGE_TOOL_NAME = 'kb_manage'
 
 export const KB_MANAGE_ACTIONS = ['add', 'delete', 'refresh'] as const
-export const KB_MANAGE_ADD_TYPES = ['file', 'url', 'note'] as const
+export const KB_MANAGE_ADD_TYPES = ['file', 'url'] as const
 
 // One flat object, not a discriminated union: which fields apply depends on `action`
 // (and, for add, on `type`). The core validates the combination and returns a steer
@@ -342,9 +341,7 @@ export const kbManageInputSchema = z.object({
   type: z
     .enum(KB_MANAGE_ADD_TYPES)
     .optional()
-    .describe(
-      'For action="add" only: the source kind — "file" (set `path`), "url" (set `url`), or "note" (set `content`).'
-    ),
+    .describe('For action="add" only: the source kind — "file" (set `path`) or "url" (set `url`).'),
   path: z
     .string()
     .trim()
@@ -352,17 +349,6 @@ export const kbManageInputSchema = z.object({
     .optional()
     .describe('For action="add", type="file": absolute local filesystem path of the file to import.'),
   url: z.string().trim().min(1).optional().describe('For action="add", type="url": the URL to fetch and index.'),
-  content: z
-    .string()
-    .min(1)
-    .optional()
-    .describe('For action="add", type="note": the plain-text note content to index.'),
-  title: z
-    .string()
-    .trim()
-    .min(1)
-    .optional()
-    .describe('For action="add", type="note": optional display title (defaults to the note\'s first line).'),
   conceptIds: z
     .array(z.string().trim().min(1))
     .optional()
@@ -383,73 +369,6 @@ export const kbManageOutputSchema = z.object({
 })
 
 export type KbManageOutput = z.infer<typeof kbManageOutputSchema>
-
-// ── web_search ───────────────────────────────────────────────────
-
-export const WEB_SEARCH_TOOL_NAME = 'web_search'
-export const PROVIDER_WEB_SEARCH_TOOL_NAME = 'webSearch'
-export const WEB_FETCH_TOOL_NAME = 'web_fetch'
-
-export const webSearchInputSchema = z.object({
-  query: z
-    .string()
-    .trim()
-    .min(2, 'Query must be at least 2 characters')
-    .max(200, 'Query should be concise — break long questions into multiple searches')
-    .describe(
-      'Self-contained web search query. MUST NOT use pronouns ("it", "their") or context-dependent ' +
-        'references; expand the topic from earlier messages when the user asks a follow-up. ' +
-        'Examples: ✓ "Anthropic Claude 4.5 release date", ✗ "when did it ship".'
-    )
-})
-
-export const webSearchOutputItemSchema = z.object({
-  // Citation id the model echoes back as `[cite:id]`. New results use a per-call
-  // random-prefixed string ("3f2a1b9c-2") so ids stay unique across multiple lookup
-  // calls in one message; number is kept so older persisted results still parse.
-  id: z.union([z.string(), z.number().int().positive()]),
-  title: z.string(),
-  url: z.string(),
-  content: z.string()
-})
-
-export const webSearchOutputSchema = z.array(webSearchOutputItemSchema)
-
-export const webFetchInputSchema = z.object({
-  // `.refine()` rather than `.url()`, for two reasons that both still hold now that no builtin tool
-  // runs with `strict: true` (see the note at the top of this file):
-  //   1. `isHttpUrl` is *narrower* than `.url()`, which happily accepts `file:///etc/passwd` and
-  //      `javascript:alert(1)`. It is literally the predicate `normalizeWebSearchUrls` enforces
-  //      service-side, so the schema and the service agree by construction rather than via two
-  //      copies of one rule that drift. Do not "simplify" this back to `.url()`.
-  //   2. A refinement is invisible to `toJSONSchema` (it emits no `format` keyword), so the schema
-  //      carries no `format: "uri"` — which strict OpenAI-compatible providers reject outright,
-  //      400ing the whole request and taking every other tool in the turn with it. Keeping `format`
-  //      out costs nothing and keeps this schema safe to send anywhere.
-  // Either way the refinement still runs locally, so a malformed URL surfaces as a repairable input
-  // error before `execute` instead of a bogus network failure.
-  //
-  // It is only a syntax gate, though. Of the two providers serving `web_fetch`, `fetch` retrieves
-  // the target in this process and so runs it through `remoteUrlSafety`, which additionally rejects
-  // credentials and loopback/private hosts that `isHttpUrl` accepts; `jina` hands the target to
-  // r.jina.ai and never retrieves it here. Passing this schema therefore does not imply a URL is
-  // safe or fetchable.
-  urls: z
-    .array(z.string().trim().min(1).refine(isHttpUrl, 'must be an absolute http(s) URL'))
-    .min(1)
-    .max(20, 'Fetch at most 20 URLs per call')
-    .describe(
-      'Absolute http(s) web page URLs to fetch and summarize. Use web_search first when you do not know the URL.'
-    )
-})
-
-export const webFetchOutputSchema = webSearchOutputSchema
-
-export type WebSearchInput = z.infer<typeof webSearchInputSchema>
-export type WebSearchOutputItem = z.infer<typeof webSearchOutputItemSchema>
-export type WebSearchOutput = z.infer<typeof webSearchOutputSchema>
-export type WebFetchInput = z.infer<typeof webFetchInputSchema>
-export type WebFetchOutput = z.infer<typeof webFetchOutputSchema>
 
 // ── to_markdown ──────────────────────────────────────────────────
 
@@ -512,22 +431,12 @@ export const REPORT_ARTIFACTS_DESCRIPTION =
 
 export type ReportArtifactsInput = z.infer<typeof reportArtifactsInputSchema>
 
-// ── generate_image ───────────────────────────────────────────────
-
-export type { GenerateImageOutput, GenerateImageOutputItem } from './generateImageTool'
-export {
-  GENERATE_IMAGE_TOOL_NAME,
-  generateImageOutputItemSchema,
-  generateImageOutputSchema
-} from './generateImageTool'
-
-// ── agent autonomy tools (cron / notify / config) ────────────────
+// ── agent autonomy tools (cron / config) ─────────────────────────
 // Hosted by the same in-process `cherry-tools` MCP server as the tools above. Their input schemas
 // are plain JSON Schema `Tool` definitions in `src/main/ai/mcp/servers/cherryAutonomyTools.ts`;
 // only the names are shared (the approval policy references them).
 
 export const CRON_TOOL_NAME = 'cron'
-export const NOTIFY_TOOL_NAME = 'notify'
 export const CONFIG_TOOL_NAME = 'config'
 
 // ── read_file ────────────────────────────────────────────────────

@@ -41,10 +41,6 @@ export const isRerankModel = (model: { capabilities?: readonly unknown[] | null 
 export const isFunctionCallingModel = (model: Model): boolean =>
   model.capabilities.includes(MODEL_CAPABILITY.FUNCTION_CALL)
 
-/** Check if model supports image generation */
-export const isGenerateImageModel = (model: Model): boolean =>
-  model.capabilities.includes(MODEL_CAPABILITY.IMAGE_GENERATION)
-
 export const isFreeModel = (model: Pick<Model, 'id' | 'name' | 'providerId'>): boolean => {
   if (model.providerId === CHERRYAI_PROVIDER_ID) {
     return true
@@ -58,9 +54,6 @@ export const isGenerateVideoModel = (model: Model): boolean =>
 
 export const isGenerateAudioModel = (model: Model): boolean =>
   !!model.capabilities.includes(MODEL_CAPABILITY.AUDIO_GENERATION)
-
-export const isEditImageModel = (model: Model): boolean =>
-  !!(model.capabilities.includes(MODEL_CAPABILITY.IMAGE_GENERATION) && model.inputModalities?.includes(MODALITY.IMAGE))
 
 // Prefer the explicit AUDIO_TRANSCRIPT capability. Catalogs that only expose
 // modalities still identify a dedicated ASR model by audio input + text output
@@ -80,16 +73,10 @@ export const isSpeechToTextModel = (model: Model): boolean =>
 export const isTextToSpeechModel = (model: Model): boolean =>
   model.capabilities.includes(MODEL_CAPABILITY.AUDIO_GENERATION)
 
-/** Check if model is a dedicated text-to-image model (no text chat) */
-export const isTextToImageModel = (model: Model): boolean =>
-  model.capabilities.includes(MODEL_CAPABILITY.IMAGE_GENERATION) &&
-  !model.capabilities.includes(MODEL_CAPABILITY.REASONING)
-
 export const isNonChatModel = (model: Model): boolean =>
   endpointImpliedCapability(model.endpointTypes?.[0]) != null ||
   isEmbeddingModel(model) ||
   isRerankModel(model) ||
-  isGenerateImageModel(model) ||
   isGenerateVideoModel(model) ||
   isGenerateAudioModel(model) ||
   isTextToSpeechModel(model) ||
@@ -235,11 +222,8 @@ export const isGrokModel = (model: Model): boolean =>
 export const isOpenAIModel = (model: Model): boolean =>
   VENDOR_PATTERNS.openai.test(getLowerBaseModelName(getRawModelId(model)))
 
-/** Check if model is an OpenAI LLM model (excludes image-generation GPT-4o variants) */
-export const isOpenAILLMModel = (model: Model): boolean => {
-  if (!isOpenAIModel(model)) return false
-  return !getLowerBaseModelName(getRawModelId(model)).includes('gpt-4o-image')
-}
+/** Check if model is an OpenAI LLM model. */
+export const isOpenAILLMModel = isOpenAIModel
 
 /** Check if model is a Qwen family model (all variants, including qwq/qvq). */
 export const isQwenModel = (model: Model): boolean =>
@@ -251,12 +235,6 @@ export const isDeepSeekModel = (model?: Model): boolean => {
   if (VENDOR_PATTERNS.deepseek.test(getLowerBaseModelName(getRawModelId(model), '/'))) return true
   if (model.providerId === 'deepseek') return true
   return model.name ? VENDOR_PATTERNS.deepseek.test(model.name.toLowerCase()) : false
-}
-
-/** Check if model supports web search in chat completion mode only */
-export const isOpenAIWebSearchChatCompletionOnlyModel = (model: Model): boolean => {
-  const id = getLowerBaseModelName(getRawModelId(model))
-  return id.includes('gpt-4o-search-preview') || id.includes('gpt-4o-mini-search-preview')
 }
 
 /** Check if model is OpenAI deep research model (requires openai/openai-chat provider) */
@@ -354,13 +332,6 @@ export const isSupportedThinkingTokenQwenModel = (model: Model): boolean => {
     return false
   }
   return isSupportedThinkingTokenModel(model)
-}
-
-/** Check if model is a pure image generation model (no tool use) */
-export const isPureGenerateImageModel = (model: Model): boolean => {
-  if (!isGenerateImageModel(model) && !isTextToImageModel(model)) return false
-  if (isFunctionCallingModel(model)) return false
-  return true
 }
 
 // ---------------------------------------------------------------------------

@@ -19,7 +19,7 @@ vi.mock('@application', () => ({
   application: {
     getPath,
     get: (name: string) => {
-      if (name === 'McpCatalogService') return { listResources }
+      if (name === 'McpToolCacheService') return { listResources }
       if (name === 'McpRuntimeService') return { getResource, getConnectedServerCapabilities }
       throw new Error(`unexpected service: ${name}`)
     }

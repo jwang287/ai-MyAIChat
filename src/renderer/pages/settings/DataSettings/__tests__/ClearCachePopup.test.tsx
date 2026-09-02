@@ -79,7 +79,7 @@ describe('ClearCachePopup', () => {
       expect(checkbox).not.toBeChecked()
     }
     expect(screen.getByText('应用缓存')).toBeInTheDocument()
-    expect(screen.getByText('网站与小程序数据')).toBeInTheDocument()
+    expect(screen.getByText('网站数据')).toBeInTheDocument()
     expect(screen.getByText('v1 版本遗留数据')).toBeInTheDocument()
     expect(screen.getByText('残留文件与知识库')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '清除缓存' })).toBeDisabled()

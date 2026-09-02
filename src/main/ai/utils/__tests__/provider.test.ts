@@ -83,10 +83,10 @@ describe('getBaseUrl', () => {
   it('falls through to any-remaining-config when no fallback-order endpoint has a baseUrl', () => {
     const provider = makeProvider({
       endpointConfigs: {
-        [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: { baseUrl: 'https://relay.example/image' }
+        [ENDPOINT_TYPE.OPENAI_TEXT_TO_SPEECH]: { baseUrl: 'https://relay.example/audio' }
       }
     })
-    expect(getBaseUrl(provider)).toBe('https://relay.example/image')
+    expect(getBaseUrl(provider)).toBe('https://relay.example/audio')
   })
 
   it('returns empty string when no endpoint config has a baseUrl', () => {

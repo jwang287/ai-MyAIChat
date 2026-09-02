@@ -8,7 +8,7 @@ date: 2026-07-24
 
 ## What changed
 
-The existing local, WebDAV, Nutstore, and S3 backup settings are enabled again. Newly created direct archives continue to use format version 7 and can be either full or slim: full archives contain `Data`, `IndexedDB`, `Local Storage`, and `cache.json`, while slim archives contain only `Data/cherrystudio.sqlite` and `cache.json`. `metadata.json` records the selected resource layout, and no duplicate top-level database or `.claude` resource is created.
+The existing local backup settings are enabled again. Newly created direct archives continue to use format version 7 and can be either full or slim: full archives contain `Data`, `IndexedDB`, `Local Storage`, and `cache.json`, while slim archives contain only `Data/cherrystudio.sqlite` and `cache.json`. `metadata.json` records the selected resource layout, and no duplicate top-level database or `.claude` resource is created.
 
 ## Why this matters to the user
 

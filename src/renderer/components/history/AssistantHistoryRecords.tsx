@@ -13,7 +13,6 @@ import { createTopicActionContext, useTopicMenuPreset } from '@renderer/hooks/ch
 import { useAssistantTopicsSource } from '@renderer/hooks/resourceViewSources'
 import { useAssistants } from '@renderer/hooks/useAssistant'
 import { useConversationNavigation } from '@renderer/hooks/useConversationNavigation'
-import { useNotesSettings } from '@renderer/hooks/useNotesSettings'
 import { useOptimisticResourceName } from '@renderer/hooks/useOptimisticResourceName'
 import { usePins } from '@renderer/hooks/usePins'
 import {
@@ -74,19 +73,13 @@ const AssistantHistoryRecords = ({
   const [assistantIconType] = usePreference('assistant.icon_type')
   const [defaultModelId] = usePreference('chat.default_model_id')
   const [renamingTopics] = useCache('topic.renaming')
-  const { notesPath } = useNotesSettings()
   const { updateTopic: patchTopic, deleteTopic: deleteTopicById, deleteTopics, batchUpdateTopics } = useTopicMutations()
   const [exportMenuOptions] = useMultiplePreferences({
     docx: 'data.export.menus.docx',
     image: 'data.export.menus.image',
-    joplin: 'data.export.menus.joplin',
     markdown: 'data.export.menus.markdown',
     markdown_reason: 'data.export.menus.markdown_reason',
-    notion: 'data.export.menus.notion',
-    obsidian: 'data.export.menus.obsidian',
-    plain_text: 'data.export.menus.plain_text',
-    siyuan: 'data.export.menus.siyuan',
-    yuque: 'data.export.menus.yuque'
+    plain_text: 'data.export.menus.plain_text'
   })
   const { pinnedIds: topicPinnedIds, togglePin: toggleTopicPin } = usePins('topic')
   const { items: optimisticTopics, rename: renameTopicOptimistically } = useOptimisticResourceName(rawTopics)
@@ -350,7 +343,6 @@ const AssistantHistoryRecords = ({
           await handlePinTopic(topic)
         },
         onStartRename: () => undefined,
-        notesPath,
         t,
         topic,
         topicsLength: topics.length
@@ -364,7 +356,6 @@ const AssistantHistoryRecords = ({
       handleDeleteTopicFromMenu,
       handlePinTopic,
       isTopicRenaming,
-      notesPath,
       t,
       topics.length
     ]

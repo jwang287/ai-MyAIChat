@@ -13,14 +13,11 @@ import { isReasoningModel } from '@shared/utils/model'
 import { isSupportFastMode } from '@shared/utils/provider'
 import { SystemProviderIds } from '@shared/utils/systemProviderId'
 import type { JSONValue } from 'ai'
-import { merge } from 'es-toolkit/compat'
 
 import type { AppProviderId } from '../types'
 import type { ProviderCapabilities } from '../types'
 import { addAnthropicHeaders } from './anthropicHeaders'
-import { buildGeminiGenerateImageParams } from './image'
 import { encodeReasoningInvocation, type ResolvedReasoningInvocation } from './reasoningSerializers'
-import { getWebSearchParams } from './websearch'
 
 const logger = loggerService.withContext('aiCore.utils.options')
 
@@ -111,7 +108,7 @@ export function extractAiSdkStandardParams(customParams: Record<string, any>): {
 export function buildCapabilityProviderOptions(
   model: Model,
   actualProvider: Provider,
-  capabilities: Pick<ProviderCapabilities, 'enableReasoning' | 'enableWebSearch' | 'enableGenerateImage'>,
+  capabilities: Pick<ProviderCapabilities, 'enableReasoning'>,
   context: {
     aiSdkProviderId: AppProviderId
     runtimeProviderId: AppProviderId
@@ -187,13 +184,7 @@ export function buildCapabilityProviderOptions(
     case 'openai-compatible':
     case 'google-vertex-maas':
     default:
-      providerSpecificOptions = buildGenericProviderOptions(
-        reasoningOptions.providerId,
-        model,
-        actualProvider,
-        capabilities,
-        reasoningOptions.options
-      )
+      providerSpecificOptions = buildGenericProviderOptions(reasoningOptions.providerId, reasoningOptions.options)
       break
   }
 
@@ -320,7 +311,7 @@ function normalizeOpenAICompatibleParams(params: Record<string, any>): Record<st
 
 function buildOpenAIProviderOptions(
   model: Model,
-  capabilities: Pick<ProviderCapabilities, 'enableReasoning' | 'enableWebSearch' | 'enableGenerateImage'>,
+  capabilities: Pick<ProviderCapabilities, 'enableReasoning'>,
   reasoningOptions: Record<string, unknown>
 ): Record<string, OpenAIResponsesProviderOptions> {
   const { enableReasoning } = capabilities
@@ -358,11 +349,10 @@ function buildAnthropicProviderOptions(
 }
 
 function buildGeminiProviderOptions(
-  capabilities: Pick<ProviderCapabilities, 'enableReasoning' | 'enableWebSearch' | 'enableGenerateImage'>,
+  _capabilities: Pick<ProviderCapabilities, 'enableReasoning'>,
   reasoningOptions: Record<string, unknown>,
   providerOptionsKey = 'google'
 ): Record<string, GoogleGenerativeAIProviderOptions> {
-  const { enableGenerateImage } = capabilities
   let providerOptions: GoogleGenerativeAIProviderOptions = {
     safetySettings: [
       {
@@ -388,9 +378,6 @@ function buildGeminiProviderOptions(
     ]
   }
   providerOptions = { ...providerOptions, ...reasoningOptions }
-  if (enableGenerateImage) {
-    providerOptions = { ...providerOptions, ...buildGeminiGenerateImageParams() }
-  }
   return { [providerOptionsKey]: { ...providerOptions } }
 }
 
@@ -429,27 +416,15 @@ function buildOllamaProviderOptions(
 
 function buildGenericProviderOptions(
   providerId: string,
-  model: Model,
-  provider: Provider,
-  capabilities: Pick<ProviderCapabilities, 'enableReasoning' | 'enableWebSearch' | 'enableGenerateImage'>,
   reasoningOptions: Record<string, unknown>
-): Record<string, any> {
-  const { enableWebSearch } = capabilities
-  let providerOptions: Record<string, any> = {}
-
-  providerOptions = { ...providerOptions, ...reasoningOptions }
-
-  if (enableWebSearch) {
-    providerOptions = merge({}, providerOptions, getWebSearchParams(model, provider))
-  }
-
-  return { [providerId]: providerOptions }
+): Record<string, Record<string, unknown>> {
+  return { [providerId]: { ...reasoningOptions } }
 }
 
 function buildAIGatewayOptions(
   model: Model,
-  capabilities: Pick<ProviderCapabilities, 'enableReasoning' | 'enableWebSearch' | 'enableGenerateImage'>,
-  provider: Provider,
+  capabilities: Pick<ProviderCapabilities, 'enableReasoning'>,
+  _provider: Provider,
   endpointType: EndpointType | undefined,
   reasoning: { providerId: string; options: Record<string, unknown> }
 ): Record<
@@ -467,8 +442,7 @@ function buildAIGatewayOptions(
     case ENDPOINT_TYPE.OPENAI_RESPONSES:
       return buildOpenAIProviderOptions(model, capabilities, reasoning.options)
     case ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS:
-    case ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION:
-      return buildGenericProviderOptions(reasoning.providerId, model, provider, capabilities, reasoning.options)
+      return buildGenericProviderOptions(reasoning.providerId, reasoning.options)
   }
   return { [reasoning.providerId]: reasoning.options }
 }

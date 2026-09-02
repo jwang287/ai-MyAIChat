@@ -31,7 +31,7 @@ vi.mock('@application', async () => {
   const { mockApplicationFactory } = await import('@test-mocks/main/application')
   const overrides = {
     PreferenceService: { get: mockPreferenceGet },
-    McpCatalogService: {
+    McpToolCacheService: {
       listTools: mockListTools,
       warmToolsCache: mockWarmToolsCache,
       listResources: vi.fn(async () => []),

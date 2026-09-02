@@ -75,7 +75,7 @@ describe('ModelTypeFilterTabs', () => {
       <ModelTypeFilterTabs
         value="all"
         onValueChange={vi.fn()}
-        counts={{ all: 9, text: 1, image: 1, embedding: 1, audio: 1, video: 1, rerank: 1, speech: 1, transcription: 1 }}
+        counts={{ all: 8, text: 1, embedding: 1, audio: 1, video: 1, rerank: 1, speech: 1, transcription: 1 }}
       />
     )
 
@@ -97,7 +97,6 @@ describe('ModelTypeFilterTabs', () => {
     const counts = {
       all: 2,
       text: 2,
-      image: 0,
       embedding: 0,
       audio: 0,
       video: 0,
@@ -114,7 +113,7 @@ describe('ModelTypeFilterTabs', () => {
     expect(screen.queryByRole('tab', { name: /models\.type\.image/ })).not.toBeInTheDocument()
     expect(screen.queryByRole('tab', { name: /models\.type\.embedding/ })).not.toBeInTheDocument()
 
-    rerender(<ModelTypeFilterTabs value="image" onValueChange={vi.fn()} counts={counts} hideEmptyFilters />)
-    expect(screen.getByRole('tab', { name: /models\.type\.image/ })).toBeInTheDocument()
+    rerender(<ModelTypeFilterTabs value="embedding" onValueChange={vi.fn()} counts={counts} hideEmptyFilters />)
+    expect(screen.getByRole('tab', { name: /models\.type\.embedding/ })).toBeInTheDocument()
   })
 })

@@ -20,24 +20,6 @@ describe('addAnthropicHeaders', () => {
     expect(headers).not.toContain('interleaved-thinking-2025-05-14')
   })
 
-  it('adds web-search beta for Claude 4 series on Vertex when search routed to the server side', () => {
-    const headers = addAnthropicHeaders(
-      makeModel({ id: 'anthropic::claude-sonnet-4-20250101', providerId: 'anthropic' }),
-      makeProvider({ id: 'google-vertex', presetProviderId: 'google-vertex', authType: 'iam-gcp' }),
-      true
-    )
-    expect(headers).toContain('web-search-2025-03-05')
-  })
-
-  it('does NOT add web-search on Vertex when search is off or routed to the client tools', () => {
-    const headers = addAnthropicHeaders(
-      makeModel({ id: 'anthropic::claude-sonnet-4-20250101', providerId: 'anthropic' }),
-      makeProvider({ id: 'google-vertex', presetProviderId: 'google-vertex', authType: 'iam-gcp' }),
-      false
-    )
-    expect(headers).not.toContain('web-search-2025-03-05')
-  })
-
   it('returns an empty list for non-qualifying model/provider combos', () => {
     const headers = addAnthropicHeaders(makeModel(), makeProvider({ id: 'openai' }))
     expect(headers).toEqual([])

@@ -95,22 +95,6 @@ export async function generateText<
 }
 
 /**
- * 直接生成图像 - 支持middlewares
- */
-export async function generateImage<
-  TSettingsMap extends Record<string, any> = CoreProviderSettingsMap,
-  T extends StringKeys<TSettingsMap> = StringKeys<TSettingsMap>
->(
-  providerId: T,
-  options: TSettingsMap[T],
-  params: Parameters<RuntimeExecutor<TSettingsMap, T>['generateImage']>[0],
-  plugins?: AiPlugin[]
-): Promise<ReturnType<RuntimeExecutor<TSettingsMap, T>['generateImage']>> {
-  const executor = await createExecutor<TSettingsMap, T>(providerId, options, plugins)
-  return executor.generateImage(params)
-}
-
-/**
  * 直接批量嵌入文本
  * AI SDK v6 只有 embedMany，没有 embed
  */

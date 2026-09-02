@@ -15,8 +15,6 @@ export const getItemStatus = (item: KnowledgeItem) => {
   switch (item.type) {
     case 'file':
       return dataSourceTypeDisplayConfig.file.getStatus(item.status)
-    case 'note':
-      return dataSourceTypeDisplayConfig.note.getStatus(item.status)
     case 'directory':
       return dataSourceTypeDisplayConfig.directory.getStatus(item.status)
     case 'url':
@@ -28,8 +26,6 @@ export const getItemTitle = (item: KnowledgeItem): string => {
   switch (item.type) {
     case 'file':
       return dataSourceTypeDisplayConfig.file.getTitle(item, { language: '' })
-    case 'note':
-      return dataSourceTypeDisplayConfig.note.getTitle(item, { language: '' })
     case 'directory':
       return dataSourceTypeDisplayConfig.directory.getTitle(item, { language: '' })
     case 'url':
@@ -47,17 +43,6 @@ export const toKnowledgeItemRowViewModel = (item: KnowledgeItem, language: strin
         title: config.getTitle(item, context),
         suffix: config.getSuffix(item, context),
         metaParts: config.getMetaParts(item, context),
-        icon: config.icon,
-        status: config.getStatus(item.status)
-      }
-    }
-    case 'note': {
-      const config = dataSourceTypeDisplayConfig.note
-
-      return {
-        title: config.getTitle(item, { language }),
-        suffix: config.getSuffix(item, { language }),
-        metaParts: config.getMetaParts(item, { language }),
         icon: config.icon,
         status: config.getStatus(item.status)
       }

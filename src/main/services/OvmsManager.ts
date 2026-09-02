@@ -545,43 +545,4 @@ export class OvmsManager extends BaseService {
     }
     return true
   }
-
-  /**
-   * Get all models from OVMS config, filtered for image generation models
-   * @returns Array of model configurations
-   */
-  public async getModels(): Promise<ModelConfig[]> {
-    const ovmsDir = application.getPath('feature.ovms.ovms')
-    const configPath = path.join(ovmsDir, 'models', 'config.json')
-
-    try {
-      if (!(await fs.pathExists(configPath))) {
-        logger.warn(`Config file does not exist: ${configPath}`)
-        return []
-      }
-
-      const config: OvmsConfig = await fs.readJson(configPath)
-      if (!config.mediapipe_config_list) {
-        logger.warn('No mediapipe_config_list found in config')
-        return []
-      }
-
-      // Filter models for image generation (SD, Stable-Diffusion, Stable Diffusion, FLUX)
-      const imageGenerationModels = config.mediapipe_config_list.filter((model) => {
-        const modelName = model.name.toLowerCase()
-        return (
-          modelName.startsWith('sd') ||
-          modelName.startsWith('stable-diffusion') ||
-          modelName.startsWith('stable diffusion') ||
-          modelName.startsWith('flux')
-        )
-      })
-
-      logger.info(`Found ${imageGenerationModels.length} image generation models`)
-      return imageGenerationModels
-    } catch (error) {
-      logger.error(`Failed to get models: ${error}`)
-      return []
-    }
-  }
 }

@@ -15,7 +15,7 @@ import {
 import { useCache } from '@renderer/data/hooks/useCache'
 import { useSessionMenuActions } from '@renderer/hooks/chat/useSessionMenuActions'
 import { useTopicStreamStatus } from '@renderer/hooks/useTopicStreamStatus'
-import { buildAgentSessionTopicId, getChannelTypeIcon } from '@renderer/utils/agentSession'
+import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { cn } from '@renderer/utils/style'
 import { classifyTurn } from '@shared/ai/transport'
 import type { AgentSessionEntity } from '@shared/data/api/schemas/agentSessions'
@@ -29,7 +29,6 @@ const DELETE_CONFIRMATION_TIMEOUT = 2000
 
 interface SessionItemProps {
   active?: boolean
-  channelType?: string
   onDelete: (id: string) => void | Promise<void>
   onOpenInNewTab?: (session: AgentSessionEntity) => void
   onOpenInNewWindow?: (session: AgentSessionEntity) => void
@@ -51,21 +50,14 @@ export interface SessionItemMenuActions {
   onCopyMarkdown: (session: AgentSessionEntity) => void | Promise<void>
   onCopyPlainText: (session: AgentSessionEntity) => void | Promise<void>
   onExportImage: (session: AgentSessionEntity) => void | Promise<void>
-  onExportJoplin: (session: AgentSessionEntity) => void | Promise<void>
   onExportMarkdown: (session: AgentSessionEntity) => void | Promise<void>
   onExportMarkdownReason: (session: AgentSessionEntity) => void | Promise<void>
-  onExportNotion: (session: AgentSessionEntity) => void | Promise<void>
-  onExportObsidian: (session: AgentSessionEntity) => void | Promise<void>
-  onExportSiyuan: (session: AgentSessionEntity) => void | Promise<void>
   onExportWord: (session: AgentSessionEntity) => void | Promise<void>
-  onExportYuque: (session: AgentSessionEntity) => void | Promise<void>
   onSaveToKnowledge: (session: AgentSessionEntity) => void | Promise<void>
-  onSaveToNotes: (session: AgentSessionEntity) => void | Promise<void>
 }
 
 const SessionItem = ({
   active = false,
-  channelType,
   onDelete,
   onOpenInNewTab,
   onOpenInNewWindow,
@@ -94,7 +86,6 @@ const SessionItem = ({
     isPending: isStreamPending,
     markSeen
   } = useTopicStreamStatus(topicId)
-  const channelIcon = getChannelTypeIcon(channelType)
   const isActive = rowState.selected
   const sessionName = !session.isNameManuallyEdited && !session.name.trim() ? t('agent.session.new') : session.name
   const isRenaming = renamingTopics?.includes(topicId) === true
@@ -125,7 +116,7 @@ const SessionItem = ({
           : null
   const hasStreamIndicator = conversationRowStatus !== null && conversationRowStatus !== 'approval'
   const showPinAction = !rowState.renaming && !!onTogglePin
-  const showLeadingSlot = reserveLeadingIconSlot || !!channelIcon
+  const showLeadingSlot = reserveLeadingIconSlot
   const [isConfirmingDeletion, setIsConfirmingDeletion] = useState(false)
   const deleteConfirmationTimeoutRef = useRef<number | null>(null)
 
@@ -155,18 +146,12 @@ const SessionItem = ({
       onCopyPlainText: () => sessionMenuActions.onCopyPlainText(session),
       onDelete: handleDelete,
       onExportImage: () => sessionMenuActions.onExportImage(session),
-      onExportJoplin: () => sessionMenuActions.onExportJoplin(session),
       onExportMarkdown: () => sessionMenuActions.onExportMarkdown(session),
       onExportMarkdownReason: () => sessionMenuActions.onExportMarkdownReason(session),
-      onExportNotion: () => sessionMenuActions.onExportNotion(session),
-      onExportObsidian: () => sessionMenuActions.onExportObsidian(session),
-      onExportSiyuan: () => sessionMenuActions.onExportSiyuan(session),
       onExportWord: () => sessionMenuActions.onExportWord(session),
-      onExportYuque: () => sessionMenuActions.onExportYuque(session),
       onOpenInNewTab: onOpenInNewTab ? handleOpenInNewTab : undefined,
       onOpenInNewWindow: onOpenInNewWindow ? handleOpenInNewWindow : undefined,
       onSaveToKnowledge: () => sessionMenuActions.onSaveToKnowledge(session),
-      onSaveToNotes: () => sessionMenuActions.onSaveToNotes(session),
       onSetPanePosition,
       onTogglePin: onTogglePin ? handleTogglePin : undefined,
       panePosition,
@@ -274,17 +259,7 @@ const SessionItem = ({
       onClick={handlePress}
       onAuxClick={handleAuxClick}
       title={sessionName}>
-      {showLeadingSlot && (
-        <ResourceList.ItemLeadingSlot className={cn('relative', !rowState.renaming && channelIcon && 'rounded-sm')}>
-          {!rowState.renaming && channelIcon ? (
-            <img
-              src={channelIcon}
-              alt=""
-              className="pointer-events-none absolute inset-0 m-auto size-3.5 rounded-[2px] object-contain transition-opacity duration-150 group-focus-within:opacity-0 group-hover:opacity-0"
-            />
-          ) : null}
-        </ResourceList.ItemLeadingSlot>
-      )}
+      {showLeadingSlot && <ResourceList.ItemLeadingSlot />}
 
       <ResourceList.RenameField
         item={session}

@@ -71,11 +71,11 @@ const rerankModel: Model = {
   isEnabled: true,
   isHidden: false
 }
-const imageModel: Model = {
-  id: 'openai::gpt-image-1',
+const videoModel: Model = {
+  id: 'openai::sora-2',
   providerId: 'openai',
-  name: 'GPT Image',
-  capabilities: [MODEL_CAPABILITY.IMAGE_GENERATION],
+  name: 'Sora 2',
+  capabilities: [MODEL_CAPABILITY.VIDEO_GENERATION],
   supportsStreaming: false,
   isEnabled: true,
   isHidden: false
@@ -103,7 +103,7 @@ function okResult(model = chatModel, key = primaryKey): ModelWithStatus {
 }
 
 describe('useHealthCheck', () => {
-  let models = [chatModel, imageModel, rerankModel]
+  let models = [chatModel, videoModel, rerankModel]
   let credentialChangeVersion = 0
 
   const getCredentialsState = (): ModelCheckCredentialsState => ({
@@ -116,7 +116,7 @@ describe('useHealthCheck', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    models = [chatModel, imageModel, rerankModel]
+    models = [chatModel, videoModel, rerankModel]
     credentialChangeVersion = 0
     prepareCredentialsMock.mockResolvedValue([
       { kind: 'api-key', entry: primaryKey },
@@ -150,7 +150,7 @@ describe('useHealthCheck', () => {
     expect(result.current.isChecking).toBe(true)
     expect(result.current.modelStatuses).toEqual([
       expect.objectContaining({ kind: 'checking', model: chatModel }),
-      expect.objectContaining({ kind: 'skipped', model: imageModel }),
+      expect.objectContaining({ kind: 'skipped', model: videoModel }),
       expect.objectContaining({ kind: 'checking', model: rerankModel })
     ])
 
@@ -169,13 +169,13 @@ describe('useHealthCheck', () => {
 
   it('uses the latest models after credentials are prepared', async () => {
     let resolveCommit!: () => void
-    models = [imageModel]
+    models = [videoModel]
     prepareCredentialsMock.mockReturnValueOnce(
       new Promise<void>((resolve) => {
         resolveCommit = resolve
       }).then(() => [{ kind: 'api-key' as const, entry: primaryKey }])
     )
-    const reclassifiedModel = { ...imageModel, name: 'Image Model Reclassified', capabilities: [] }
+    const reclassifiedModel = { ...videoModel, name: 'Video Model Reclassified', capabilities: [] }
     checkModelsHealthMock.mockResolvedValue([okResult(reclassifiedModel)])
     const { result, rerender } = renderHook(() => useHealthCheck('openai', getCredentialsState()))
 
@@ -301,7 +301,7 @@ describe('useHealthCheck', () => {
     const renamedChatModel = { ...chatModel, name: 'GPT-4o Renamed' }
     models = [
       renamedChatModel,
-      { ...imageModel, capabilities: [] },
+      { ...videoModel, capabilities: [] },
       { ...rerankModel, endpointTypes: [ENDPOINT_TYPE.ANTHROPIC_MESSAGES] }
     ]
     rerender()

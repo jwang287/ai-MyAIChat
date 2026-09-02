@@ -12,19 +12,17 @@ import { addAnthropicHeaders } from '../../../../utils/anthropicHeaders'
 export interface AnthropicHeadersPluginConfig {
   model: Model
   provider: Provider
-  serverWebSearch: boolean
 }
 
 const createAnthropicHeadersPlugin = ({
   model,
-  provider,
-  serverWebSearch
+  provider
 }: AnthropicHeadersPluginConfig): AiPlugin<StreamTextParams, StreamTextResult> =>
   definePlugin<StreamTextParams, StreamTextResult>({
     name: 'anthropic-headers',
     enforce: 'pre',
     transformParams: (params) => {
-      const betas = addAnthropicHeaders(model, provider, serverWebSearch)
+      const betas = addAnthropicHeaders(model, provider)
       if (betas.length === 0) return params
 
       const existingHeaders = (params.headers ?? {}) as Record<string, string>
@@ -53,8 +51,7 @@ export const anthropicHeadersFeature: RequestFeature = {
   contributeModelAdapters: (scope) => [
     createAnthropicHeadersPlugin({
       model: scope.model,
-      provider: scope.provider,
-      serverWebSearch: scope.webToolRoutes?.webSearch === 'server'
+      provider: scope.provider
     })
   ]
 }

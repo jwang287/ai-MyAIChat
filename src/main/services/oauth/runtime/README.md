@@ -16,7 +16,7 @@ It is **provider-scoped**, not a general OAuth system. The hard coupling is to
 the *provider* row in SQLite: tokens persist into that row's `authConfig`
 (`ProviderAuthConfigOAuthTokenStore` → `providerService.update(providerId, …)`),
 and the same `providerService.update` toggles `isEnabled` on sign-in/logout. A
-non-provider entity (an MCP server, a cloud-sync account) cannot reuse this
+non-provider entity (such as an MCP server) cannot reuse this
 runtime without its own `OAuthTokenStore` backend and its own enablement model.
 
 Other OAuth/auth flows in the app are deliberately **separate** and do not share
@@ -27,8 +27,6 @@ create a leaky mega-abstraction:
 | --- | --- | --- |
 | MCP remote servers | `src/main/ai/mcp/oauth/` | SDK-driven (`@modelcontextprotocol/sdk` `OAuthClientProvider`) + dynamic client registration (RFC 7591); control is inverted — the SDK drives, we implement an interface. Storage is per-server-URL JSON files. |
 | GitHub Copilot | `src/main/services/CopilotService.ts` | Device flow (RFC 8628) — no redirect/callback; encrypted-file storage. |
-| Nutstore | `src/main/services/nutstore/` | Proprietary SSO with custom encryption — not standard OAuth. |
-| Feishu / WeChat | `src/main/ai/channels/adapters/` | Proprietary device/binary protocols — not OAuth. |
 | Silicon / PPIO / 302 / AIHubMix / AIOnly | `src/renderer/utils/oauth.ts` | One-shot popup that returns an **API key** (no token session / refresh). |
 
 **Do not** route any of the above through this runtime. If you think you need to,

@@ -17,32 +17,16 @@
         "path": "/app/agents"
       },
       {
-        "id": "paintings",
-        "path": "/app/paintings"
-      },
-      {
         "id": "translate",
         "path": "/app/translate"
-      },
-      {
-        "id": "mini_app",
-        "path": "/app/mini-app"
       },
       {
         "id": "knowledge",
         "path": "/app/knowledge"
       },
       {
-        "id": "files",
-        "path": "/app/files"
-      },
-      {
         "id": "code_tools",
         "path": "/app/code"
-      },
-      {
-        "id": "notes",
-        "path": "/app/notes"
       }
     ],
     "all": [
@@ -52,16 +36,13 @@
       "/app/chat",
       "/app/code",
       "/app/file-preview",
-      "/app/files",
       "/app/knowledge",
       "/app/launchpad",
-      "/app/notes",
       "/app/release-notes",
       "/app/translate",
       "/settings/about",
       "/settings/api-gateway",
       "/settings/appearance",
-      "/settings/channels",
       "/settings/code-execution",
       "/settings/data",
       "/settings/dependencies",
@@ -82,18 +63,9 @@
       "/settings/skills",
       "/settings/system",
       "/settings/usage",
-      "/settings/websearch",
-      "/app/mini-app/$appId",
-      "/app/paintings/$",
-      "/settings/mcp/$",
       "/settings/mcp/builtin",
-      "/settings/mcp/marketplaces",
-      "/settings/mcp/mcp-install",
-      "/settings/mcp/npx-search",
       "/settings/mcp/servers",
       "/settings/scheduled-tasks/$taskId",
-      "/app/mini-app",
-      "/app/paintings",
       "/settings/mcp/settings/$serverId"
     ]
   },
@@ -448,7 +420,7 @@
     }
   ],
   "providers": {
-    "version": "92900b8ee894edee",
+    "version": "e60fcfba5dece8ad",
     "count": 61,
     "entries": [
       {
@@ -760,14 +732,6 @@
     }
   ],
   "agents": {
-    "channelTypes": [
-      "telegram",
-      "feishu",
-      "qq",
-      "wechat",
-      "discord",
-      "slack"
-    ],
     "scheduleTriggerKinds": [
       "cron",
       "interval",

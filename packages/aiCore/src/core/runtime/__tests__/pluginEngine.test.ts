@@ -4,8 +4,8 @@
  * Covers both streaming and non-streaming execution paths
  */
 
-import type { ImageModelV3, LanguageModelV3 } from '@ai-sdk/provider'
-import { createMockImageModel, createMockLanguageModel, createMockMiddleware } from '@test-utils'
+import type { LanguageModelV3 } from '@ai-sdk/provider'
+import { createMockLanguageModel, createMockMiddleware } from '@test-utils'
 import { wrapLanguageModel } from 'ai'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -28,7 +28,6 @@ vi.mock('ai', async (importOriginal) => {
 describe('PluginEngine', () => {
   let engine: PluginEngine<'openai'>
   let mockLanguageModel: LanguageModelV3
-  let mockImageModel: ImageModelV3
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -36,11 +35,6 @@ describe('PluginEngine', () => {
     mockLanguageModel = createMockLanguageModel({
       provider: 'openai',
       modelId: 'gpt-4'
-    })
-
-    mockImageModel = createMockImageModel({
-      provider: 'openai',
-      modelId: 'dall-e-3'
     })
   })
 
@@ -617,46 +611,6 @@ describe('PluginEngine', () => {
       expect(states[0]).toEqual({ depth: 0, isRecursive: false })
       expect(states[1]).toEqual({ depth: 1, isRecursive: true })
       expect(states[2]).toEqual({ depth: 0, isRecursive: false })
-    })
-  })
-
-  describe('Image Model Execution', () => {
-    it('should execute image generation with plugins', async () => {
-      const plugin: AiPlugin = {
-        name: 'image-plugin',
-        resolveModel: vi.fn().mockResolvedValue(mockImageModel),
-        transformParams: vi.fn().mockImplementation(async (params) => params)
-      }
-
-      engine = new PluginEngine('openai', [plugin])
-
-      const mockExecutor = vi.fn().mockResolvedValue({
-        image: { base64: 'test', uint8Array: new Uint8Array(), mimeType: 'image/png' }
-      })
-
-      await engine.executeImageWithPlugins('generateImage', { model: 'dall-e-3', prompt: 'test' }, mockExecutor)
-
-      expect(plugin.resolveModel).toHaveBeenCalledWith('dall-e-3', expect.any(Object))
-      expect(mockExecutor).toHaveBeenCalled()
-    })
-
-    it('should skip resolution for direct image model objects', async () => {
-      const resolveModelSpy = vi.fn()
-
-      const plugin: AiPlugin = {
-        name: 'image-resolver',
-        resolveModel: resolveModelSpy
-      }
-
-      engine = new PluginEngine('openai', [plugin])
-
-      await engine.executeImageWithPlugins(
-        'generateImage',
-        { model: mockImageModel, prompt: 'test' },
-        vi.fn().mockResolvedValue({ image: {} })
-      )
-
-      expect(resolveModelSpy).not.toHaveBeenCalled()
     })
   })
 

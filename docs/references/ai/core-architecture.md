@@ -171,10 +171,9 @@ src/main/ai/
 ├── runtime/                      ← aiSdk plus claudeCode / pi / dsh agent-session drivers
 ├── agentSession/                 ← agent-session topic host
 ├── agents/                       ← AgentJobsService, AgentTaskJobHandler, runAgentTask, prompt, heartbeat
-├── channels/                     ← ChannelManager + IM adapters (discord/feishu/qq/slack/telegram/wechat) + security/
 ├── streamManager/                ← AiStreamManager, listeners, persistence, dispatch
 ├── provider/                     ← provider config, endpoint resolution, custom providers
-├── mcp/                          ← McpRuntimeService / McpCatalogService, oauth, built-in servers
+├── mcp/                          ← McpRuntimeService / McpToolCacheService, oauth, built-in servers
 ├── skills/                       ← SkillService, SkillInstaller
 ├── contextBuild/                 ← context policy, compression, persisted tool outputs
 ├── inference/                    ← local embedding/OCR inference
@@ -183,7 +182,7 @@ src/main/ai/
 ├── observability/                ← AI trace adapters, local projection, sinks
 ├── messages/                     ← UI part → AI SDK part conversion
 ├── types/                        ← AppProviderId, merged types, request types
-└── utils/                        ← reasoning / model parameters / options / websearch
+└── utils/                        ← reasoning / model parameters / options
 
 src/main/ipc/handlers/ai.ts        ← IpcApi transport adapters
 src/renderer/services/aiTransport/ ← IpcChatTransport, StreamDispatchService, overlays

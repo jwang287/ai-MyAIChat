@@ -66,9 +66,6 @@ vi.mock('react-i18next', async (importOriginal) => {
       t: (key: string, options?: { count?: number; name?: string }) => {
         const translations: Record<string, string> = {
           'agent.session.new': 'New task',
-          'agent.session.workdir.delete.channels_count': `${options?.count} channels`,
-          'agent.session.workdir.delete.channels_empty': 'No channels will be changed.',
-          'agent.session.workdir.delete.channels_title': 'Channels changed to no work directory',
           'agent.session.workdir.delete.disk_preserved': 'The folder on disk and its files will not be deleted.',
           'agent.session.workdir.delete.more_count': `…and ${options?.count} more items`,
           'agent.session.workdir.delete.preview': `Deleting “${options?.name}” shows every impact.`,
@@ -173,10 +170,6 @@ const REFERENCES = {
   sessions: {
     items: SESSIONS.slice(0, 2).map(({ id, name }) => ({ id, name })),
     total: 5
-  },
-  channels: {
-    items: [{ id: 'channel-alpha', name: 'Release bot' }],
-    total: 1
   },
   tasks: {
     items: [{ id: 'task-alpha', name: 'Nightly review' }],
@@ -391,8 +384,6 @@ describe('WorkspaceSelector', () => {
     expect(dialog).toHaveTextContent('Review delete dialog')
     expect(dialog).not.toHaveTextContent('Unrelated session')
     expect(dialog).toHaveTextContent('…and 3 more items')
-    expect(dialog).toHaveTextContent('1 channels')
-    expect(dialog).toHaveTextContent('Release bot')
     expect(dialog).toHaveTextContent('1 scheduled tasks')
     expect(dialog).toHaveTextContent('Nightly review')
     expect(dialog).toHaveTextContent('/Users/jd/cherry-studio')

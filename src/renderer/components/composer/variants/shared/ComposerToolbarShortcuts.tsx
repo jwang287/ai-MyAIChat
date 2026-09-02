@@ -310,7 +310,7 @@ export const ComposerToolbarShortcuts = ({
   }
   const showModelRequiredToast = () => toast.error(t('code.model_required'))
 
-  // Localized drag feedback so screen readers announce tool names, not internal ids (e.g. "web-search").
+  // Localized drag feedback so screen readers announce tool names, not internal ids.
   const dragAccessibility = useMemo(() => {
     const nameOf = (id: string | number) => {
       const label = candidateById.get(String(id))?.label

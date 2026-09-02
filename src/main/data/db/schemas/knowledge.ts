@@ -94,6 +94,8 @@ export const knowledgeItemTable = sqliteTable(
     ...createUpdateTimestamps
   },
   (t) => [
+    // Keep the retired `note` value accepted so existing migrated databases remain
+    // schema-compatible. Runtime services exclude those legacy rows.
     check('knowledge_item_type_check', sql`${t.type} IN ('file', 'url', 'note', 'directory')`),
     check(
       'knowledge_item_status_check',

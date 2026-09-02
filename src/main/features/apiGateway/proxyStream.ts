@@ -2,7 +2,7 @@
  * Proxy Stream Service
  *
  * Routes API-gateway requests through main's `AiStreamManager` as an equal
- * subscriber (alongside WebContentsListener / ChannelAdapterListener), using a
+ * subscriber (alongside WebContentsListener), using a
  * one-shot non-persisting prompt stream. The resulting `UIMessageChunk` stream
  * is translated into each API's SSE / JSON shape by the adapter system, driven
  * from the listener via the adapter's push API.

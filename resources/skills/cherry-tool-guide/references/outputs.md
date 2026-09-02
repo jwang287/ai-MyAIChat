@@ -23,8 +23,7 @@ Declares your final deliverable file(s) so Cherry can surface them to the user.
 
 **It's a declaration, not a transfer.** `report_artifacts` makes Cherry aware of the
 deliverable in the UI; it does **not** push the file anywhere. To actually send a file to
-the user through an IM channel, use `mcp__cherry-tools__notify` instead (see
-[autonomy.md](autonomy.md)). Pick by intent:
+the user, use a normal Cherry chat response instead. Pick by intent:
 
 - Surface a finished file in the Cherry UI → `report_artifacts`.
 - Deliver a file to the user over a connected channel → `notify`.

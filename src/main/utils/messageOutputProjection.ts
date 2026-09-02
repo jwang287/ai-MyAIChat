@@ -10,10 +10,7 @@ import {
   type KbGrepMatch,
   kbGrepOutputSchema,
   kbReadOutputSchema,
-  kbSearchOutputSchema,
-  WEB_FETCH_TOOL_NAME,
-  WEB_SEARCH_TOOL_NAME,
-  webSearchOutputSchema
+  kbSearchOutputSchema
 } from '@shared/ai/builtinTools'
 import {
   type DeferredToolOutput,
@@ -30,12 +27,7 @@ import { isToolUIPart } from 'ai'
 export const DEFER_TOOL_OUTPUT_BYTES = 32 * 1024
 
 const CHERRY_TOOLS_MCP_SERVER = 'cherry-tools'
-const CITABLE_TOOL_NAMES: ReadonlySet<string> = new Set([
-  WEB_SEARCH_TOOL_NAME,
-  WEB_FETCH_TOOL_NAME,
-  KB_SEARCH_TOOL_NAME,
-  KB_READ_TOOL_NAME
-])
+const CITABLE_TOOL_NAMES: ReadonlySet<string> = new Set([KB_SEARCH_TOOL_NAME, KB_READ_TOOL_NAME])
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -76,11 +68,6 @@ function toCitationGrepMatches(matches: KbGrepMatch[]): KbGrepMatch[] {
 
 /** Keep only the schema-valid fields and bounded snippets needed to render citations. */
 function toCitationPayloadSkeleton(output: unknown): unknown | undefined {
-  const web = webSearchOutputSchema.safeParse(output)
-  if (web.success) {
-    return web.data.map((item) => ({ ...item, content: toCitationSnippet(item.content) }))
-  }
-
   const knowledgeSearch = kbSearchOutputSchema.safeParse(output)
   if (knowledgeSearch.success) {
     return knowledgeSearch.data.map((item) => ({ ...item, content: toCitationSnippet(item.content) }))

@@ -327,7 +327,7 @@ describe('processing settings pages', () => {
     ).toBeInTheDocument()
   })
 
-  it('uses the web search field treatment for document processing inputs', async () => {
+  it('uses the compact field treatment for document processing inputs', async () => {
     const { container } = render(<DocumentProcessingSettings />)
 
     await screen.findByText('settings.tool.file_processing.features.document_to_markdown.title')

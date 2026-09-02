@@ -10,15 +10,7 @@ export const CUSTOM_PROVIDER_TEXT_ENDPOINTS = [
   ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT
 ] as const
 
-export const CUSTOM_PROVIDER_IMAGE_ENDPOINTS = [
-  ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION,
-  ENDPOINT_TYPE.OPENAI_IMAGE_EDIT
-] as const
-
-export const CUSTOM_PROVIDER_ENDPOINTS = [
-  ...CUSTOM_PROVIDER_TEXT_ENDPOINTS,
-  ...CUSTOM_PROVIDER_IMAGE_ENDPOINTS
-] as const
+export const CUSTOM_PROVIDER_ENDPOINTS = [...CUSTOM_PROVIDER_TEXT_ENDPOINTS] as const
 
 export type CustomProviderTextEndpoint = (typeof CUSTOM_PROVIDER_TEXT_ENDPOINTS)[number]
 export type CustomProviderEndpoint = (typeof CUSTOM_PROVIDER_ENDPOINTS)[number]
@@ -42,9 +34,7 @@ const ENDPOINT_PATHS: Record<CustomProviderEndpoint, string> = {
   [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]: '/chat/completions',
   [ENDPOINT_TYPE.OPENAI_RESPONSES]: '/responses',
   [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: '/messages',
-  [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: '/models/{model}:generateContent',
-  [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: '/images/generations',
-  [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT]: '/images/edits'
+  [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: '/models/{model}:generateContent'
 }
 
 export function getCustomProviderDefaultChatEndpoint(

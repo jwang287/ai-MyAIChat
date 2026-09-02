@@ -196,7 +196,7 @@ describe('AnthropicMessageConverter.toUIMessages', () => {
         messages: [
           {
             role: 'assistant',
-            content: [{ type: 'tool_use', id: 'call_img', name: 'generate_image', input: {} }]
+            content: [{ type: 'tool_use', id: 'call_img', name: 'mcp__local-tools__render_image', input: {} }]
           },
           {
             role: 'user',
@@ -238,8 +238,8 @@ describe('AnthropicMessageConverter.toUIMessages', () => {
           {
             role: 'assistant',
             content: [
-              { type: 'tool_use', id: 'c1', name: 'generate_image', input: { prompt: 'first' } },
-              { type: 'tool_use', id: 'c2', name: 'generate_image', input: { prompt: 'second' } }
+              { type: 'tool_use', id: 'c1', name: 'mcp__local-tools__render_image', input: { prompt: 'first' } },
+              { type: 'tool_use', id: 'c2', name: 'mcp__local-tools__render_image', input: { prompt: 'second' } }
             ]
           },
           {

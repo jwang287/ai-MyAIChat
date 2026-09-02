@@ -11,7 +11,7 @@ const callTool = vi.fn<(req: unknown) => Promise<McpCallToolResponse>>()
 vi.mock('@application', async () => {
   const { mockApplicationFactory } = await import('@test-mocks/main/application')
   return mockApplicationFactory({
-    McpCatalogService: { listTools },
+    McpToolCacheService: { listTools },
     McpRuntimeService: { callTool }
   } as Record<string, unknown>)
 })
@@ -20,7 +20,7 @@ vi.mock('@application', async () => {
   return {
     application: {
       get: (name: string) => {
-        if (name === 'McpCatalogService') return { listTools }
+        if (name === 'McpToolCacheService') return { listTools }
         if (name === 'McpRuntimeService') return { callTool }
         throw new Error(`unexpected service: ${name}`)
       }

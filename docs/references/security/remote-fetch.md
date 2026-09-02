@@ -33,15 +33,15 @@ blocked.
 
 `fetchRemoteText` reads this preference and passes it to `resolveRemoteFetchUrl` as
 `allowPrivateNetwork`. When on — the default — both the literal and the DNS private-address
-rejections are skipped, so `@cherry/fetch`, `web_fetch`, web search extraction, and citation previews
+rejections are skipped, so `@cherry/fetch` and citation previews
 can reach `localhost`, a LAN NAS, or a proxy-only host. Every other rule above still applies: scheme
 and credential validation, connection pinning, redirect limits, and the response size bound.
 
 Turning it off restores the full guard.
 
 `sanitizeRemoteUrl` takes the same flag as its third argument. Pass it wherever the literal guard
-runs as a precheck in front of `fetchRemoteText` — citation preview and the web-search fetch
-fallback do — otherwise the precheck rejects a target the pinned fetch would have accepted, and the
+runs as a precheck in front of `fetchRemoteText` for citation previews — otherwise the precheck
+rejects a target the pinned fetch would have accepted, and the
 preference silently does nothing on that path. Callers that guard a `net.fetch` of a
 provider-configured endpoint keep the default and rely on `configuredApiHost` instead.
 

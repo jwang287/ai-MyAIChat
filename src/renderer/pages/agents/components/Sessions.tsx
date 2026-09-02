@@ -35,7 +35,6 @@ import type { AgentSessionsSource } from '@renderer/hooks/resourceViewSources'
 import { useCloseConversationTabs } from '@renderer/hooks/tab'
 import { useConversationNavigation } from '@renderer/hooks/useConversationNavigation'
 import { useImageCaptureTargets } from '@renderer/hooks/useImageCaptureTargets'
-import { useNotesSettings } from '@renderer/hooks/useNotesSettings'
 import { useOptimisticResourceName } from '@renderer/hooks/useOptimisticResourceName'
 import { usePins } from '@renderer/hooks/usePins'
 import { useSidebarFavorites } from '@renderer/hooks/useSidebarFavorites'
@@ -371,18 +370,12 @@ const Sessions = ({
     }
   }, [])
 
-  const { notesPath } = useNotesSettings()
   const [exportMenuOptions] = useMultiplePreferences({
     docx: 'data.export.menus.docx',
     image: 'data.export.menus.image',
-    joplin: 'data.export.menus.joplin',
     markdown: 'data.export.menus.markdown',
     markdown_reason: 'data.export.menus.markdown_reason',
-    notion: 'data.export.menus.notion',
-    obsidian: 'data.export.menus.obsidian',
-    plain_text: 'data.export.menus.plain_text',
-    siyuan: 'data.export.menus.siyuan',
-    yuque: 'data.export.menus.yuque'
+    plain_text: 'data.export.menus.plain_text'
   })
   const [sessionDisplayMode, setSessionDisplayMode] = usePreference('agent.session.display_mode')
   const [storedPanePosition, setStoredPanePosition] = usePreference('agent.session.position')
@@ -432,15 +425,6 @@ const Sessions = ({
       delayMs: IMAGE_CAPTURE_START_DELAY_MS,
       rejectPendingActions: rejectPendingAgentSessionImageActions
     })
-
-  const { data: channels } = useQuery('/agent-channels', { enabled: dataEnabled })
-  const channelTypeMap = useMemo(() => {
-    const map: Record<string, string> = {}
-    for (const ch of channels ?? []) {
-      if (ch.sessionId) map[ch.sessionId] = ch.type
-    }
-    return map
-  }, [channels])
 
   const displayMode: AgentSessionDisplayMode = isRightPanel
     ? 'time'
@@ -955,19 +939,6 @@ const Sessions = ({
     [queueImageCaptureTarget, showSessionImageExportToast, t]
   )
 
-  const handleSaveSessionToNotes = useCallback(
-    async (session: AgentSessionEntity) => {
-      const [{ agentSessionToMarkdown, getAgentSessionExportTitle }, { exportContentToNotes }] = await Promise.all([
-        import('@renderer/services/agentSessionExport'),
-        import('@renderer/services/ExportService')
-      ])
-      const title = getAgentSessionExportTitle(session)
-      const markdown = await agentSessionToMarkdown(session, undefined, undefined, getSessionExportOptions(session))
-      await exportContentToNotes(title, markdown, notesPath)
-    },
-    [getSessionExportOptions, notesPath]
-  )
-
   const handleSaveSessionToKnowledge = useCallback(
     async (session: AgentSessionEntity) => {
       try {
@@ -1033,68 +1004,6 @@ const Sessions = ({
         markdown,
         fileName: removeSpecialCharactersForFileName(title)
       })
-    },
-    [getSessionExportOptions]
-  )
-
-  const handleExportSessionNotion = useCallback(
-    async (session: AgentSessionEntity) => {
-      const [{ getAgentSessionExportTitle, getAgentSessionMessagesForExport }, { exportMessagesToNotion }] =
-        await Promise.all([import('@renderer/services/agentSessionExport'), import('@renderer/services/ExportService')])
-      const title = getAgentSessionExportTitle(session)
-      const messages = await getAgentSessionMessagesForExport(session, getSessionExportOptions(session))
-      await exportMessagesToNotion(title, messages)
-    },
-    [getSessionExportOptions]
-  )
-
-  const handleExportSessionYuque = useCallback(
-    async (session: AgentSessionEntity) => {
-      const [{ agentSessionToMarkdown, getAgentSessionExportTitle }, { exportMarkdownToYuque }] = await Promise.all([
-        import('@renderer/services/agentSessionExport'),
-        import('@renderer/services/ExportService')
-      ])
-      const title = getAgentSessionExportTitle(session)
-      const markdown = await agentSessionToMarkdown(session, undefined, undefined, getSessionExportOptions(session))
-      await exportMarkdownToYuque(title, markdown)
-    },
-    [getSessionExportOptions]
-  )
-
-  const handleExportSessionObsidian = useCallback(
-    async (session: AgentSessionEntity) => {
-      const [{ getAgentSessionExportTitle, getAgentSessionMessagesForExport }, { default: ObsidianExportPopup }] =
-        await Promise.all([
-          import('@renderer/services/agentSessionExport'),
-          import('@renderer/components/ObsidianExportPopup')
-        ])
-      const title = getAgentSessionExportTitle(session)
-      const messages = await getAgentSessionMessagesForExport(session, getSessionExportOptions(session))
-      await ObsidianExportPopup.show({ title: title.replace(/\\/g, '_'), messages, processingMethod: '3' })
-    },
-    [getSessionExportOptions]
-  )
-
-  const handleExportSessionJoplin = useCallback(
-    async (session: AgentSessionEntity) => {
-      const [{ getAgentSessionExportTitle, getAgentSessionMessagesForExport }, { exportMarkdownToJoplin }] =
-        await Promise.all([import('@renderer/services/agentSessionExport'), import('@renderer/services/ExportService')])
-      const title = getAgentSessionExportTitle(session)
-      const messages = await getAgentSessionMessagesForExport(session, getSessionExportOptions(session))
-      await exportMarkdownToJoplin(title, messages)
-    },
-    [getSessionExportOptions]
-  )
-
-  const handleExportSessionSiyuan = useCallback(
-    async (session: AgentSessionEntity) => {
-      const [{ agentSessionToMarkdown, getAgentSessionExportTitle }, { exportMarkdownToSiyuan }] = await Promise.all([
-        import('@renderer/services/agentSessionExport'),
-        import('@renderer/services/ExportService')
-      ])
-      const title = getAgentSessionExportTitle(session)
-      const markdown = await agentSessionToMarkdown(session, undefined, undefined, getSessionExportOptions(session))
-      await exportMarkdownToSiyuan(title, markdown)
     },
     [getSessionExportOptions]
   )
@@ -1241,11 +1150,7 @@ const Sessions = ({
           closeConversationTabs('agents', result.deletedSessionIds ?? [])
         }
         try {
-          await Promise.all(
-            ['/agents', '/agent-sessions', '/agent-workspaces', '/pins', '/agent-channels'].map((key) =>
-              invalidate(key)
-            )
-          )
+          await Promise.all(['/agents', '/agent-sessions', '/agent-workspaces', '/pins'].map((key) => invalidate(key)))
         } catch (err) {
           logger.warn('Failed to refresh after deleting Agent from session group', { agentId, err })
         }
@@ -1326,7 +1231,7 @@ const Sessions = ({
 
         try {
           await Promise.all([
-            ...['/agent-sessions', '/agent-workspaces', '/pins', '/agent-channels'].map((key) => invalidate(key)),
+            ...['/agent-sessions', '/agent-workspaces', '/pins'].map((key) => invalidate(key)),
             reload(),
             refetchWorkspaces()
           ])
@@ -1901,16 +1806,10 @@ const Sessions = ({
       onCopyMarkdown: handleCopySessionMarkdown,
       onCopyPlainText: handleCopySessionPlainText,
       onExportImage: handleExportSessionImage,
-      onExportJoplin: handleExportSessionJoplin,
       onExportMarkdown: handleExportSessionMarkdown,
       onExportMarkdownReason: handleExportSessionMarkdownReason,
-      onExportNotion: handleExportSessionNotion,
-      onExportObsidian: handleExportSessionObsidian,
-      onExportSiyuan: handleExportSessionSiyuan,
       onExportWord: handleExportSessionWord,
-      onExportYuque: handleExportSessionYuque,
-      onSaveToKnowledge: handleSaveSessionToKnowledge,
-      onSaveToNotes: handleSaveSessionToNotes
+      onSaveToKnowledge: handleSaveSessionToKnowledge
     }),
     [
       exportMenuOptions,
@@ -1919,16 +1818,10 @@ const Sessions = ({
       handleCopySessionPlainText,
       handleCopySessionImage,
       handleExportSessionImage,
-      handleExportSessionJoplin,
       handleExportSessionMarkdown,
       handleExportSessionMarkdownReason,
-      handleExportSessionNotion,
-      handleExportSessionObsidian,
-      handleExportSessionSiyuan,
       handleExportSessionWord,
-      handleExportSessionYuque,
-      handleSaveSessionToKnowledge,
-      handleSaveSessionToNotes
+      handleSaveSessionToKnowledge
     ]
   )
 
@@ -2036,7 +1929,6 @@ const Sessions = ({
       {refreshError && <ResourceRefreshErrorBanner onRetry={handleRetry} retrying={listValidating} />}
       <SessionListBody
         activeSessionId={activeSessionId}
-        channelTypeMap={channelTypeMap}
         displayMode={displayMode}
         error={listError}
         isDraggable={isDraggableMode && !isRightPanel}
@@ -2099,7 +1991,6 @@ const Sessions = ({
 
 interface SessionListBodyProps {
   activeSessionId: string | null
-  channelTypeMap: Record<string, string>
   displayMode: AgentSessionDisplayMode
   error?: unknown
   isDraggable: boolean
@@ -2119,7 +2010,6 @@ interface SessionListBodyProps {
 
 function SessionListBody({
   activeSessionId,
-  channelTypeMap,
   displayMode,
   error,
   isDraggable,
@@ -2144,7 +2034,6 @@ function SessionListBody({
         key={session.id}
         session={session}
         active={session.id === activeSessionId}
-        channelType={channelTypeMap[session.id]}
         pinned={session.pinned}
         // The slot exists to line a row up under its group's icon. A pinned row is lifted out to the
         // pinned section, where there is no such icon above it, so it indents against nothing.
@@ -2164,7 +2053,6 @@ function SessionListBody({
     ),
     [
       activeSessionId,
-      channelTypeMap,
       displayMode,
       onDeleteSession,
       onOpenInNewTab,

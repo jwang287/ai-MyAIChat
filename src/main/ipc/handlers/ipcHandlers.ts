@@ -6,7 +6,6 @@ import { apiGatewayHandlers } from './apiGateway'
 import { appHandlers } from './app'
 import { backupHandlers } from './backup'
 import { binaryHandlers } from './binary'
-import { channelHandlers } from './channel'
 import { cherryinHandlers } from './cherryin'
 import { citationHandlers } from './citation'
 import { codeCliHandlers } from './codeCli'
@@ -20,7 +19,6 @@ import { hermesDashboardHandlers } from './hermesDashboard'
 import { knowledgeHandlers } from './knowledge'
 import { localModelHandlers } from './localModel'
 import { mcpHandlers } from './mcp'
-import { miniAppHandlers } from './miniApp'
 import { navigationHandlers } from './navigation'
 import { notificationHandlers } from './notification'
 import { oauthHandlers } from './oauth'
@@ -36,8 +34,6 @@ import { skillHandlers } from './skill'
 import { systemHandlers } from './system'
 import { tabHandlers } from './tab'
 import { translateHandlers } from './translate'
-import { webSearchHandlers } from './webSearch'
-import { webviewHandlers } from './webview'
 import { windowHandlers } from './window'
 
 /**
@@ -55,7 +51,6 @@ export const ipcHandlers: IpcHandlersFor<IpcRequestSchemas> = {
   ...appHandlers,
   ...backupHandlers,
   ...binaryHandlers,
-  ...channelHandlers,
   ...cherryinHandlers,
   ...citationHandlers,
   ...codeCliHandlers,
@@ -69,7 +64,6 @@ export const ipcHandlers: IpcHandlersFor<IpcRequestSchemas> = {
   ...knowledgeHandlers,
   ...localModelHandlers,
   ...mcpHandlers,
-  ...miniAppHandlers,
   ...navigationHandlers,
   ...notificationHandlers,
   ...oauthHandlers,
@@ -85,7 +79,5 @@ export const ipcHandlers: IpcHandlersFor<IpcRequestSchemas> = {
   ...systemHandlers,
   ...tabHandlers,
   ...translateHandlers,
-  ...webSearchHandlers,
-  ...webviewHandlers,
   ...windowHandlers
 }

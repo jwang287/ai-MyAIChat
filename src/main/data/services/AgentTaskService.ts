@@ -1,6 +1,6 @@
 /**
  * Read-side service for agent scheduled tasks: list / get / run logs plus the
- * JobScheduleSnapshot → ScheduledTaskEntity mapping and subscription reads.
+ * JobScheduleSnapshot → ScheduledTaskEntity mapping.
  * User-driven task mutations go through `AgentJobsService` (IpcApi
  * `ai.agent.task.*`); the workspace cleanup methods below are DB-only
  * transaction primitives used by workspace deletion.
@@ -8,7 +8,6 @@
 
 import { notifyDataApiDataChange } from '@data/dataApiDataChange'
 import type { DbOrTx } from '@data/db/types'
-import { agentChannelService } from '@data/services/AgentChannelService'
 import { agentSessionService } from '@data/services/AgentSessionService'
 import { registerDataService } from '@data/services/dataServiceRegistry'
 import { jobScheduleService } from '@data/services/JobScheduleService'
@@ -283,7 +282,6 @@ export class AgentTaskService {
     if (!tmpl) {
       throw DataApiErrorFactory.invalidOperation('read task', 'invalid agent task template')
     }
-    const channelRows = agentChannelService.getSubscribedChannels(snapshot.id)
     const reuse = readTaskSessionReuse(snapshot.metadata)
     return {
       id: snapshot.id,
@@ -298,7 +296,6 @@ export class AgentTaskService {
       workspace: tmpl.workspace,
       reuseSession: reuse.enabled,
       reuseSessionId: reuse.enabled ? reuseSessionId : null,
-      channelIds: channelRows.map((c) => c.id),
       nextRun: snapshot.nextRun,
       lastRun: snapshot.lastRun,
       enabled: snapshot.enabled,

@@ -19,7 +19,6 @@ const PACKAGE_JSON_FILE = path.join(ROOT_DIR, 'package.json')
 const ROUTE_TREE_FILE = path.join(ROOT_DIR, 'src/renderer/routeTree.gen.ts')
 const SIDEBAR_FILE = path.join(ROOT_DIR, 'src/renderer/utils/sidebar.ts')
 const PROVIDERS_FILE = path.join(ROOT_DIR, 'packages/provider-registry/data/providers.json')
-const AGENT_CHANNELS_FILE = path.join(ROOT_DIR, 'src/shared/data/api/schemas/agentChannels.ts')
 const JOBS_FILE = path.join(ROOT_DIR, 'src/shared/data/api/schemas/jobs.ts')
 
 interface PackageJson {
@@ -63,7 +62,6 @@ export interface ProductManifest {
   }
   locales: Array<{ value: string; label: string; flag: string }>
   agents: {
-    channelTypes: string[]
     scheduleTriggerKinds: string[]
     codeCli: {
       route: string
@@ -149,10 +147,8 @@ function readPrimaryRoutes(): ProductManifest['routes']['primary'] {
   const project = new Project({ skipAddingFilesFromTsConfig: true })
   const sourceFile = project.addSourceFileAtPath(SIDEBAR_FILE)
   const publicInitializer = sourceFile.getVariableDeclarationOrThrow('SIDEBAR_APPS').getInitializerOrThrow()
-  if (!Node.isIdentifier(publicInitializer)) {
-    throw new Error('SIDEBAR_APPS must reference the sidebar definition array')
-  }
-  const initializer = sourceFile.getVariableDeclarationOrThrow(publicInitializer.getText()).getInitializerOrThrow()
+  const definitionsName = Node.isIdentifier(publicInitializer) ? publicInitializer.getText() : 'SIDEBAR_APP_DEFINITIONS'
+  const initializer = sourceFile.getVariableDeclarationOrThrow(definitionsName).getInitializerOrThrow()
   const definitions = initializer.getFirstDescendantByKindOrThrow(SyntaxKind.ArrayLiteralExpression)
 
   return definitions.getElements().map((element) => {
@@ -163,20 +159,6 @@ function readPrimaryRoutes(): ProductManifest['routes']['primary'] {
       id: readStringProperty(element, 'id'),
       path: readStringProperty(element, 'routePrefix')
     }
-  })
-}
-
-function readChannelTypes(): string[] {
-  const project = new Project({ skipAddingFilesFromTsConfig: true })
-  const sourceFile = project.addSourceFileAtPath(AGENT_CHANNELS_FILE)
-  const initializer = sourceFile.getVariableDeclarationOrThrow('AgentChannelTypeSchema').getInitializerOrThrow()
-  const values = initializer.getFirstDescendantByKindOrThrow(SyntaxKind.ArrayLiteralExpression)
-
-  return values.getElements().map((element) => {
-    if (!Node.isStringLiteral(element)) {
-      throw new Error(`AgentChannelTypeSchema contains a non-literal value: ${element.getText()}`)
-    }
-    return element.getLiteralValue()
   })
 }
 
@@ -215,7 +197,6 @@ function readAgentCapabilities(primaryRoutes: ProductManifest['routes']['primary
   }
 
   return {
-    channelTypes: readChannelTypes(),
     scheduleTriggerKinds: readScheduleTriggerKinds(),
     codeCli: {
       route: codeCliRoute,

@@ -29,7 +29,7 @@ const DEFAULT_PREFERENCE_OPTIONS: PreferenceUpdateOptions = { optimistic: true }
  * const [theme, setTheme] = usePreference('ui.theme_mode')
  *
  * // Pessimistic updates for critical settings
- * const [webdavPassword, setWebdavPassword] = usePreference('data.backup.webdav.pass', { optimistic: false })
+ * const [language, setLanguage] = usePreference('ui.language', { optimistic: false })
  *
  * // Simple optimistic updates
  * const [fontSize, setFontSize] = usePreference('chat.message.font_size', {
@@ -141,9 +141,9 @@ export function usePreference<K extends UnifiedPreferenceKeyType>(
  * })
  *
  * // Pessimistic updates for critical settings
- * const [webdavSettings, setWebdavSettings] = useMultiplePreferences({
- *   password: 'data.backup.webdav.pass',
- *   host: 'data.backup.webdav.host'
+ * const [displaySettings, setDisplaySettings] = useMultiplePreferences({
+ *   theme: 'ui.theme_mode',
+ *   fontSize: 'chat.message.font_size'
  * }, { optimistic: false })
  *
  * // Accessing individual values with type safety (defaults applied automatically)

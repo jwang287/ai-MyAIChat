@@ -6,12 +6,10 @@ import { AgentJobsService } from '@main/ai/agents/AgentJobsService'
 import { AgentSessionDeliveryService } from '@main/ai/agentSession/AgentSessionDeliveryService'
 import { AgentSessionRuntimeService } from '@main/ai/agentSession/AgentSessionRuntimeService'
 import { AiService } from '@main/ai/AiService'
-import { ChannelManager } from '@main/ai/channels'
 import { EmbeddingInferenceService } from '@main/ai/inference/EmbeddingInferenceService'
 import { OcrInferenceService } from '@main/ai/inference/OcrInferenceService'
-import { McpCatalogService } from '@main/ai/mcp/McpCatalogService'
-import { McpPackageService } from '@main/ai/mcp/McpPackageService'
 import { McpRuntimeService } from '@main/ai/mcp/McpRuntimeService'
+import { McpToolCacheService } from '@main/ai/mcp/McpToolCacheService'
 import { ClaudeCodeTraceBridgeService, NodeTraceService, TraceStorageService } from '@main/ai/observability'
 import {
   ClaudeCodeProcessManager,
@@ -27,7 +25,6 @@ import { WindowManager } from '@main/core/window/WindowManager'
 import { ApiGatewayService } from '@main/features/apiGateway/ApiGatewayService'
 import { FileProcessingService, TesseractRuntimeService } from '@main/features/fileProcessing'
 import { KnowledgeService, KnowledgeVectorStoreService } from '@main/features/knowledge'
-import { MiniAppRuntimeService } from '@main/features/miniApp/runtime/MiniAppRuntimeService'
 import { IpcApiService } from '@main/ipc/IpcApiService'
 import { AnalyticsService } from '@main/services/AnalyticsService'
 import { AppMenuService } from '@main/services/AppMenuService'
@@ -42,7 +39,6 @@ import { ConversationNavigationService } from '@main/services/ConversationNaviga
 import { DeepSeekHarnessService } from '@main/services/deepSeekHarness'
 import { DirectoryTreeManager, FileManager } from '@main/services/file'
 import { HermesDashboardService } from '@main/services/HermesDashboardService'
-import { LanTransferService } from '@main/services/lanTransfer'
 import { MainNetworkDevtoolsService } from '@main/services/mainNetworkDevtools'
 import { MainWindowService } from '@main/services/MainWindowService'
 import { MediaProtocolService } from '@main/services/mediaProtocol'
@@ -63,8 +59,6 @@ import { StorageMonitorService } from '@main/services/StorageMonitorService'
 import { SubWindowService } from '@main/services/SubWindowService'
 import { ThemeService } from '@main/services/ThemeService'
 import { TrayService } from '@main/services/TrayService'
-import { WebSearchService } from '@main/services/webSearch'
-import { WebviewService } from '@main/services/WebviewService'
 
 /**
  * Centralized service registry.
@@ -108,7 +102,6 @@ export const services = {
   CitationPreviewService,
   DeepSeekHarnessService,
   HermesDashboardService,
-  LanTransferService,
   FileManager,
   DirectoryTreeManager,
   FileProcessingService,
@@ -127,15 +120,12 @@ export const services = {
   StorageMonitorService,
   PythonService,
   TrayService,
-  WebSearchService,
-  WebviewService,
   OAuthRuntimeService,
   MainWindowService,
   NotificationService,
   QuickAssistantService,
-  McpPackageService,
   McpRuntimeService,
-  McpCatalogService,
+  McpToolCacheService,
   BinaryManager,
   OpenClawService,
   PdfTranslationService,
@@ -143,7 +133,6 @@ export const services = {
   AgentSessionRuntimeService,
   AgentSessionDeliveryService,
   AgentJobsService,
-  ChannelManager,
   AiService,
   ClaudeCodeWarmQueryManager,
   ClaudeCodeSessionStateService,
@@ -152,7 +141,6 @@ export const services = {
   OcrInferenceService,
   KnowledgeService,
   KnowledgeVectorStoreService,
-  MiniAppRuntimeService,
   ApiGatewayService,
   AppUpdaterService,
   AutoBackupService,

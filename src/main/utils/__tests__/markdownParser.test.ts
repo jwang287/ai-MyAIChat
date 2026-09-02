@@ -96,8 +96,8 @@ Body`
 
   it('reads skill runtime fields and nested metadata version', async () => {
     vi.mocked(fs.promises.readFile).mockResolvedValue(`---
-name: parallel-web-search
-slug: parallel-web-search
+name: parallel-task-search
+slug: parallel-task-search
 context: fork
 agent: parallel:parallel-subagent
 allowed-tools: Bash(parallel-cli:*)
@@ -109,7 +109,7 @@ Body`)
 
     const metadata = await parseSkillMetadata('/abs/skill', 'skills/git', 'skills')
 
-    expect(metadata.slug).toBe('parallel-web-search')
+    expect(metadata.slug).toBe('parallel-task-search')
     expect(metadata.version).toBe('1.0.12')
     expect(metadata).toMatchObject({
       context: 'fork',

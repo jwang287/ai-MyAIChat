@@ -95,7 +95,7 @@ function getUseCacheDefaultValue<K extends UseCacheKey>(key: K): InferUseCacheVa
  * match template patterns (finds template, returns its default).
  *
  * Note: template default values are shared across all instances — e.g., all
- * `web_search.provider.last_used_key.*` keys fall back to the single default
+ * `ocr.provider.last_used_key.*` keys fall back to the single default
  * `''`. This mirrors getUseCacheDefaultValue semantics.
  */
 function getSharedCacheDefaultValue<K extends SharedCacheKey>(key: K): InferSharedCacheValue<K> | undefined {
@@ -134,7 +134,7 @@ function getSharedCacheDefaultValue<K extends SharedCacheKey>(key: K): InferShar
  * // TypeScript infers scrollPos as number
  *
  * // With custom initial value
- * const [generating, setGenerating] = useCache('chat.web_search.searching', true)
+ * const [draft, setDraft] = useCache('chat.composer_draft.topic-1')
  *
  * // Update the value
  * setResourcesPath('/path/to/resources')
@@ -237,9 +237,9 @@ export function useCache<K extends UseCacheKey>(
  * Data is lost when the app restarts.
  *
  * Supports both fixed keys and template keys (aligned with useCache):
- * - Fixed keys: `useSharedCache('chat.web_search.active_searches')`
- * - Template keys: `useSharedCache('web_search.provider.last_used_key.google')`
- *   matches schema entry `'web_search.provider.last_used_key.${providerId}'`
+ * - Fixed keys: `useSharedCache('chat.multi_select_mode')`
+ * - Template keys: `useSharedCache('ocr.provider.last_used_key.google')`
+ *   matches schema entry `'ocr.provider.last_used_key.${providerId}'`
  *
  * Template-instance defaults are shared across all matching instances (inherited
  * from useCache semantics) — the schema default is written to cache on hook mount.
@@ -251,10 +251,10 @@ export function useCache<K extends UseCacheKey>(
  * @example
  * ```typescript
  * // Fixed key
- * const [active, setActive] = useSharedCache('chat.web_search.active_searches')
+ * const [isMultiSelect, setIsMultiSelect] = useSharedCache('chat.multi_select_mode')
  *
- * // Template key (schema: 'web_search.provider.last_used_key.${providerId}')
- * const [lastKey, setLastKey] = useSharedCache('web_search.provider.last_used_key.google')
+ * // Template key (schema: 'ocr.provider.last_used_key.${providerId}')
+ * const [lastKey, setLastKey] = useSharedCache('ocr.provider.last_used_key.google')
  *
  * // Changes automatically sync to all open windows
  * setLastKey('api-key-1')
@@ -294,7 +294,7 @@ export function useSharedCache<K extends SharedCacheKey>(
    *
    * Template-instance defaults fall through getSharedCacheDefaultValue, which
    * resolves the concrete key back to its schema template and returns the
-   * shared default (e.g. all 'web_search.provider.last_used_key.*' instances
+   * shared default (e.g. all 'ocr.provider.last_used_key.*' instances
    * share the single default '').
    */
   useEffect(() => {

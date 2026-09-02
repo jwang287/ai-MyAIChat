@@ -3,12 +3,12 @@ import type { KnowledgeItem, KnowledgeItemOf } from '@shared/data/types/knowledg
 
 import { probeKnowledgeFile, probeKnowledgeSourcePath } from './pathStorage'
 
-export type IndexableKnowledgeItem = KnowledgeItemOf<'file' | 'url' | 'note'>
+export type IndexableKnowledgeItem = KnowledgeItemOf<'file' | 'url'>
 
 export type ContainerKnowledgeItem = KnowledgeItemOf<'directory'>
 
 export function isIndexableKnowledgeItem(item: KnowledgeItem): item is IndexableKnowledgeItem {
-  return item.type === 'file' || item.type === 'url' || item.type === 'note'
+  return item.type === 'file' || item.type === 'url'
 }
 
 export function isContainerKnowledgeItem(item: KnowledgeItem): item is ContainerKnowledgeItem {
@@ -26,11 +26,10 @@ export function isContainerKnowledgeItem(item: KnowledgeItem): item is Container
 export type MaterialFieldSource =
   | Pick<KnowledgeItemOf<'file'>, 'id' | 'type' | 'data'>
   | Pick<KnowledgeItemOf<'url'>, 'id' | 'type' | 'data'>
-  | Pick<KnowledgeItemOf<'note'>, 'id' | 'type' | 'data'>
 
 /**
  * A material's stable relative path. A file uses its stored path (the processed
- * artifact when present). A url or note uses its captured snapshot path — a real
+ * artifact when present). A URL uses its captured snapshot path — a real
  * base file under `raw/`, materialized before the material is stamped (the index
  * job's ensure-snapshot step, or the vector migrator), so it is always present
  * here; a missing one is an invariant violation, not a fallback case.
@@ -53,8 +52,8 @@ const toSourceState = (probe: PathReadability): KnowledgeItemSourceState =>
 
 /**
  * Classify a knowledge item's rebuild source: a directory from its original folder (`data.source`), a
- * file leaf from its own material file (`indexedRelativePath ?? relativePath`); note/url always
- * rebuild from the DB / network. The `unverifiable` state (a transient/permission error rather than
+ * file leaf from its own material file (`indexedRelativePath ?? relativePath`); URLs rebuild from
+ * their snapshot or the network. The `unverifiable` state (a transient/permission error rather than
  * a genuine ENOENT) lets the admission gate avoid telling the user to delete a source that may still
  * exist. Reindex deletes a subtree's vectors before re-reading, so neither `missing` nor
  * `unverifiable` may proceed — both would wipe vectors with nothing to rebuild from.

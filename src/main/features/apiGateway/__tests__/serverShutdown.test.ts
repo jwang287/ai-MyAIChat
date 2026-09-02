@@ -25,7 +25,7 @@ vi.mock('@application', async () => {
       // port 0 => OS picks a free port, so tests never collide.
       get: (key: string) => (key.endsWith('port') ? 0 : '127.0.0.1')
     },
-    McpCatalogService: {
+    McpToolCacheService: {
       warmToolsCache: mocks.warmToolsCache,
       listTools: mocks.listTools,
       listResources: vi.fn(async () => []),

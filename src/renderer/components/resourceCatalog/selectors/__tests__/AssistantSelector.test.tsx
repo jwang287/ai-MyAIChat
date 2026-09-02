@@ -203,7 +203,6 @@ const ASSISTANTS_RESPONSE = {
         mcpMode: 'auto',
         maxToolCalls: 20,
         enableMaxToolCalls: true,
-        enableWebSearch: false,
         customParameters: []
       },
       modelId: 'provider::old-model',
@@ -233,7 +232,6 @@ const ASSISTANTS_RESPONSE = {
         mcpMode: 'auto',
         maxToolCalls: 20,
         enableMaxToolCalls: true,
-        enableWebSearch: false,
         customParameters: []
       },
       modelId: 'provider::old-model',

@@ -515,6 +515,46 @@ describe('AiUsageRecordService', () => {
     }
   })
 
+  it('keeps historical image records in the database but excludes them from visible usage data', () => {
+    aiUsageRecordService.recordInvocations([
+      invocation({ requestId: 'visible-language', completedAt: 2_000 }),
+      invocation({
+        requestId: 'historical-image',
+        context: context({ messageRef: null, pricingSnapshot: null }),
+        modality: 'image',
+        usage: undefined,
+        imageCount: 1,
+        completedAt: 2_001
+      })
+    ])
+
+    expect(
+      dbh.db
+        .select()
+        .from(aiUsageRecordTable)
+        .all()
+        .map((row) => row.requestId)
+    ).toEqual(['visible-language', 'historical-image'])
+    expect(aiUsageRecordService.list({ limit: 10 }).items.map((item) => item.requestId)).toEqual(['visible-language'])
+    expect(
+      aiUsageRecordService.stats({
+        from: 0,
+        to: 10_000,
+        metric: 'requests',
+        groupBy: 'provider',
+        limit: 10
+      }).totals
+    ).toMatchObject({ recordCount: 1, requestCount: 1 })
+    expect(
+      aiUsageRecordService.timeline({
+        from: 0,
+        to: 10_000,
+        metric: 'requests',
+        limit: 10
+      }).buckets
+    ).toMatchObject([{ recordCount: 1, requestCount: 1 }])
+  })
+
   it('counts logical requests separately from stored rows in stats and timeline', () => {
     aiUsageRecordService.recordLegacyAggregatesTx(dbh.db, [
       {

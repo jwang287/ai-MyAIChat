@@ -4,13 +4,10 @@ import type { SidebarAppId } from '@renderer/utils/sidebar'
 import {
   getOrderedVisibleSidebarFavoriteItems,
   getOrderedVisibleSidebarFavorites,
-  getSidebarMiniAppFavoriteIds,
   removeSidebarEntityFavorite,
-  removeSidebarMiniApp,
   reorderSidebarFavorites,
   setSidebarAppPinned,
-  toggleSidebarEntityFavorite,
-  toggleSidebarMiniApp
+  toggleSidebarEntityFavorite
 } from '@renderer/utils/sidebar'
 import type { SidebarFavoriteItem } from '@shared/data/preference/preferenceTypes'
 import { useCallback, useMemo } from 'react'
@@ -19,15 +16,8 @@ import { useTranslation } from 'react-i18next'
 /**
  * Single entry point for the `ui.sidebar.favorites` preference.
  *
- * `favorites` is the full ordered mixed list (apps and mini apps interleaved) the
- * sidebar renders and drag-reorders as one list; `reorderFavorites` persists a new
- * mixed order. The partitioned `appFavorites` / `miniAppFavoriteIds` remain for
- * surfaces (launchpad, mini app menu) that need to know a single type's membership
- * (e.g. pin state), and `setAppPinned` / `toggleMiniApp` / `removeMiniApp` mutate
- * membership. The launchpad owns its own tile ordering elsewhere (built-in apps via
- * `ui.launchpad.app_order`, mini apps via `orderKey`), so favorites carries the
- * sidebar order only. Every mutation goes through the mix-preserving helpers in
- * `utils/sidebar`, so components never touch the raw `type` tags.
+ * `favorites` is the ordered sidebar list. Every mutation goes through the
+ * centralized helpers in `utils/sidebar`, so components never touch raw tags.
  */
 export function useSidebarFavorites() {
   const { t } = useTranslation()
@@ -35,7 +25,6 @@ export function useSidebarFavorites() {
 
   const favoriteItems = useMemo(() => getOrderedVisibleSidebarFavoriteItems(favorites), [favorites])
   const appFavorites = useMemo(() => getOrderedVisibleSidebarFavorites(favorites), [favorites])
-  const miniAppFavoriteIds = useMemo(() => getSidebarMiniAppFavoriteIds(favorites), [favorites])
   const agentFavoriteIds = useMemo(
     () => favoriteItems.flatMap((favorite) => (favorite.type === 'agent' ? [favorite.id] : [])),
     [favoriteItems]
@@ -57,14 +46,6 @@ export function useSidebarFavorites() {
   const setAppPinned = useCallback(
     (id: SidebarAppId, pinned: boolean) => persist(setSidebarAppPinned(favorites, id, pinned)),
     [favorites, persist]
-  )
-  const toggleMiniApp = useCallback((id: string) => persist(toggleSidebarMiniApp(favorites, id)), [favorites, persist])
-  const removeMiniApp = useCallback(
-    (id: string) => {
-      if (!miniAppFavoriteIds.includes(id)) return
-      persist(removeSidebarMiniApp(favorites, id))
-    },
-    [favorites, miniAppFavoriteIds, persist]
   )
   const toggleAgent = useCallback(
     (id: string) => persist(toggleSidebarEntityFavorite(favorites, 'agent', id)),
@@ -96,13 +77,10 @@ export function useSidebarFavorites() {
   return {
     favorites: favoriteItems,
     appFavorites,
-    miniAppFavoriteIds,
     agentFavoriteIds,
     assistantFavoriteIds,
     setAppPinned,
     reorderFavorites,
-    toggleMiniApp,
-    removeMiniApp,
     toggleAgent,
     toggleAssistant,
     removeAgent,

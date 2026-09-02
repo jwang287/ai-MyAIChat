@@ -1,7 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@cherrystudio/ui'
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { SESSION_CREATE_TOOL_NAME } from '@shared/ai/agentSessionDelivery'
-import { PROVIDER_WEB_SEARCH_TOOL_NAME } from '@shared/ai/builtinTools'
 import type { CherryMessagePart } from '@shared/data/types/message'
 import {
   Brain,
@@ -99,8 +98,6 @@ const TOOL_GROUP_ICON_BY_NAME: Record<string, LucideIcon> = {
   [AgentToolsType.TodoWrite]: ListChecks,
   [AgentToolsType.ToolSearch]: FileSearch,
   [AgentToolsType.WebFetch]: Globe,
-  [AgentToolsType.WebSearch]: Globe,
-  [PROVIDER_WEB_SEARCH_TOOL_NAME]: Globe,
   [AgentToolsType.Workflow]: Workflow,
   [AgentToolsType.Write]: FileText
 }
@@ -118,7 +115,6 @@ type McpActivityTarget =
   | 'relatedContent'
   | 'taskList'
   | 'webPage'
-  | 'webSearch'
 
 interface McpToolGroupPresentation {
   action?: McpActivityAction
@@ -204,7 +200,7 @@ function getMcpToolGroupPresentation(
     target = 'taskList'
     icon = ListChecks
   } else if (MCP_WEB_PATTERN.test(targetText)) {
-    target = MCP_SEARCH_PATTERN.test(targetText) ? 'webSearch' : 'webPage'
+    target = 'webPage'
     icon = Globe
   } else if (MCP_DOCUMENT_PATTERN.test(targetText)) {
     target = 'documentFiles'

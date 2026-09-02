@@ -137,7 +137,7 @@ export async function syncMcpToolsToRegistry(
     if (selectedToolIds && freshNames.size === selectedToolIds.size) break
     const namespace = namespaceForServer(server.id)
     try {
-      const enabledTools = application.get('McpCatalogService').listTools(server.id, { includeDisabled: false })
+      const enabledTools = application.get('McpToolCacheService').listTools(server.id, { includeDisabled: false })
       const scopedTools = selectedToolIds ? enabledTools.filter((tool) => selectedToolIds.has(tool.id)) : enabledTools
       if (!selectedToolIds || scopedTools.length > 0) targetNamespaces.add(namespace)
       for (const mcpTool of scopedTools) {

@@ -65,11 +65,9 @@ function getSkipReasonDescription(model: Model, t: ReturnType<typeof useTranslat
   if (!reason) return undefined
   if (reason.kind === 'unsupported_probe') return t('settings.models.check.skip_reason_unsupported_probe')
   const output =
-    reason.output === 'image'
-      ? t('settings.models.check.generation_output_image')
-      : reason.output === 'video'
-        ? t('settings.models.check.generation_output_video')
-        : t('settings.models.check.generation_output_audio')
+    reason.output === 'video'
+      ? t('settings.models.check.generation_output_video')
+      : t('settings.models.check.generation_output_audio')
   return t('settings.models.check.skip_reason_generation_cost', { output })
 }
 

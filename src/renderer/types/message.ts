@@ -3,11 +3,9 @@ import type { GroundingMetadata } from '@google/genai'
 import type { McpServer } from '@shared/data/types/mcpServer'
 
 import type { FileMetadata } from './file'
-import type { GenerateImageResponse } from './image'
 import type { KnowledgeReference } from './knowledge'
 import type { McpToolResponse } from './mcpTool'
 import type { Model } from './model'
-import type { WebSearchProviderResponse } from './webSearchProvider'
 
 export type Usage = OpenAI.Completions.CompletionUsage & {
   thoughts_tokens?: number
@@ -60,14 +58,8 @@ export type LegacyMessage = {
     citations?: string[]
     // OpenAI
     annotations?: OpenAI.Chat.Completions.ChatCompletionMessage.Annotation[]
-    // Zhipu or Hunyuan
-    webSearchInfo?: any[]
-    // Web search
-    webSearch?: WebSearchProviderResponse
     // MCP Tools
     mcpTools?: McpToolResponse[]
-    // Generate Image
-    generateImage?: GenerateImageResponse
     // knowledge
     knowledge?: KnowledgeReference[]
   }

@@ -10,12 +10,7 @@ import {
   messageToMarkdown,
   messageToMarkdownWithReasoning
 } from '../ExportService'
-import {
-  collectExportableImages,
-  hydrateDeferredImageOutputs,
-  serializeMessagesWithImages,
-  writeImageAssets
-} from '../markdownImageExport'
+import { collectExportableImages, serializeMessagesWithImages, writeImageAssets } from '../markdownImageExport'
 
 // jsdom's Blob lacks the standard arrayBuffer(); shim it via FileReader so the
 // production `blob.arrayBuffer()` call works unmodified in tests.
@@ -69,42 +64,6 @@ function imageFilePart(url: string, entryId?: string, filename = 'photo.png', me
     url,
     filename,
     ...(entryId ? { providerMetadata: { cherry: { fileEntryId: entryId } } } : {})
-  }
-}
-
-function generateImagePart(items: Array<{ id: string; name: string }>, state = 'output-available') {
-  return {
-    type: 'tool-generate_image',
-    toolCallId: 'call-1',
-    state,
-    input: {},
-    output: items
-  }
-}
-
-/** MCP CallToolResult shape: inline base64 payloads instead of FileEntry references. */
-function generateImageInlinePart(images: Array<{ data: string; mimeType?: string }>, state = 'output-available') {
-  return {
-    type: 'tool-generate_image',
-    toolCallId: 'call-1',
-    state,
-    input: {},
-    output: {
-      content: images.map((img) => ({ type: 'image', data: img.data, mimeType: img.mimeType }))
-    }
-  }
-}
-
-/** Agent-session transport shape: an output over the limit arrives as a deferred ref. */
-function generateImageDeferredPart(toolCallId = 'call-1') {
-  return {
-    type: 'tool-mcp__cherry-tools__generate_image',
-    toolCallId,
-    state: 'output-available',
-    input: {},
-    output: {
-      $deferredToolResult: { topicId: 'agent-session:s1', messageId: 'm1', toolCallId }
-    }
   }
 }
 
@@ -176,50 +135,6 @@ describe('collectExportableImages', () => {
     expect(refs).toEqual([])
   })
 
-  it('resolves generate_image output ids to file urls', async () => {
-    mockPhysicalPaths({ 'gen-1': '/data/Files/gen-1.png' })
-    const message = view([generateImagePart([{ id: 'gen-1', name: 'painting.png' }])], 'assistant')
-
-    const { refs } = await collectExportableImages([message])
-    expect(ipcApiRequest).toHaveBeenCalledWith('file.batch_get_physical_paths', { ids: ['gen-1'] })
-
-    expect(refs).toEqual([
-      {
-        key: 'gen-1',
-        url: 'file:///data/Files/gen-1.png',
-        filename: 'painting.png'
-      }
-    ])
-  })
-
-  it('drops an unresolvable generate_image entry, counts it, and keeps the rest', async () => {
-    mockPhysicalPaths({ gone: null })
-    mockPhysicalPaths({ 'gen-2': '/data/Files/gen-2.png' })
-    const message = view(
-      [
-        generateImagePart([
-          { id: 'gone', name: 'old.png' },
-          { id: 'gen-2', name: 'new.png' }
-        ])
-      ],
-      'assistant'
-    )
-
-    const { refs, unresolvedCount } = await collectExportableImages([message])
-
-    expect(unresolvedCount).toBe(1)
-    expect(refs.map((ref) => ref.key)).toEqual(['gen-2'])
-  })
-
-  it('ignores generate_image parts that are still running', async () => {
-    const message = view([generateImagePart([{ id: 'gen-1', name: 'a.png' }], 'input-available')])
-
-    const { refs } = await collectExportableImages([message])
-
-    expect(refs).toEqual([])
-    expect(ipcApiRequest).not.toHaveBeenCalled()
-  })
-
   it('dedupes the same image referenced from two messages', async () => {
     const messages = [view([imageFilePart(PNG_1PX, 'entry-a')]), view([imageFilePart(PNG_1PX, 'entry-a')])]
 
@@ -237,141 +152,6 @@ describe('collectExportableImages', () => {
     const { refs } = await collectExportableImages(messages)
 
     expect(refs.map((r) => r.key)).toEqual(['file:///data/Files/a.png', 'file:///data/Files/b.png'])
-  })
-
-  it('recognizes the mcp-prefixed agent generate_image tool name', async () => {
-    mockPhysicalPaths({ 'gen-9': '/data/Files/gen-9.png' })
-    const part = {
-      ...generateImagePart([{ id: 'gen-9', name: 'a.png' }]),
-      type: 'tool-mcp__cherry-tools__generate_image'
-    }
-    const message = view([part], 'assistant')
-
-    const { refs } = await collectExportableImages([message])
-
-    expect(refs).toEqual([{ key: 'gen-9', url: 'file:///data/Files/gen-9.png', filename: 'a.png' }])
-  })
-
-  it('collects MCP inline generate_image payloads as data URLs (render parity)', async () => {
-    const raw = PNG_1PX.slice('data:image/png;base64,'.length)
-    const message = view(
-      [generateImageInlinePart([{ data: raw }]), generateImageInlinePart([{ data: raw, mimeType: 'image/png' }])],
-      'assistant'
-    )
-
-    const { refs, unresolvedCount } = await collectExportableImages([message])
-
-    expect(unresolvedCount).toBe(0)
-    // identical inline payloads collapse to one data-URL ref; no FileEntry lookup happens
-    expect(refs).toEqual([{ key: PNG_1PX, url: PNG_1PX, filename: undefined, mime: 'image/png' }])
-    expect(ipcApiRequest).not.toHaveBeenCalled()
-  })
-
-  it('collects MCP inline payloads that keep the {content} envelope (mcp metadata)', async () => {
-    // With mcp metadata present, extractOutputMetadata keeps the {content: [...]}
-    // envelope instead of unwrapping to the array — the envelope branch must hit too.
-    const part = {
-      ...generateImageInlinePart([{ data: PNG_1PX_RAW, mimeType: 'image/png' }]),
-      output: {
-        content: [{ type: 'image', data: PNG_1PX_RAW, mimeType: 'image/png' }],
-        metadata: { type: 'mcp', name: 'generate_image' }
-      }
-    }
-    const message = view([part], 'assistant')
-
-    const { refs, unresolvedCount } = await collectExportableImages([message])
-
-    expect(unresolvedCount).toBe(0)
-    expect(refs).toEqual([{ key: PNG_1PX, url: PNG_1PX, filename: undefined, mime: 'image/png' }])
-  })
-
-  it('does not export an errored MCP inline result as an image', async () => {
-    const part = {
-      ...generateImageInlinePart([{ data: PNG_1PX_RAW }]),
-      output: {
-        content: [{ type: 'image', data: PNG_1PX_RAW, mimeType: 'image/png' }],
-        isError: true,
-        metadata: { type: 'mcp', name: 'generate_image' }
-      }
-    }
-    const message = view([part], 'assistant')
-
-    const { refs, unresolvedCount } = await collectExportableImages([message])
-
-    expect(refs).toEqual([])
-    expect(unresolvedCount).toBe(0)
-  })
-
-  it('does not export an errored envelope whose flag the unwrap would drop (no metadata)', async () => {
-    // Without mcp metadata extractOutputMetadata unwraps to the bare content array,
-    // so the isError flag only survives a check made before the unwrap.
-    const part = {
-      ...generateImageInlinePart([{ data: PNG_1PX_RAW }]),
-      output: {
-        content: [{ type: 'image', data: PNG_1PX_RAW, mimeType: 'image/png' }],
-        isError: true
-      }
-    }
-    const message = view([part], 'assistant')
-
-    const { refs, unresolvedCount } = await collectExportableImages([message])
-
-    expect(refs).toEqual([])
-    expect(unresolvedCount).toBe(0)
-  })
-})
-
-// --- hydrateDeferredImageOutputs ---
-
-describe('hydrateDeferredImageOutputs', () => {
-  it('resolves a deferred generate_image ref into the stored output', async () => {
-    ipcApiRequest.mockResolvedValueOnce({
-      ok: true,
-      data: { found: true, output: { content: [{ type: 'image', data: PNG_1PX_RAW, mimeType: 'image/png' }] } }
-    })
-    const message = view([generateImageDeferredPart()], 'assistant')
-
-    const { messages, unresolvedCount } = await hydrateDeferredImageOutputs([message])
-
-    expect(unresolvedCount).toBe(0)
-    expect(ipcApiRequest).toHaveBeenCalledWith('ai.tool.get_result', {
-      topicId: 'agent-session:s1',
-      messageId: 'm1',
-      toolCallId: 'call-1'
-    })
-    expect(messages[0].parts?.[0]).toHaveProperty('output.content', [
-      { type: 'image', data: PNG_1PX_RAW, mimeType: 'image/png' }
-    ])
-  })
-
-  it('counts an unresolvable ref, keeps the marker part, and leaves other messages untouched', async () => {
-    ipcApiRequest.mockResolvedValueOnce({ ok: true, data: { found: false } })
-    const deferred = view([generateImageDeferredPart()], 'assistant')
-    const plain = view([{ type: 'text', text: 'no tools here' }])
-
-    const { messages, unresolvedCount } = await hydrateDeferredImageOutputs([deferred, plain])
-
-    expect(unresolvedCount).toBe(1)
-    // the same array reference survives when nothing resolved
-    expect(messages[0]).toBe(deferred)
-    expect(messages[1]).toBe(plain)
-  })
-
-  it('does not fetch deferred outputs of other tools', async () => {
-    const part = {
-      type: 'tool-mcp__cherry-tools__web_search',
-      toolCallId: 'call-2',
-      state: 'output-available',
-      input: {},
-      output: { $deferredToolResult: { topicId: 'agent-session:s1', messageId: 'm1', toolCallId: 'call-2' } }
-    }
-    const message = view([part], 'assistant')
-
-    const { messages, unresolvedCount } = await hydrateDeferredImageOutputs([message])
-
-    expect(ipcApiRequest).not.toHaveBeenCalled()
-    expect(unresolvedCount).toBe(0)
-    expect(messages[0]).toBe(message)
   })
 })
 
@@ -564,32 +344,6 @@ describe('serializeMessagesWithImages', () => {
     expect(overrides.get(second.id)).toContain(`(assets/${link})`)
   })
 
-  it('serializes generate_image outputs in both modes (folder)', async () => {
-    mockPhysicalPaths({ 'gen-1': '/data/Files/gen-1.png' })
-    ipcApiRequest.mockResolvedValue({ ok: true, data: { content: new Uint8Array([1, 2, 3]), mime: 'image/png' } })
-    const message = view([generateImagePart([{ id: 'gen-1', name: 'painting.png' }])], 'assistant')
-    const { refs } = await collectExportableImages([message])
-
-    const folder = await serializeMessagesWithImages([message], 'folder', refs)
-    expect(folder.overrides.get(message.id)).toMatch(/!\[painting\.png\]\(assets\/img-[a-z0-9-]+\.png\)/)
-
-    const embed = await serializeMessagesWithImages([message], 'embed', refs)
-    expect(embed.overrides.get(message.id)).toContain('![painting.png](data:image/png;base64,')
-  })
-
-  it('serializes MCP inline generate_image payloads in both modes', async () => {
-    const message = view([generateImageInlinePart([{ data: PNG_1PX_RAW }])], 'assistant')
-    const { refs } = await collectExportableImages([message])
-
-    const embed = await serializeMessagesWithImages([message], 'embed', refs)
-    expect(embed.overrides.get(message.id)).toContain(`![image](data:image/png;base64,${PNG_1PX_RAW})`)
-
-    const folder = await serializeMessagesWithImages([message], 'folder', refs)
-    expect(folder.overrides.get(message.id)).toMatch(/!\[image\]\(assets\/img-[a-z0-9-]+\.png\)/)
-    expect(folder.pendingWrites).toHaveLength(1)
-    expect(folder.pendingWrites[0].ref.url).toBe(PNG_1PX)
-  })
-
   it('leaves messages without images unoverridden', async () => {
     const withImage = view([{ type: 'text', text: 'has image' }, imageFilePart(PNG_1PX, 'entry-a')])
     const textOnly = view([{ type: 'text', text: 'plain message' }])
@@ -752,71 +506,6 @@ describe('exportMessageAsMarkdown image pipeline', () => {
     expect(chooseImageMode).not.toHaveBeenCalled()
     expect(fileApi.save).toHaveBeenCalledTimes(1)
     expect(fileApi.save.mock.calls[0][1]).not.toContain('data:image')
-  })
-
-  it('exports text-only with a warning when the only image failed to resolve', async () => {
-    fileApi.save.mockResolvedValue('/tmp/x/a.md')
-    mockPhysicalPaths({ gone: null })
-    const message = view([
-      { type: 'text', text: 'here is a painting' },
-      generateImagePart([{ id: 'gone', name: 'painting.png' }])
-    ])
-
-    await exportMessageAsMarkdown(message, false, undefined, chooseImageMode)
-
-    // nothing left to carry: chooser untouched, plain text export, skipped-count toast
-    expect(chooseImageMode).not.toHaveBeenCalled()
-    expect(toast.warning).toHaveBeenCalledWith('已跳过 1 张图片（无法获取或读取）')
-    expect(fileApi.save).toHaveBeenCalledTimes(1)
-    expect(fileApi.save.mock.calls[0][1]).toContain('here is a painting')
-    expect(fileApi.save.mock.calls[0][1]).not.toContain('data:image')
-  })
-
-  it('carries a deferred agent-session generate_image image once its ref is resolved (embed)', async () => {
-    // Agent sessions read with deferToolOutputs, so an inline image over the transport
-    // limit reaches the export as $deferredToolResult — hydrating it must surface the
-    // image instead of silently taking the text-only path.
-    fileApi.save.mockResolvedValue('/tmp/x/a.md')
-    ipcApiRequest.mockResolvedValueOnce({
-      ok: true,
-      data: { found: true, output: { content: [{ type: 'image', data: PNG_1PX_RAW, mimeType: 'image/png' }] } }
-    })
-    chooseImageMode.mockResolvedValue('embed')
-    const message = view([{ type: 'text', text: 'generated this' }, generateImageDeferredPart()], 'assistant')
-
-    await exportMessageAsMarkdown(message, false, undefined, chooseImageMode)
-
-    expect(chooseImageMode).toHaveBeenCalledWith(1)
-    expect(fileApi.save.mock.calls[0][1]).toContain(`data:image/png;base64,${PNG_1PX_RAW}`)
-  })
-
-  it('exports text-only with a warning when a deferred output can no longer be resolved', async () => {
-    fileApi.save.mockResolvedValue('/tmp/x/a.md')
-    ipcApiRequest.mockResolvedValueOnce({ ok: true, data: { found: false } })
-    const message = view([generateImageDeferredPart()], 'assistant')
-
-    await exportMessageAsMarkdown(message, false, undefined, chooseImageMode)
-
-    expect(chooseImageMode).not.toHaveBeenCalled()
-    expect(toast.warning).toHaveBeenCalledWith('已跳过 1 张图片（无法获取或读取）')
-    expect(fileApi.save).toHaveBeenCalledTimes(1)
-    expect(fileApi.save.mock.calls[0][1]).not.toContain('data:image')
-  })
-
-  it('toasts the combined skip count when unresolved and exported images coexist', async () => {
-    fileApi.save.mockResolvedValue('/tmp/x/a.md')
-    // one dead generate_image entry (collection failure) + one healthy attachment
-    // (no entryId, so the healthy part never touches the batch route)
-    mockPhysicalPaths({ gone: null })
-    const message = view([imageFilePart(PNG_1PX), generateImagePart([{ id: 'gone', name: 'painting.png' }])])
-    chooseImageMode.mockResolvedValue('embed')
-
-    await exportMessageAsMarkdown(message, false, undefined, chooseImageMode)
-
-    expect(chooseImageMode).toHaveBeenCalledWith(1)
-    // embed mode surfaces collection failures with the embed-flavored copy
-    expect(toast.warning).toHaveBeenCalledWith('已跳过 1 张图片（超过 10 MiB 或无法读取）')
-    expect(fileApi.save.mock.calls[0][1]).toContain(`data:image/png;base64,${PNG_1PX_RAW}`)
   })
 
   it('aborts with zero file writes when the user cancels the mode choice', async () => {

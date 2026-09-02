@@ -28,7 +28,6 @@ import {
   Languages,
   ListChecks,
   Menu,
-  NotebookPen,
   Save,
   Split,
   ThumbsUp,
@@ -217,10 +216,6 @@ registerCommand('message.saveKnowledge', async ({ actions, messageForExport }) =
   await actions.saveToKnowledge?.(messageForExport)
 })
 
-registerCommand('message.exportNotes', async ({ actions, messageForExport }) => {
-  await actions.exportToNotes?.(messageForExport)
-})
-
 registerCommand('message.copyPlainText', async ({ actions, messageForExport, t }) => {
   const { messageToPlainText } = await import('@renderer/utils/export')
   await actions.copyText?.(messageToPlainText(messageForExport), {
@@ -266,26 +261,6 @@ registerCommand('message.exportWord', async ({ actions, messageForExport }) => {
   const markdown = await messageToMarkdown(messageForExport)
   const title = await getMessageTitle(messageForExport)
   await actions.exportToWord?.(markdown, title)
-})
-
-registerCommand('message.exportNotion', async ({ actions, messageForExport }) => {
-  await actions.exportToNotion?.(messageForExport)
-})
-
-registerCommand('message.exportYuque', async ({ actions, messageForExport }) => {
-  await actions.exportToYuque?.(messageForExport)
-})
-
-registerCommand('message.exportObsidian', async ({ actions, messageForExport }) => {
-  await actions.exportToObsidian?.(messageForExport)
-})
-
-registerCommand('message.exportJoplin', async ({ actions, messageForExport }) => {
-  await actions.exportToJoplin?.(messageForExport)
-})
-
-registerCommand('message.exportSiyuan', async ({ actions, messageForExport }) => {
-  await actions.exportToSiyuan?.(messageForExport)
 })
 
 registerCommand('message.useful', ({ message, onSelectContext }) => {
@@ -368,17 +343,6 @@ registerToolbarAction({
   availability: toolbarAvailability(
     'useful',
     ({ actions, isAssistantMessage, isGrouped }) => isAssistantMessage && !!isGrouped && !!actions.setActiveBranch
-  )
-})
-
-registerToolbarAction({
-  id: 'notes',
-  commandId: 'message.exportNotes',
-  label: ({ t }) => t('notes.save'),
-  icon: <NotebookPen size={15} />,
-  availability: toolbarAvailability(
-    'notes',
-    ({ actions, isAssistantMessage }) => isAssistantMessage && !!actions.exportToNotes
   )
 })
 
@@ -490,17 +454,10 @@ registerAction({
       availability: ({ actions }) => !!actions.saveTextFile
     },
     {
-      id: 'save.notes',
-      commandId: 'message.exportNotes',
-      label: ({ t }) => t('notes.save'),
-      order: 20,
-      availability: ({ actions, isAssistantMessage }) => isAssistantMessage && !!actions.exportToNotes
-    },
-    {
       id: 'save.knowledge',
       commandId: 'message.saveKnowledge',
       label: ({ t }) => t('chat.save.knowledge.title'),
-      order: 30,
+      order: 20,
       availability: ({ actions }) => !!actions.saveToKnowledge
     }
   ]
@@ -547,46 +504,6 @@ registerAction({
       group: 'file',
       order: 40,
       availability: ({ actions, menuConfig }) => menuConfig.exportMenuOptions.docx && !!actions.exportToWord
-    },
-    {
-      id: 'export.notion',
-      commandId: 'message.exportNotion',
-      label: ({ t }) => t('chat.topics.export.notion'),
-      group: 'external',
-      order: 50,
-      availability: ({ actions, menuConfig }) => menuConfig.exportMenuOptions.notion && !!actions.exportToNotion
-    },
-    {
-      id: 'export.yuque',
-      commandId: 'message.exportYuque',
-      label: ({ t }) => t('chat.topics.export.yuque'),
-      group: 'external',
-      order: 60,
-      availability: ({ actions, menuConfig }) => menuConfig.exportMenuOptions.yuque && !!actions.exportToYuque
-    },
-    {
-      id: 'export.obsidian',
-      commandId: 'message.exportObsidian',
-      label: ({ t }) => t('chat.topics.export.obsidian'),
-      group: 'external',
-      order: 70,
-      availability: ({ actions, menuConfig }) => menuConfig.exportMenuOptions.obsidian && !!actions.exportToObsidian
-    },
-    {
-      id: 'export.joplin',
-      commandId: 'message.exportJoplin',
-      label: ({ t }) => t('chat.topics.export.joplin'),
-      group: 'external',
-      order: 80,
-      availability: ({ actions, menuConfig }) => menuConfig.exportMenuOptions.joplin && !!actions.exportToJoplin
-    },
-    {
-      id: 'export.siyuan',
-      commandId: 'message.exportSiyuan',
-      label: ({ t }) => t('chat.topics.export.siyuan'),
-      group: 'external',
-      order: 90,
-      availability: ({ actions, menuConfig }) => menuConfig.exportMenuOptions.siyuan && !!actions.exportToSiyuan
     },
     {
       id: 'export.copy-plain-text',

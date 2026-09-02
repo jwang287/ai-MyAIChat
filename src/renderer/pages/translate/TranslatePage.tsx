@@ -15,12 +15,10 @@ import { useDrag } from '@renderer/hooks/useDrag'
 import { useFiles } from '@renderer/hooks/useFiles'
 import { useJob } from '@renderer/hooks/useJob'
 import { useModels } from '@renderer/hooks/useModel'
-import { useNotesSettings } from '@renderer/hooks/useNotesSettings'
 import { useSmoothStream } from '@renderer/hooks/useSmoothStream'
 import { useTemporaryValue } from '@renderer/hooks/useTemporaryValue'
 import { useTimer } from '@renderer/hooks/useTimer'
 import { ipcApi, useIpcOn } from '@renderer/ipc'
-import { exportContentToNotes } from '@renderer/services/ExportService'
 import { toast } from '@renderer/services/toast'
 import { type FileMetadata, isImageFileMetadata } from '@renderer/types/file'
 import { formatErrorMessageWithPrefix } from '@renderer/utils/error'
@@ -74,7 +72,6 @@ const PdfTranslationView = lazy(() => import('./pdf/PdfTranslationView'))
 
 const logger = loggerService.withContext('TranslatePage')
 const PRIORITIZED_PROVIDER_IDS = ['cherryai', 'openai', 'anthropic', 'google', 'gemini', 'openrouter']
-const TRANSLATION_RESULT_TITLE_MAX_LENGTH = 80
 
 const useBabelDoc = (enabled: boolean) => {
   const { t } = useTranslation()
@@ -134,9 +131,6 @@ const useBabelDoc = (enabled: boolean) => {
   return { availability, installing, install, refresh }
 }
 const getModelInitial = (model: SelectorModel) => model.name.trim().charAt(0) || 'M'
-
-const getTitleFromTranslationResult = (translationResult: string) =>
-  translationResult.trim().split(/\r?\n/, 1)[0].slice(0, TRANSLATION_RESULT_TITLE_MAX_LENGTH)
 
 type OcrJob = {
   jobId: string
@@ -218,7 +212,6 @@ const TranslatePage: FC = () => {
   const { add: addHistory, update: updateHistory } = useTranslateHistory({
     update: { showErrorToast: false, rethrowError: false }
   })
-  const { notesPath } = useNotesSettings()
   const { shikiMarkdownIt } = useCodeStyle()
   const { onSelectFile, selecting, clearFiles } = useFiles({ extensions: [...imageExts, ...textExts, ...documentExts] })
   const { setTimeoutTimer } = useTimer()
@@ -360,17 +353,6 @@ const TranslatePage: FC = () => {
       toast.error(t('common.copy_failed'))
     }
   }, [copy, t, translateOutput])
-
-  const onExportOutputToNotes = useCallback(() => {
-    const translationResult = translateOutput.trim()
-    if (!translationResult) return
-
-    void exportContentToNotes(getTitleFromTranslationResult(translationResult), translationResult, notesPath).catch(
-      (error) => {
-        logger.error('Failed to export output to notes:', error as Error)
-      }
-    )
-  }, [notesPath, translateOutput])
 
   const translate = useCallback(
     async (
@@ -1093,7 +1075,6 @@ const TranslatePage: FC = () => {
                           translating={isTranslating || isDetecting || isPdfTextExtracting}
                           copied={copied}
                           onCopy={onCopyOutput}
-                          onExportToNotes={onExportOutputToNotes}
                           onScroll={outputScrollHandler}
                         />
                       )
@@ -1140,7 +1121,6 @@ const TranslatePage: FC = () => {
                 translating={isTranslating || isDetecting}
                 copied={copied}
                 onCopy={onCopyOutput}
-                onExportToNotes={onExportOutputToNotes}
                 onScroll={outputScrollHandler}
               />
             </section>

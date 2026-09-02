@@ -1,7 +1,6 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@cherrystudio/ui'
 import { getModelDisplayTags, ModelTag } from '@renderer/components/tags/Model'
 import { deriveThinkingOptions } from '@shared/ai/reasoning'
-import type { Model } from '@shared/data/types/model'
 import type { Provider } from '@shared/data/types/provider'
 import type { TFunction } from 'i18next'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
@@ -32,14 +31,6 @@ const REASONING_EFFORT_LABEL_KEYS: Record<string, string> = {
   minimal: 'assistants.settings.reasoning_effort.minimal',
   none: 'assistants.settings.reasoning_effort.off',
   xhigh: 'assistants.settings.reasoning_effort.xhigh'
-}
-
-const IMAGE_MODE_LABEL_KEYS: Record<string, string> = {
-  edit: 'paintings.mode.edit',
-  generate: 'paintings.mode.generate',
-  merge: 'paintings.mode.merge',
-  remix: 'paintings.mode.remix',
-  upscale: 'paintings.mode.upscale'
 }
 
 function formatNumber(value: number | null | undefined): string | undefined {
@@ -91,23 +82,8 @@ function getDetailCardAlign(): HoverCardAlign {
   return 'start'
 }
 
-function compactList(values: readonly string[] | undefined, limit = 3): string | undefined {
-  if (!values?.length) {
-    return undefined
-  }
-
-  const visibleValues = values.slice(0, limit)
-  const restCount = values.length - visibleValues.length
-  return restCount > 0 ? `${visibleValues.join(', ')} +${restCount}` : visibleValues.join(', ')
-}
-
 function formatReasoningEfforts(values: readonly string[] | undefined, t: TFunction): string | undefined {
   return values?.map((value) => t(REASONING_EFFORT_LABEL_KEYS[value] ?? value)).join(', ')
-}
-
-function formatImageGenerationModes(model: Model, t: TFunction): string | undefined {
-  const modes = Object.keys(model.imageGeneration?.modes ?? {})
-  return compactList(modes.map((mode) => t(IMAGE_MODE_LABEL_KEYS[mode] ?? mode)))
 }
 
 function DetailRow({ label, value }: { label: ReactNode; value?: ReactNode }) {
@@ -139,9 +115,8 @@ function ModelSelectorDetailCardBody({
     deriveThinkingOptions(model)?.filter((option) => option !== 'default'),
     t
   )
-  const imageModes = formatImageGenerationModes(model, t)
   const hasTokenDetails = model.contextWindow != null || model.maxInputTokens != null || model.maxOutputTokens != null
-  const hasCapabilityDetails = Boolean(reasoningEfforts || imageModes)
+  const hasCapabilityDetails = Boolean(reasoningEfforts)
 
   return (
     <div className="max-h-[min(420px,70vh,var(--radix-hover-card-content-available-height,70vh))] overflow-auto p-3">
@@ -182,7 +157,6 @@ function ModelSelectorDetailCardBody({
       {hasCapabilityDetails ? (
         <dl className="mt-3 space-y-1.5 border-border border-t pt-3">
           <DetailRow label={t('assistants.settings.reasoning_effort.label')} value={reasoningEfforts} />
-          <DetailRow label={t('models.detail.image_modes')} value={imageModes} />
         </dl>
       ) : null}
     </div>

@@ -27,13 +27,6 @@
       "description": "Show a system notification when a background update check finds a new version (v2 new feature, no v1 source)"
     },
     {
-      "targetKey": "app.notification.mini_app.enabled",
-      "type": "boolean",
-      "defaultValue": true,
-      "status": "classified",
-      "description": "Show system notifications from installed mini apps that hold the notification grant (v2 new feature, no v1 source)"
-    },
-    {
       "targetKey": "app.onboarding.provider_setup.status",
       "type": "PreferenceTypes.OnboardingProviderSetupStatus",
       "defaultValue": "pending",
@@ -90,41 +83,6 @@
       "description": "Enable supported hardware acceleration for local embedding and OCR inference (v2 new feature, no v1 source)"
     },
     {
-      "targetKey": "chat.web_search.default_search_keywords_provider",
-      "type": "PreferenceTypes.WebSearchProviderId",
-      "defaultValue": "exa-mcp",
-      "status": "classified",
-      "description": "Default Web Search provider for keyword search capability"
-    },
-    {
-      "targetKey": "chat.web_search.default_fetch_urls_provider",
-      "type": "PreferenceTypes.WebSearchProviderId",
-      "defaultValue": "jina",
-      "status": "classified",
-      "description": "Default Web Search provider for URL fetch capability"
-    },
-    {
-      "targetKey": "chat.web_search.client_tools_preferred",
-      "type": "boolean",
-      "defaultValue": false,
-      "status": "classified",
-      "description": "Prefer configured web search and fetch services over equivalent model-native tools when both are available"
-    },
-    {
-      "targetKey": "chat.web_search.compression.cutoff_limit",
-      "type": "number",
-      "defaultValue": 2000,
-      "status": "classified",
-      "description": "Web search compression cutoff limit (from complex migration; defaults when legacy value is empty)"
-    },
-    {
-      "targetKey": "chat.web_search.compression.method",
-      "type": "PreferenceTypes.WebSearchCompressionMethod",
-      "defaultValue": "cutoff",
-      "status": "classified",
-      "description": "Web search compression method (from complex migration; default cutoff caps raw source content per finding #7 — new installs only, migrated profiles keep their explicit value)"
-    },
-    {
       "targetKey": "feature.code_cli.configs",
       "type": "PreferenceTypes.CodeCliConfigs",
       "defaultValue": "VALUE: {} as PreferenceTypes.CodeCliConfigs",
@@ -134,50 +92,46 @@
     {
       "targetKey": "chat.input.toolbar.pinned_tools",
       "type": "string[]",
-      "defaultValue": ["composer:new-conversation", "web-search"],
+      "defaultValue": [
+        "composer:new-conversation"
+      ],
       "status": "classified",
       "description": "Ordered tool ids pinned on the chat composer toolbar (v2 new feature, no v1 source)"
     },
     {
       "targetKey": "agent.input.toolbar.pinned_tools",
       "type": "string[]",
-      "defaultValue": ["composer:new-session", "skills", "permission-mode"],
+      "defaultValue": [
+        "composer:new-session",
+        "skills",
+        "permission-mode"
+      ],
       "status": "classified",
       "description": "Ordered tool ids pinned on the agent composer toolbar (v2 new feature, no v1 source)"
-    },
-    {
-      "targetKey": "chat.web_search.exclude_domains",
-      "type": "string[]",
-      "defaultValue": [],
-      "status": "classified",
-      "description": "Web search excluded domains (from complex migration)"
-    },
-    {
-      "targetKey": "chat.web_search.max_results",
-      "type": "number",
-      "defaultValue": 5,
-      "status": "classified",
-      "description": "Web search max results (from complex migration)"
-    },
-    {
-      "targetKey": "chat.web_search.provider_overrides",
-      "type": "PreferenceTypes.WebSearchProviderOverrides",
-      "defaultValue": {},
-      "status": "classified",
-      "description": "Web search provider overrides (from complex migration)"
     },
     {
       "targetKey": "ui.sidebar.favorites",
       "type": "PreferenceTypes.SidebarFavoriteItem[]",
       "defaultValue": [
-        { "id": "assistants", "type": "app" },
-        { "id": "agents", "type": "app" },
-        { "id": "translate", "type": "app" },
-        { "id": "paintings", "type": "app" },
-        { "id": "knowledge", "type": "app" }
+        {
+          "id": "assistants",
+          "type": "app"
+        },
+        {
+          "id": "agents",
+          "type": "app"
+        },
+        {
+          "id": "translate",
+          "type": "app"
+        },
+        {
+          "id": "knowledge",
+          "type": "app"
+        }
       ],
       "status": "classified",
-      "description": "Left sidebar favorites, an ordered list of tagged items: built-in apps ({type:'app'}) and mini apps ({type:'mini_app'})"
+      "description": "Left sidebar favorites, an ordered list of tagged built-in apps and user entities"
     },
     {
       "targetKey": "ui.launchpad.app_order",
@@ -304,13 +258,6 @@
       "defaultValue": null,
       "status": "classified",
       "description": "Translate model UniqueModelId (provider::modelId, from complex mapping llm_model_ids_to_unique)"
-    },
-    {
-      "targetKey": "feature.paintings.default_model_id",
-      "type": "string",
-      "defaultValue": null,
-      "status": "classified",
-      "description": "Paintings default image-generation model UniqueModelId (provider::modelId)"
     },
     {
       "targetKey": "feature.openclaw.gateway_port",
@@ -693,13 +640,6 @@
       "description": "Global menu presentation mode: native system menus or Cherry custom menus"
     },
     {
-      "targetKey": "feature.notes.line_breaks",
-      "type": "boolean",
-      "defaultValue": false,
-      "status": "classified",
-      "description": "Notes line-break rendering mode: a single newline renders as a line break (v2 new feature, no v1 source)"
-    },
-    {
       "targetKey": "chat.input.steer_shortcut",
       "type": "PreferenceTypes.ComposerShortcut",
       "defaultValue": "VALUE: null",
@@ -731,24 +671,21 @@
       "targetKey": "shortcut.screenshot.capture",
       "type": "PreferenceTypes.PreferenceShortcutType",
       "defaultValue": {
-        "binding": ["CommandOrControl", "Shift", "A"],
+        "binding": [
+          "CommandOrControl",
+          "Shift",
+          "A"
+        ],
         "enabled": true
       },
       "status": "classified",
       "description": "Command shortcut: screenshot.capture (unified command system)"
     },
     {
-      "targetKey": "feature.mini_app.check_updates_on_open",
-      "type": "boolean",
-      "defaultValue": true,
-      "status": "classified",
-      "description": "Check installed mini apps for updates when they are opened (v2 new feature, no v1 source)"
-    },
-    {
       "targetKey": "data.backup.webdav.allow_self_signed_tls",
       "type": "boolean",
       "defaultValue": false,
-      "status": "classified",
+      "status": "pending",
       "description": "Allow self-signed/unverifiable TLS certificates for WebDAV backup transport (v2 new feature, no v1 source)"
     }
   ]

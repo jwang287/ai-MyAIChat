@@ -121,9 +121,7 @@ const KnowledgeItemRow = ({
   const canReindex = canReindexKnowledgeItem(item)
   const canViewChunks = item.status === 'completed'
   // Every row's primary click views its original content in-app: files/URLs delegate
-  // preview/fallback/error handling to `previewSource`, directories drill into their children, and
-  // notes open their stored `data.content`. All are status-independent — a note's text is present
-  // from creation, well before its chunk view (`completed`) exists.
+  // preview/fallback/error handling to `previewSource`, and directories drill into their children.
   const canActivate = true
   const typeLabel = t(dataSourceTypeDisplayConfig[item.type].filterLabelKey)
   const updatedAt = formatRelativeTime(item.updatedAt, language)
@@ -134,21 +132,17 @@ const KnowledgeItemRow = ({
   const contextMenuItems = useMemo<CommandContextMenuExtraItem[]>(() => {
     const items: CommandContextMenuExtraItem[] = []
 
-    // Notes have no external source to preview — their original text opens via the row's primary
-    // click — so the "preview original" action only applies to files, URLs, and directories.
-    if (item.type !== 'note') {
-      items.push({
-        type: 'item',
-        id: 'preview-source',
-        label: t('knowledge.data_source.actions.preview_source'),
-        icon: <BookOpen className="size-3.5" />,
-        onSelect: () => {
-          void Promise.resolve(onPreviewSource()).catch((error) => {
-            toast.error(formatErrorMessageWithPrefix(error, t('knowledge.data_source.preview.failed')))
-          })
-        }
-      })
-    }
+    items.push({
+      type: 'item',
+      id: 'preview-source',
+      label: t('knowledge.data_source.actions.preview_source'),
+      icon: <BookOpen className="size-3.5" />,
+      onSelect: () => {
+        void Promise.resolve(onPreviewSource()).catch((error) => {
+          toast.error(formatErrorMessageWithPrefix(error, t('knowledge.data_source.preview.failed')))
+        })
+      }
+    })
 
     if (canViewChunks) {
       items.push({

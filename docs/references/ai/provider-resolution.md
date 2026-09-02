@@ -147,9 +147,6 @@ extension declares:
 - `aliases` (alternate ids that normalize to `name`)
 - `variants` (suffix entries — see above)
 - `create` (the SDK's factory)
-- `toolFactories` (per-capability factory functions for `webSearch` /
-  `urlContext` etc.)
-- `supportsImageGeneration` (boolean flag)
 
 ## Where to read more
 

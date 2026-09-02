@@ -32,16 +32,8 @@ import { checkSkillRuntimeDependencies, SKILL_TOOL_NAME } from './skillDependenc
 
 export const ASK_USER_QUESTION_TOOL_NAME = 'AskUserQuestion'
 export const HEADLESS_INTERACTIVE_TOOL_DENIAL =
-  'This channel or scheduled turn has no interactive responder, so proceed without asking the user and state your assumptions instead.'
-const HEADLESS_CONFIG_MUTATION_ACTIONS = new Set([
-  'rename',
-  'complete_bootstrap',
-  'reset_bootstrap',
-  'add_channel',
-  'update_channel',
-  'remove_channel',
-  'reconnect_channel'
-])
+  'This scheduled turn has no interactive responder, so proceed without asking the user and state your assumptions instead.'
+const HEADLESS_CONFIG_MUTATION_ACTIONS = new Set(['rename', 'complete_bootstrap', 'reset_bootstrap'])
 export const WORKSPACE_PATH_FIELDS = {
   Edit: 'file_path',
   Glob: 'path',
@@ -148,7 +140,7 @@ const CROSS_CUTTING_TOOL_GUARD_RULES: readonly ToolGuardRule[] = [
     headless: {
       predicate: 'turn-headless',
       reason:
-        'Headless channel or scheduled turns cannot mutate agent configuration. Ask the user to make this change in Cherry Studio.'
+        'Headless scheduled turns cannot mutate agent configuration. Ask the user to make this change in Cherry Studio.'
     }
   },
   {
@@ -159,7 +151,7 @@ const CROSS_CUTTING_TOOL_GUARD_RULES: readonly ToolGuardRule[] = [
     headless: {
       predicate: 'turn-headless',
       reason:
-        'This channel or scheduled turn cannot approve a skill installation. Use bypassPermissions for unattended installation, or install it from an interactive turn.',
+        'This scheduled turn cannot approve a skill installation. Use bypassPermissions for unattended installation, or install it from an interactive turn.',
       skipHeadlessDenyInBypass: true
     }
   },
@@ -189,7 +181,7 @@ const CROSS_CUTTING_TOOL_GUARD_RULES: readonly ToolGuardRule[] = [
     headless: { predicate: 'responder-unavailable', reason: HEADLESS_INTERACTIVE_TOOL_DENIAL }
   },
   {
-    // The explicit per-call approval list (kb_manage / generate_image / cli_install + mounted
+    // The explicit per-call approval list (kb_manage / cli_install + mounted
     // assistant tools). The snapshot's auto-allow exceptions come from the same registry entries, so
     // acceptEdits / default safe-tools never auto-pierce it; bypassPermissions is the one opt-out.
     id: 'approval-required',

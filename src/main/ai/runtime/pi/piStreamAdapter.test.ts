@@ -1,5 +1,4 @@
 import type { AgentSessionEvent } from '@earendil-works/pi-coding-agent'
-import { webSearchOutputSchema } from '@shared/ai/builtinTools'
 import { PI_TOOL_CALL_TOOL_NAME } from '@shared/ai/piBuiltinTools'
 import type { CherryUIMessage, CherryUIMessageChunk } from '@shared/data/types/message'
 import { readUIMessageStream } from 'ai'
@@ -249,35 +248,6 @@ describe('PiStreamAdapter', () => {
         cherry: { transport: PI_TRANSPORT, tool: { type: 'mcp', name: 'search', serverName: 'exa' } }
       }
     })
-  })
-
-  /**
-   * pi's code mode is unconditional, so cherry-tools is never a tool name of its own — every call
-   * arrives as `tool_call`, returning the target's MCP result verbatim. The renderer resolves
-   * `[cite:id]` markers by validating that output against `webSearchOutputSchema`, which a content
-   * block array never matches, so without the unwrap the markers stay literal.
-   */
-  it('unwraps a tool_call search result into the shape the citation resolver validates', async () => {
-    const results = [{ id: '19ff9dcd-1', title: 'First', url: 'https://a.com', content: 'x' }]
-    const message = await accumulate(
-      collect([
-        {
-          type: 'tool_execution_start',
-          toolCallId: 'm2',
-          toolName: PI_TOOL_CALL_TOOL_NAME,
-          args: { name: 'mcp__cherry-tools__web_search', params: { query: 'x' } }
-        },
-        {
-          type: 'tool_execution_end',
-          toolCallId: 'm2',
-          toolName: PI_TOOL_CALL_TOOL_NAME,
-          result: { content: [{ type: 'text', text: JSON.stringify(results) }], details: null },
-          isError: false
-        }
-      ] as AgentSessionEvent[])
-    )
-    const output = (message.parts.find((part) => part.type === 'dynamic-tool') as { output?: unknown }).output
-    expect(webSearchOutputSchema.safeParse(output).success).toBe(true)
   })
 
   it('falls back to joined text when a tool_call result is not JSON', async () => {

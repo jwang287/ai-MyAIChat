@@ -117,8 +117,14 @@ describe('BasicDataSettings', () => {
     await renderSettings()
     fireEvent.click(screen.getByRole('button', { name: 'settings.data.clear_cache.button' }))
     await waitFor(() => expect(clearCacheShowMock).toHaveBeenCalledOnce())
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => {
-      throw new DOMException('quota exceeded', 'QuotaExceededError')
+    const browserStorage = localStorage
+    vi.stubGlobal('localStorage', {
+      clear: browserStorage.clear.bind(browserStorage),
+      getItem: browserStorage.getItem.bind(browserStorage),
+      removeItem: browserStorage.removeItem.bind(browserStorage),
+      setItem: () => {
+        throw new DOMException('quota exceeded', 'QuotaExceededError')
+      }
     })
     requestMock.mockResolvedValueOnce({
       results: [{ group: 'normal_cache', status: 'cleared' }]
@@ -128,9 +134,13 @@ describe('BasicDataSettings', () => {
     ) => Promise<boolean>
 
     let succeeded: boolean | undefined
-    await act(async () => {
-      succeeded = await onClear(['normal_cache', 'legacy_v1'])
-    })
+    try {
+      await act(async () => {
+        succeeded = await onClear(['normal_cache', 'legacy_v1'])
+      })
+    } finally {
+      vi.stubGlobal('localStorage', browserStorage)
+    }
 
     expect(succeeded).toBe(false)
     expect(requestMock).toHaveBeenCalledWith('app.cache_cleanup.run', { groups: ['normal_cache'] })

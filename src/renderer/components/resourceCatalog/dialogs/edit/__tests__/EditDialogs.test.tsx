@@ -541,8 +541,6 @@ const ASSISTANT: Assistant = {
     mcpMode: 'auto',
     maxToolCalls: 20,
     enableMaxToolCalls: true,
-    enableWebSearch: false,
-    enableGenerateImage: false,
     customParameters: []
   },
   modelId: 'provider::old-model',
@@ -1249,8 +1247,8 @@ describe('edit dialogs', () => {
             items: [
               {
                 id: 'mcp-command-only',
-                name: '@cherry/mcp-auto-install',
-                description: 'Installs MCP servers automatically',
+                name: '@example/local-stdio-mcp',
+                description: 'A manually configured local MCP server',
                 baseUrl: 'https://mcp.example.com',
                 command: 'npx',
                 isActive: true
@@ -1270,11 +1268,11 @@ describe('edit dialogs', () => {
 
     selectTab('MCP')
 
-    expect(await screen.findByText('@cherry/mcp-auto-install')).toBeInTheDocument()
-    expect(screen.queryByText('Installs MCP servers automatically')).not.toBeInTheDocument()
+    expect(await screen.findByText('@example/local-stdio-mcp')).toBeInTheDocument()
+    expect(screen.queryByText('A manually configured local MCP server')).not.toBeInTheDocument()
     expect(screen.queryByText('https://mcp.example.com')).not.toBeInTheDocument()
     expect(screen.queryByText('npx')).not.toBeInTheDocument()
-    expect(screen.getByRole('switch', { name: '@cherry/mcp-auto-install' })).toBeInTheDocument()
+    expect(screen.getByRole('switch', { name: '@example/local-stdio-mcp' })).toBeInTheDocument()
     expect(screen.getByText('Connected')).toBeInTheDocument()
   })
 

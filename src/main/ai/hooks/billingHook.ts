@@ -9,14 +9,13 @@ import type { LanguageModelMiddleware } from 'ai'
 
 import { extractProviderCostWithCurrency } from '../utils/billingCost'
 
-export const BILLABLE_AI_OPERATIONS = ['streamText', 'generateText', 'embedMany', 'generateImage', 'rerank'] as const
+export const BILLABLE_AI_OPERATIONS = ['streamText', 'generateText', 'embedMany', 'rerank'] as const
 export type BillableAiOperation = (typeof BILLABLE_AI_OPERATIONS)[number]
 
 export const AI_USAGE_RECORD_OPERATION_COVERAGE = {
   streamText: { status: 'recorded', modality: 'language', capture: 'language-middleware' },
   generateText: { status: 'recorded', modality: 'language', capture: 'language-middleware' },
   embedMany: { status: 'recorded', modality: 'embedding', capture: 'ai-core-handler' },
-  generateImage: { status: 'recorded', modality: 'image', capture: 'ai-core-handler' },
   rerank: { status: 'recorded', modality: 'rerank', capture: 'ai-core-handler' }
 } as const
 

@@ -214,41 +214,19 @@ describe('SubWindowService', () => {
       expect(args.options).not.toHaveProperty('titleBarOverlay')
     })
 
-    it('threads initData shape for a pinned webview tab', () => {
+    it('threads tab.icon through initData when supplied', () => {
       const win = createMockWindow()
       windowManagerMock.getWindow.mockReturnValue(win)
 
       svc.createWindow({
-        id: 'tab-3',
-        url: 'cherry://agent',
+        id: 'tab-agent',
+        url: '/app/agents',
         title: 'Agent',
-        type: 'webview',
-        isPinned: true
+        icon: 'emoji:🤖'
       })
 
       const { args } = lastOpenCall()
-      expect(args.initData).toEqual({
-        tabId: 'tab-3',
-        url: 'cherry://agent',
-        title: 'Agent',
-        type: 'webview',
-        isPinned: true
-      })
-    })
-
-    it('threads tab.icon through initData when supplied (mini-app logo / emoji descriptor)', () => {
-      const win = createMockWindow()
-      windowManagerMock.getWindow.mockReturnValue(win)
-
-      svc.createWindow({
-        id: 'tab-mini',
-        url: '/app/mini-app/chatgpt',
-        title: 'ChatGPT',
-        icon: 'chatgpt'
-      })
-
-      const { args } = lastOpenCall()
-      expect(args.initData).toMatchObject({ icon: 'chatgpt' })
+      expect(args.initData).toMatchObject({ icon: 'emoji:🤖' })
     })
 
     it('omits icon from initData when blank or absent', () => {

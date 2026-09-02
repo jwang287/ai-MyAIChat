@@ -15,7 +15,6 @@ export {
   reserveImportedFileRelativePath
 } from './pathStorage'
 export { DOCUMENT_SEPARATOR } from './pipeline/indexing/chunk'
-export { buildNoteSnapshotFile } from './pipeline/sources/noteSnapshot'
 export { buildUrlSnapshotFile } from './pipeline/sources/urlSnapshot'
 export { createKnowledgeIndexStoreAtPath } from './pipeline/vectorstore/indexStore/createIndexStore'
 export { hashEmbeddingText } from './pipeline/vectorstore/indexStore/hashing'

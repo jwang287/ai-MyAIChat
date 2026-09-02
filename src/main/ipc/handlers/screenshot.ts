@@ -7,7 +7,7 @@ import type { IpcHandlersFor } from '@shared/ipc/types'
  * choreography stay in that service.
  *
  * Authorization is two-tiered. `validateSender` only proves the caller is one of our
- * own renderers — every window (main, quick assistant, a MiniApp's host) passes it.
+ * own renderers — every window (main, quick assistant) passes it.
  * On top of that:
  *
  * - **Session scope** (`isSessionOverlay`) — the caller must be an overlay of the live

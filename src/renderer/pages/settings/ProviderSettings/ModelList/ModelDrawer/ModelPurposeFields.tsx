@@ -25,7 +25,7 @@ interface ModelPurposeFieldsProps {
   onChatEndpointTypeChange: (endpointType: ModelChatEndpointType) => void
 }
 
-const PURPOSES: ModelPurpose[] = ['chat', 'image-generation', 'image-edit']
+const PURPOSES: ModelPurpose[] = ['chat']
 
 const ENDPOINT_LABEL_KEYS: Record<ModelChatEndpointType, string> = {
   [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]: 'settings.provider.more_endpoints.openai_chat',
@@ -38,14 +38,6 @@ const PURPOSE_LABEL_KEYS: Record<ModelPurpose, { label: string; description: str
   chat: {
     label: 'settings.models.add.purpose.chat.label',
     description: 'settings.models.add.purpose.chat.description'
-  },
-  'image-generation': {
-    label: 'settings.models.add.purpose.image_generation.label',
-    description: 'settings.models.add.purpose.image_generation.description'
-  },
-  'image-edit': {
-    label: 'settings.models.add.purpose.image_edit.label',
-    description: 'settings.models.add.purpose.image_edit.description'
   }
 }
 

@@ -525,7 +525,7 @@ export class CacheService extends BaseService {
 
   /**
    * Subscribe to shared cache changes. Supports both exact keys and template
-   * keys (e.g. `'web_search.provider.last_used_key.${providerId}'`).
+   * keys (e.g. `'ocr.provider.last_used_key.${providerId}'`).
    *
    * Fire semantics are identical to `subscribeChange` plus:
    * - Fires for both main-origin writes (`setShared`/`deleteShared`) and

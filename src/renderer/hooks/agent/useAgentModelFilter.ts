@@ -6,8 +6,7 @@
  * Pi additionally validates that its provider wire protocol is supported.
  *
  * Default `null`-typed agents fall through to the shared "agent-friendly"
- * filter (drops embedding / rerank / image-generation models — none of
- * those make sense as chat targets).
+ * filter (drops non-chat models).
  */
 
 import { AGENT_RUNTIME_CAPABILITIES } from '@shared/ai/agentRuntimeCapabilities'

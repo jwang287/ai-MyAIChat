@@ -19,10 +19,10 @@ const Harness = (props: { toolName: string; input?: unknown; output?: unknown })
 )
 
 describe('UnknownToolRenderer', () => {
-  it('renders inline MCP image content blocks as data URLs alongside the text', () => {
+  it('renders inline local-MCP image content blocks as data URLs alongside the text', () => {
     render(
       <Harness
-        toolName="mcp__cherry-tools__generate_image"
+        toolName="mcp__local-tools__render_image"
         output={{
           content: [
             { type: 'text', text: 'Generated 1 image(s)' },
@@ -39,8 +39,8 @@ describe('UnknownToolRenderer', () => {
   it('shows text only when the MCP result carries no image content', () => {
     render(
       <Harness
-        toolName="mcp__cherry-tools__generate_image"
-        output={{ content: [{ type: 'text', text: 'No painting model is configured.' }] }}
+        toolName="mcp__local-tools__render_image"
+        output={{ content: [{ type: 'text', text: 'No image content was returned.' }] }}
       />
     )
     expect(screen.queryByRole('img')).toBeNull()

@@ -23,7 +23,6 @@
  */
 
 import { application } from '@application'
-import { agentChannelService } from '@data/services/AgentChannelService'
 import { agentService } from '@data/services/AgentService'
 import { agentSessionService } from '@data/services/AgentSessionService'
 import {
@@ -38,7 +37,7 @@ import { jobService } from '@data/services/JobService'
 import { loggerService } from '@logger'
 import { readHeartbeat } from '@main/ai/agents/heartbeat'
 import { buildAgentSessionTopicId } from '@main/ai/agentSession/topic'
-import { ChannelAdapterListener, startAgentSessionRun, type StreamListener } from '@main/ai/streamManager'
+import { startAgentSessionRun, type StreamListener } from '@main/ai/streamManager'
 import type { JobContext } from '@main/core/job/types'
 import { ErrorCode, isDataApiError } from '@shared/data/api/errors'
 import { AGENT_WORKSPACE_TYPE, type AgentSessionWorkspaceSource } from '@shared/data/api/schemas/agentWorkspaces'
@@ -141,8 +140,8 @@ function resolveTaskSession(params: {
 export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<AgentTaskOutput> {
   const { agentId, prompt, timeoutMinutes, workspace } = ctx.input
 
-  // schedule-fired jobs carry `scheduleId` on the row; manual ad-hoc enqueues
-  // (no schedule) degrade gracefully: skip channel notification.
+  // Schedule-fired jobs carry `scheduleId` on the row; manual ad-hoc enqueues
+  // have no schedule metadata.
   const jobSnapshot = jobService.getById(ctx.jobId)
   const scheduleId = jobSnapshot?.scheduleId ?? null
   const scheduleSnapshot = scheduleId ? jobScheduleService.getById(scheduleId) : null
@@ -202,7 +201,7 @@ export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<Age
     effectivePrompt = [
       '[Heartbeat]',
       'This is a periodic heartbeat. The instructions below are from your heartbeat.md file.',
-      'Process each item, take action where possible, and use the notify tool to alert the user of important results.',
+      'Process each item and take action where possible.',
       '',
       '---',
       content
@@ -223,26 +222,7 @@ export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<Age
     name: taskName ?? 'Scheduled task',
     workspace
   })
-  // Snapshot the task's configured recipients before starting the run. Adapter availability affects
-  // delivery, not authority: a temporarily disconnected configured channel must not hide `notify`.
-  const subscribedChannels = scheduleId
-    ? agentChannelService.getSubscribedChannels(scheduleId).filter((channel) => channel.agentId === agentId)
-    : []
-  const trustedNotifyChannels = subscribedChannels
-    .map((channel) => ({ id: channel.id, type: channel.type }))
-    .sort((left, right) => left.id.localeCompare(right.id))
-  const channelManager = application.get('ChannelManager')
-  const channelListeners: StreamListener[] = subscribedChannels.flatMap((channel) => {
-    const adapter = channelManager.getAdapter(channel.id)
-    if (!adapter) return []
-    // Suppress the listener's generic `Error: …` — `notifyTaskError` below sends a richer
-    // `[Task failed]` summary to the same chats, so leaving it on would double-notify.
-    return adapter.notifyChatIds.map((chatId) => new ChannelAdapterListener(adapter, chatId, true))
-  })
-
   const { signal: runSignal, dispose } = makeRunSignal(ctx.signal, timeoutMinutes)
-  const startTimeMs = Date.now()
-
   let resolveExecution!: (text: string) => void
   let rejectExecution!: (err: unknown) => void
   const executionDone = new Promise<string>((resolve, reject) => {
@@ -255,9 +235,7 @@ export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<Age
   const complete = (settle: () => void) => {
     if (!completionActive) return
     completionActive = false
-    // `startRuntimeTurn` carries ordinary listeners into a queued successor. Remove this fire's
-    // task/channel listeners synchronously, before the later runtime terminal listener can launch it.
-    for (const listener of channelListeners) application.get('AiStreamManager').removeListener(topicId, listener.id)
+    // Remove this fire's listener synchronously before a queued successor can launch.
     application.get('AiStreamManager').removeListener(topicId, `agent-task:${scheduleId ?? ctx.jobId}`)
     settle()
   }
@@ -297,7 +275,6 @@ export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<Age
   const onRunAbort = () => {
     if (!completionActive) return
     completionActive = false
-    for (const listener of channelListeners) application.get('AiStreamManager').removeListener(topicId, listener.id)
     application.get('AiStreamManager').removeListener(topicId, sentinel.id)
     const reason = runSignal.reason
     application
@@ -313,9 +290,8 @@ export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<Age
       const started = await startAgentSessionRun({
         sessionId: session.id,
         userParts: [{ type: 'text', text: effectivePrompt }],
-        listeners: [sentinel, ...channelListeners],
+        listeners: [sentinel],
         headless: true,
-        trustedNotifyChannels,
         requireIdle: { expectedAgentId: agentId }
       })
       if (started.mode === 'started') break
@@ -351,13 +327,6 @@ export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<Age
     resultText = await executionDone
   } catch (err) {
     runError = err instanceof Error ? err : new Error(String(err))
-    if (!runSignal.aborted && subscribedChannels.length > 0) {
-      await notifyTaskError(
-        { id: scheduleId, name: taskName, durationMs: Date.now() - startTimeMs },
-        runError.message,
-        subscribedChannels
-      )
-    }
     throw runError
   } finally {
     runSignal.removeEventListener('abort', onRunAbort)
@@ -367,38 +336,5 @@ export async function runAgentTask(ctx: JobContext<AgentTaskInput>): Promise<Age
   return {
     sessionId: session.id,
     result: resultText.slice(0, 200) || 'Completed'
-  }
-}
-
-async function notifyTaskError(
-  task: { id: string | null; name: string | null; durationMs: number },
-  error: string,
-  subscribedChannels: Array<{ id: string }>
-): Promise<void> {
-  const channelManager = application.get('ChannelManager')
-  try {
-    const durationSec = Math.round(task.durationMs / 1000)
-    const label = task.name ?? task.id ?? '(unknown)'
-    const text = `[Task failed] ${label}\nDuration: ${durationSec}s\nError: ${error}`
-
-    for (const ch of subscribedChannels) {
-      const adapter = channelManager.getAdapter(ch.id)
-      if (!adapter) continue
-      for (const chatId of adapter.notifyChatIds) {
-        adapter.sendMessage(chatId, text).catch((err) => {
-          logger.warn('Failed to deliver task error notification', {
-            scheduleId: task.id,
-            channelId: ch.id,
-            chatId,
-            error: err instanceof Error ? err.message : String(err)
-          })
-        })
-      }
-    }
-  } catch (err) {
-    logger.warn('Error while building task error notification', {
-      scheduleId: task.id,
-      error: err instanceof Error ? err.message : String(err)
-    })
   }
 }

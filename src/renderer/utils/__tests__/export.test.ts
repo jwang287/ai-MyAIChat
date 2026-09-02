@@ -238,30 +238,6 @@ describe('export', () => {
       expect(result).toBe('/pdf/ hello')
       expect(markdownToPlainText).toHaveBeenCalledWith('/pdf/ hello')
     })
-
-    it('should resolve tool citation markers to plain numbers before copying', () => {
-      // Left in place, `remove-markdown` mangles a chain of markers down to a bare
-      // `cite:<id>` and the internal id lands on the clipboard.
-      const testMessage = createExportView([
-        {
-          type: 'tool-web_search',
-          toolCallId: 'search-1',
-          state: 'output-available',
-          input: { query: 'q' },
-          output: [
-            { id: '3f2a1b9c-1', title: 'First', url: 'https://a.com/x', content: 'alpha' },
-            { id: '3f2a1b9c-2', title: 'Second', url: 'https://b.com/y', content: 'beta' }
-          ]
-        },
-        { type: 'text', text: 'Prices rose. [cite:3f2a1b9c-1][cite:3f2a1b9c-2]' }
-      ])
-      ;(markdownToPlainText as any).mockImplementation((str: string) => str)
-
-      const result = messageToPlainText(testMessage)
-
-      expect(result).toBe('Prices rose. [1][2]')
-      expect(result).not.toContain('cite:')
-    })
   })
 
   describe('messagesToPlainText', () => {

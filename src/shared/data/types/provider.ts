@@ -11,17 +11,9 @@
  * Zod schemas are the single source of truth — all types derived via z.infer<>
  */
 
-import type { EndpointType, ServerTool, ServerToolConfig } from '@cherrystudio/provider-registry'
-import {
-  CURRENCY,
-  ENDPOINT_TYPE,
-  FastModeTransportSchema,
-  objectValues,
-  ServerToolConfigSchema
-} from '@cherrystudio/provider-registry'
+import type { EndpointType } from '@cherrystudio/provider-registry'
+import { CURRENCY, ENDPOINT_TYPE, FastModeTransportSchema, objectValues } from '@cherrystudio/provider-registry'
 import * as z from 'zod'
-
-export type { ServerTool, ServerToolConfig }
 
 // ─── Schemas formerly from provider-registry/schemas ─────────────────────────
 
@@ -263,8 +255,6 @@ export const ProviderSchema = z.object({
    * the registry; absent/`'api'` for normal providers.
    */
   modelListSource: z.enum(['api', 'registry']).optional(),
-  /** Provider-native (server-executed) built-in tools resolved from the registry. */
-  serverTools: z.array(ServerToolConfigSchema).optional(),
   /**
    * Which credential kinds this provider accepts (`'api-key'` / `'oauth'` /
    * `'external-cli'`) — a set, since a provider can offer more than one (CherryIN
@@ -276,7 +266,7 @@ export const ProviderSchema = z.object({
   /**
    * Registry capability: the provider serves requests without any credential
    * (local server — ollama / lmstudio / gpustack / ovms), so the missing-API-key
-   * guards (model sync, painting/OpenClaw gating) skip the key check. Carried
+   * guards (model sync and OpenClaw gating) skip the key check. Carried
    * from the registry; absent ⇒ false.
    */
   authOptional: z.boolean().optional(),

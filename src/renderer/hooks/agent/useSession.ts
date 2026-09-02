@@ -327,7 +327,7 @@ export const useSessions = (
         const result = await ipcApi.request('ai.agent.session.delete', { sessionIds: [id] })
         closeConversationTabs('agents', result.deletedIds)
         try {
-          await invalidate(['/agent-sessions', '/agent-workspaces', '/pins', '/agent-channels'])
+          await invalidate(['/agent-sessions', '/agent-workspaces', '/pins'])
         } catch (error) {
           logger.warn('Failed to refresh after deleting Agent Session', error as Error, { sessionId: id })
         }
@@ -346,7 +346,7 @@ export const useSessions = (
         const result = await ipcApi.request('ai.agent.session.delete', { sessionIds: ids })
         closeConversationTabs('agents', result.deletedIds)
         try {
-          await invalidate(['/agent-sessions', '/agent-workspaces', '/pins', '/agent-channels'])
+          await invalidate(['/agent-sessions', '/agent-workspaces', '/pins'])
         } catch (error) {
           logger.warn('Failed to refresh after deleting Agent Sessions', error as Error, {
             sessionIds: result.deletedIds

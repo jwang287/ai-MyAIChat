@@ -21,7 +21,7 @@ const callTool = vi.fn()
 vi.mock('@application', () => ({
   application: {
     get: (name: string) => {
-      if (name === 'McpCatalogService') return { listTools }
+      if (name === 'McpToolCacheService') return { listTools }
       if (name === 'McpRuntimeService') return { callTool }
       throw new Error(`unexpected service: ${name}`)
     }

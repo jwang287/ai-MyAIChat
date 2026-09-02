@@ -15,7 +15,6 @@ import { copilotService } from './services/CopilotService'
 import { fileStorage as fileManager } from './services/FileStorage'
 import FileService from './services/FileSystemService'
 import { legacyBackupManager as backupManager } from './services/LegacyBackupManager'
-import * as NutstoreService from './services/nutstore/NutstoreService'
 import { decrypt } from './utils/aes'
 import { getHostname } from './utils/system'
 import { decompress } from './utils/zip'
@@ -83,15 +82,6 @@ export async function registerIpc() {
   // backup
   handleGuarded(IpcChannel.Backup_Backup, backupManager.backup.bind(backupManager))
   handleGuarded(IpcChannel.Backup_Restore, backupManager.restore.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_BackupToWebdav, async (event, config) => {
-    const { result, cleanupError } = await backupManager.backupToWebdav(event, config)
-    return { result, cleanupFailed: cleanupError !== null }
-  })
-  handleGuarded(IpcChannel.Backup_RestoreFromWebdav, backupManager.restoreFromWebdav.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_ListWebdavFiles, backupManager.listWebdavFiles.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_CheckConnection, backupManager.checkConnection.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_CreateDirectory, backupManager.createDirectory.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_DeleteWebdavFile, backupManager.deleteWebdavFile.bind(backupManager))
   handleGuarded(IpcChannel.Backup_BackupToLocalDir, async (event, fileName, config) => {
     const { result, cleanupError } = await backupManager.backupToLocalDir(event, fileName, config)
     return { result, cleanupFailed: cleanupError !== null }
@@ -99,15 +89,6 @@ export async function registerIpc() {
   handleGuarded(IpcChannel.Backup_RestoreFromLocalBackup, backupManager.restoreFromLocalBackup.bind(backupManager))
   handleGuarded(IpcChannel.Backup_ListLocalBackupFiles, backupManager.listLocalBackupFiles.bind(backupManager))
   handleGuarded(IpcChannel.Backup_DeleteLocalBackupFile, backupManager.deleteLocalBackupFile.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_BackupToS3, async (event, config) => {
-    const { result, cleanupError } = await backupManager.backupToS3(event, config)
-    return { result, cleanupFailed: cleanupError !== null }
-  })
-  handleGuarded(IpcChannel.Backup_RestoreFromS3, backupManager.restoreFromS3.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_ListS3Files, backupManager.listS3Files.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_DeleteS3File, backupManager.deleteS3File.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_CreateLanTransferBackup, backupManager.createLanTransferBackup.bind(backupManager))
-  handleGuarded(IpcChannel.Backup_DeleteLanTransferBackup, backupManager.deleteLanTransferBackup.bind(backupManager))
 
   // file
   handleGuarded(IpcChannel.File_Open, fileManager.open.bind(fileManager))
@@ -133,7 +114,6 @@ export async function registerIpc() {
     searchListDirectoryEntries(dirPath, options)
   )
   handleGuarded(IpcChannel.File_CheckFileName, fileManager.fileNameGuard.bind(fileManager))
-  handleGuarded(IpcChannel.File_ValidateNotesDirectory, fileManager.validateNotesDirectory.bind(fileManager))
   handleGuarded(IpcChannel.File_BatchUploadMarkdown, fileManager.batchUploadMarkdownFiles.bind(fileManager))
   handleGuarded(IpcChannel.File_ShowInFolder, fileManager.showInFolder.bind(fileManager))
 
@@ -153,13 +133,6 @@ export async function registerIpc() {
   handleGuarded(IpcChannel.Copilot_GetToken, copilotService.getToken.bind(copilotService))
   handleGuarded(IpcChannel.Copilot_Logout, copilotService.logout.bind(copilotService))
   handleGuarded(IpcChannel.Copilot_GetUser, copilotService.getUser.bind(copilotService))
-
-  // nutstore
-  handleGuarded(IpcChannel.Nutstore_GetSsoUrl, NutstoreService.getNutstoreSSOUrl.bind(NutstoreService))
-  handleGuarded(IpcChannel.Nutstore_DecryptToken, (_, token: string) => NutstoreService.decryptToken(token))
-  handleGuarded(IpcChannel.Nutstore_GetDirectoryContents, (_, token: string, path: string) =>
-    NutstoreService.getDirectoryContents(token, path)
-  )
 
   // Global Skills: install / uninstall / install-from-zip / install-from-directory / list-local
   // migrated to IpcApi (skill.*). read-file / list-files stay on legacy IPC (roadmap placeholders).

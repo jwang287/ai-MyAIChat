@@ -18,7 +18,6 @@ import { type ChunkedKnowledgeContent, chunkKnowledgeDocuments } from '../pipeli
 import { embedKnowledgeTexts } from '../pipeline/indexing/embed'
 import { refineLocalEmbeddingChunks } from '../pipeline/indexing/localEmbeddingTokenLimit'
 import { loadKnowledgeItemDocuments } from '../pipeline/readers/KnowledgeReader'
-import { captureNoteSnapshotFile } from '../pipeline/sources/noteSnapshot'
 import { fetchKnowledgeWebPage } from '../pipeline/sources/url'
 import { captureUrlSnapshotFile } from '../pipeline/sources/urlSnapshot'
 import { hashEmbeddingText } from '../pipeline/vectorstore/indexStore/hashing'
@@ -89,9 +88,7 @@ export function createIndexDocumentsJobHandler(
       reportKnowledgeProgress(ctx, 0, { stage: 'reading', currentFile: 0, totalFiles: 1 })
       knowledgeItemService.updateStatus(ctx.input.itemId, 'reading')
 
-      // Capture a url's or note's snapshot on first index (a url fetches outside
-      // the lock, a note writes its in-hand content; both persist a relativePath
-      // under it), then read every item from disk. Read and chunk outside the base
+      // Capture a URL's snapshot on first index, then read every item from disk. Read and chunk outside the base
       // lock; these phases can be slow and do not mutate shared state.
       const readableItem = await ensureSnapshot(ctx, item, knowledgeLockManager)
       const documents = await readItemDocuments(ctx, readableItem)
@@ -189,7 +186,7 @@ async function readItemDocuments(
 }
 
 type SnapshotCaptureSpec = {
-  type: 'url' | 'note'
+  type: 'url'
   /** Produce snapshot content OUTSIDE the base mutation lock; rejects empty input. */
   produce: (signal: AbortSignal) => Promise<{ markdown: string; title?: string }>
   /** Write the produced snapshot to a base file under the lock, returning its relativePath. */
@@ -197,11 +194,7 @@ type SnapshotCaptureSpec = {
 }
 
 /**
- * Resolve how to capture a url/note snapshot, or null when the item needs none
- * (a file leaf, or a url/note that already has a snapshot). url and note differ
- * only in how the markdown is produced (network fetch vs in-hand content) and
- * written — the lock, re-read, name reservation, and persistence are shared by
- * {@link ensureSnapshot}, so a future cloud source is just another spec.
+ * Resolve how to capture a URL snapshot, or null when the item needs none.
  */
 function resolveSnapshotCaptureSpec(item: IndexableKnowledgeItem): SnapshotCaptureSpec | null {
   if (item.type === 'url' && !item.data.relativePath) {
@@ -221,36 +214,13 @@ function resolveSnapshotCaptureSpec(item: IndexableKnowledgeItem): SnapshotCaptu
     }
   }
 
-  if (item.type === 'note' && !item.data.relativePath) {
-    const { baseId } = item
-    const { source, content } = item.data
-    return {
-      type: 'note',
-      // The content is already in hand, so there is no network step — but still
-      // reject empty/whitespace-only content here (before the lock, like the url
-      // empty-markdown guard): an empty note would otherwise write a
-      // frontmatter-only snapshot and complete with an empty index.
-      produce: async () => {
-        if (content.trim() === '') {
-          throw new Error(`Knowledge note has empty content: ${source}`)
-        }
-        return { markdown: content }
-      },
-      capture: ({ markdown }, reservedPaths) => captureNoteSnapshotFile(baseId, source, markdown, reservedPaths)
-    }
-  }
-
   return null
 }
 
 /**
- * Ensure a url or note item has an on-disk snapshot before it is read. An item
- * without a `relativePath` (freshly added or migrated from v1) is captured once
- * here: its markdown is produced outside the base mutation lock (a url fetches
- * over the network, a note returns its in-hand content), then the name
- * allocation, file write, and `relativePath` persistence run under the lock so
- * concurrent captures in the same base cannot pick the same path. file items, and
- * url/note items that already have a snapshot, pass straight through.
+ * Ensure a URL item has an on-disk snapshot before it is read. An item without a
+ * `relativePath` is captured once here. File items and URLs that already have a
+ * snapshot pass straight through.
  */
 async function ensureSnapshot(
   ctx: JobContext<KnowledgeIndexDocumentsPayload>,

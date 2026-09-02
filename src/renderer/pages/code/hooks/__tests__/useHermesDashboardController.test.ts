@@ -3,14 +3,10 @@ import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
-  openSmartMiniApp: vi.fn(),
   request: vi.fn(),
   handlers: new Map<string, (payload: unknown) => void>()
 }))
 
-vi.mock('@renderer/hooks/useMiniAppPopup', () => ({
-  useMiniAppPopup: () => ({ openSmartMiniApp: mocks.openSmartMiniApp })
-}))
 vi.mock('@renderer/ipc', () => ({
   ipcApi: { request: mocks.request },
   useIpcOn: (event: string, handler: (payload: unknown) => void) => mocks.handlers.set(event, handler)
@@ -31,6 +27,7 @@ describe('useHermesDashboardController', () => {
       if (route === 'hermes_dashboard.start') return Promise.resolve({ success: true, url: 'http://127.0.0.1:49152' })
       if (route === 'hermes_dashboard.get_status') return Promise.resolve({ status: 'stopped' })
       if (route === 'hermes_dashboard.stop') return Promise.resolve({ success: true })
+      if (route === 'system.shell.open_website') return Promise.resolve()
       throw new Error(`Unexpected IPC route: ${route}`)
     })
     vi.spyOn(Date, 'now').mockReturnValue(1_774_560_000_000)
@@ -49,12 +46,10 @@ describe('useHermesDashboardController', () => {
     })
 
     expect(mocks.request).toHaveBeenCalledWith('hermes_dashboard.start')
-    expect(mocks.openSmartMiniApp).toHaveBeenCalledWith({
-      appId: 'hermes-dashboard',
-      name: 'code.cli_tools.hermes',
-      url: 'http://127.0.0.1:49152/?cherry_navigation_revision=1774560000000',
-      logo: 'nousresearch'
-    })
+    expect(mocks.request).toHaveBeenCalledWith(
+      'system.shell.open_website',
+      'http://127.0.0.1:49152/?cherry_navigation_revision=1774560000000'
+    )
   })
 
   it('clears busy state when a pending launch is superseded by stop', async () => {
@@ -92,7 +87,7 @@ describe('useHermesDashboardController', () => {
     expect(result.current.stopping).toBe(false)
     // The superseded start must not revive running or open the Web UI after the stop.
     expect(result.current.running).toBe(false)
-    expect(mocks.openSmartMiniApp).not.toHaveBeenCalled()
+    expect(mocks.request).not.toHaveBeenCalledWith('system.shell.open_website', expect.anything())
   })
 
   it('clears busy state when a pending stop is superseded by launch', async () => {
@@ -136,7 +131,7 @@ describe('useHermesDashboardController', () => {
     await act(async () => {
       await result.current.onLaunch()
     })
-    mocks.openSmartMiniApp.mockClear()
+    mocks.request.mockClear()
     mocks.request.mockImplementation((route: string) => {
       if (route === 'hermes_dashboard.get_status')
         return Promise.resolve({ status: 'running', url: 'http://127.0.0.1:49153' })
@@ -148,8 +143,9 @@ describe('useHermesDashboardController', () => {
     })
 
     expect(mocks.request).toHaveBeenCalledWith('hermes_dashboard.get_status')
-    expect(mocks.openSmartMiniApp).toHaveBeenCalledWith(
-      expect.objectContaining({ url: 'http://127.0.0.1:49153/?cherry_navigation_revision=1774560000000' })
+    expect(mocks.request).toHaveBeenCalledWith(
+      'system.shell.open_website',
+      'http://127.0.0.1:49153/?cherry_navigation_revision=1774560000000'
     )
   })
 
@@ -162,6 +158,7 @@ describe('useHermesDashboardController', () => {
         })
       }
       if (route === 'hermes_dashboard.start') return Promise.resolve({ success: true, url: 'http://127.0.0.1:49152' })
+      if (route === 'system.shell.open_website') return Promise.resolve()
       throw new Error(`Unexpected IPC route: ${route}`)
     })
     const { result } = renderHook(() => useHermesDashboardController(CodeCli.HERMES))

@@ -38,7 +38,7 @@ describe('i18n-check-unused', () => {
         'common.tooltip',
         'openclaw.migration.title',
         'openclaw.not_installed.title',
-        'paintings.zhipu.image_sizes.1024x1024_default',
+        'provider.openai',
         'settings.title',
         'trace.title'
       ])
@@ -49,7 +49,7 @@ describe('i18n-check-unused', () => {
         const title = i18n.t('settings.title')
         const openclawTitle = t(needsMigration ? 'openclaw.migration.title' : 'openclaw.not_installed.title')
         const config = { titleKey: 'agent.title', unrelated: 'common.cancel' }
-        const option = { label: 'paintings.zhipu.image_sizes.1024x1024_default', value: '1024x1024' }
+        const option = { label: 'provider.openai', value: 'openai' }
         export function View() {
           return <Trans i18nKey="common.tooltip" />
         }
@@ -64,7 +64,7 @@ describe('i18n-check-unused', () => {
         'common.tooltip',
         'openclaw.migration.title',
         'openclaw.not_installed.title',
-        'paintings.zhipu.image_sizes.1024x1024_default',
+        'provider.openai',
         'settings.title',
         'trace.title'
       ])

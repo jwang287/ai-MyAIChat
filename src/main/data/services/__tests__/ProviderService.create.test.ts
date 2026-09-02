@@ -62,7 +62,7 @@ describe('ProviderService.create — endpoint config overrides', () => {
   it('resolves adapterFamily from the preset for a preset-derived instance (custom CherryIN host)', async () => {
     // Mirrors the "add CherryIN instance" flow: user-entered baseUrls only, no
     // adapterFamily. Without read-time resolution the gemini endpoint resolves
-    // to openai-compatible and image generation POSTs to /v1/images/generations.
+    // to openai-compatible rather than the preset's specialized adapters.
     const created = providerService.create({
       providerId: 'cherryin-express',
       presetProviderId: 'cherryin',

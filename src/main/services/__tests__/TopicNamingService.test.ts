@@ -132,8 +132,8 @@ describe('TopicNamingService', () => {
       })
     )
     // A naming request must never carry the assistant id — buildAgentParams would
-    // otherwise attach the assistant's tool configuration (MCP / web search /
-    // knowledge bases) onto the throwaway title request.
+    // otherwise attach the assistant's tool configuration onto the throwaway
+    // title request.
     expect(mocks.generateText.mock.calls[0][0]).not.toHaveProperty('assistantId')
     expect(mocks.updateTopic).toHaveBeenCalledWith('topic-1', {
       name: 'Generated Title',

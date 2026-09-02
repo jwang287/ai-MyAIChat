@@ -6,7 +6,6 @@ import type { Model, UniqueModelId } from '@shared/data/types/model'
 import type { ApiKeyEntry, Provider } from '@shared/data/types/provider'
 import {
   isGenerateAudioModel,
-  isGenerateImageModel,
   isGenerateVideoModel,
   isSpeechToTextModel,
   isTextToSpeechModel
@@ -159,10 +158,6 @@ export function aggregateApiKeyResults(keyResults: ApiKeyWithStatus[]): {
 }
 
 export function getModelHealthCheckGenerationOutput(model: Model): ModelHealthCheckGenerationOutput | null {
-  if (isGenerateImageModel(model)) {
-    return 'image'
-  }
-
   if (isGenerateVideoModel(model)) {
     return 'video'
   }

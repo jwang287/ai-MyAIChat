@@ -1,6 +1,6 @@
 import { HorizontalScrollContainer, Tabs, TabsList, TabsTrigger } from '@cherrystudio/ui'
 import { cn } from '@renderer/utils/style'
-import { ArrowUpDown, AudioLines, Boxes, Image, type LucideIcon, Mic, Speech, Type, Video } from 'lucide-react'
+import { ArrowUpDown, AudioLines, Boxes, type LucideIcon, Mic, Speech, Type, Video } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -12,7 +12,6 @@ type ModelTypeFilter = Exclude<ModelListCapabilityFilter, 'all'>
 /** The model-type filters, in the order they render across the manage drawer and the model list. */
 const MODEL_TYPE_FILTERS: ModelTypeFilter[] = [
   'text',
-  'image',
   'embedding',
   'audio',
   'video',
@@ -23,7 +22,6 @@ const MODEL_TYPE_FILTERS: ModelTypeFilter[] = [
 
 const CAPABILITY_FILTER_LABEL_KEYS: Record<ModelTypeFilter, string> = {
   text: 'models.type.text',
-  image: 'models.type.image',
   embedding: 'models.type.embedding',
   audio: 'models.type.audio',
   video: 'models.type.video',
@@ -36,7 +34,6 @@ const CAPABILITY_FILTER_LABEL_KEYS: Record<ModelTypeFilter, string> = {
 // type reads identically in the filter bar and on its row.
 const CAPABILITY_FILTER_ICONS: Record<ModelTypeFilter, LucideIcon> = {
   text: Type,
-  image: Image,
   embedding: Boxes,
   audio: AudioLines,
   video: Video,

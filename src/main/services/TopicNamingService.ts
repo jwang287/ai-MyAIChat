@@ -264,7 +264,7 @@ export class TopicNamingService {
    * quick-assistant model preference for summarization, matching normal chat
    * topic naming behavior. The agent id is deliberately
    * NOT passed to the generation request — that would attach the agent's tool
-   * configuration (MCP tools, web search, knowledge bases) to the title.
+   * configuration (MCP tools, knowledge bases) to the title.
    *
    * @param agentId    Agent id, used for failure logging context only.
    * @param sessionId  Cherry Studio session id.
@@ -358,7 +358,7 @@ export class TopicNamingService {
     const systemPrompt = this.resolveNamingPrompt()
     // A title is a throwaway 10-word summary: never carry the source assistant /
     // agent id, or buildAgentParams resolves its tool configuration (MCP tools,
-    // web search, knowledge bases) onto this request — the manual rename path in
+    // knowledge bases) onto this request — the manual rename path in
     // the renderer omits assistantId for the same reason.
     const request: AiGenerateRequest = {
       uniqueModelId,

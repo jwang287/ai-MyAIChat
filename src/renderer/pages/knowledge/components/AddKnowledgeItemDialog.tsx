@@ -15,7 +15,6 @@ import AddKnowledgeItemDialogHeader from './addKnowledgeItemDialog/AddKnowledgeI
 import AddKnowledgeItemDialogSourceTabs from './addKnowledgeItemDialog/AddKnowledgeItemDialogSourceTabs'
 import { DEFAULT_SOURCE_TYPE, KNOWLEDGE_ADD_ITEMS_MAX } from './addKnowledgeItemDialog/constants'
 import KnowledgeAddConflictDialog from './addKnowledgeItemDialog/KnowledgeAddConflictDialog'
-import type { NoteDraft, NoteItem, NoteSourceMode } from './addKnowledgeItemDialog/types'
 
 type ConflictResolution = 'rename' | 'replace'
 
@@ -30,7 +29,7 @@ interface AddKnowledgeItemDialogProps {
 }
 
 // `file` and `directory` skip the in-dialog panel entirely: clicking the menu item opens the OS
-// picker directly and submits the selection. Only `note` / `url` still render the dialog panel.
+// picker directly and submits the selection. URLs render the dialog panel.
 const isDirectPickSource = (source: KnowledgeItemType) => source === 'file' || source === 'directory'
 
 const knowledgeSupportedFileExtSet = new Set<string>(knowledgeSupportedFileExts)
@@ -58,9 +57,6 @@ const AddKnowledgeItemDialog = ({ open, onOpenChange }: AddKnowledgeItemDialogPr
   const activeSource = pendingAddSource ?? DEFAULT_SOURCE_TYPE
   const directPick = isDirectPickSource(activeSource)
 
-  const [noteMode, setNoteMode] = useState<NoteSourceMode>('import')
-  const [selectedNotes, setSelectedNotes] = useState<NoteItem[]>([])
-  const [noteDraft, setNoteDraft] = useState<NoteDraft>({ title: '', content: '' })
   const [urlValue, setUrlValue] = useState('')
   const [submitErrorMessage, setSubmitErrorMessage] = useState('')
   const [isResolvingSubmit, setIsResolvingSubmit] = useState(false)
@@ -75,37 +71,6 @@ const AddKnowledgeItemDialog = ({ open, onOpenChange }: AddKnowledgeItemDialogPr
     [onOpenChange]
   )
 
-  const handleNoteToggle = useCallback((note: NoteItem) => {
-    setSubmitErrorMessage('')
-    setSelectedNotes((currentNotes) =>
-      currentNotes.some((selected) => selected.externalPath === note.externalPath)
-        ? currentNotes.filter((selected) => selected.externalPath !== note.externalPath)
-        : [...currentNotes, note]
-    )
-  }, [])
-
-  const handleNoteSelectionChange = useCallback((notes: NoteItem[]) => {
-    setSubmitErrorMessage('')
-    setSelectedNotes(notes)
-  }, [])
-
-  const handleNoteModeChange = useCallback((mode: NoteSourceMode) => {
-    setSubmitErrorMessage('')
-    setNoteMode(mode)
-  }, [])
-
-  // Title and content update independently so neither handler closes over the draft;
-  // see the note on NoteCreateContent's props.
-  const handleNoteDraftTitleChange = useCallback((title: string) => {
-    setSubmitErrorMessage('')
-    setNoteDraft((current) => ({ ...current, title }))
-  }, [])
-
-  const handleNoteDraftContentChange = useCallback((content: string) => {
-    setSubmitErrorMessage('')
-    setNoteDraft((current) => ({ ...current, content }))
-  }, [])
-
   const canSubmit = useMemo(() => {
     if (!selectedBaseId) {
       return false
@@ -114,16 +79,10 @@ const AddKnowledgeItemDialog = ({ open, onOpenChange }: AddKnowledgeItemDialogPr
     switch (activeSource) {
       case 'url':
         return urlValue.trim().length > 0
-      case 'note':
-        // A drafted note needs both halves: the title becomes the item's `source`
-        // (schema-required, non-empty) and empty content indexes to nothing.
-        return noteMode === 'create'
-          ? noteDraft.title.trim().length > 0 && noteDraft.content.trim().length > 0
-          : selectedNotes.length > 0
       default:
         return false
     }
-  }, [activeSource, noteDraft.content, noteDraft.title, noteMode, selectedBaseId, selectedNotes.length, urlValue])
+  }, [activeSource, selectedBaseId, urlValue])
 
   const buildPanelSubmitItems = useCallback(async (): Promise<KnowledgeAddItemInput[]> => {
     if (activeSource === 'url') {
@@ -131,25 +90,8 @@ const AddKnowledgeItemDialog = ({ open, onOpenChange }: AddKnowledgeItemDialogPr
       return [{ type: 'url' as const, data: { source: url, url } }]
     }
 
-    if (activeSource === 'note') {
-      if (noteMode === 'create') {
-        return [{ type: 'note' as const, data: { source: noteDraft.title.trim(), content: noteDraft.content } }]
-      }
-
-      return Promise.all(
-        selectedNotes.map(async (note) => {
-          // Name the note in the failure so a read error (e.g. it was moved or
-          // deleted while the dialog was open) points at the specific source.
-          const content = await window.api.file.readExternal(note.externalPath).catch((cause) => {
-            throw new Error(`${note.name}: ${cause instanceof Error ? cause.message : String(cause)}`)
-          })
-          return { type: 'note' as const, data: { source: note.name, content } }
-        })
-      )
-    }
-
     return []
-  }, [activeSource, noteDraft.content, noteDraft.title, noteMode, selectedNotes, urlValue])
+  }, [activeSource, urlValue])
 
   // An interactive batch can be huge (the OS picker has no cap), but add_items rejects
   // oversized batches at the IPC boundary with a generic "Invalid input". Stop them here
@@ -335,23 +277,12 @@ const AddKnowledgeItemDialog = ({ open, onOpenChange }: AddKnowledgeItemDialogPr
     <>
       {directPick ? null : (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogContent
-            closeOnOverlayClick={false}
-            size={activeSource === 'url' ? 'sm' : 'lg'}
-            className="flex max-h-[70vh] flex-col overflow-hidden">
+          <DialogContent closeOnOverlayClick={false} size="sm" className="flex max-h-[70vh] flex-col overflow-hidden">
             <AddKnowledgeItemDialogHeader title={t('knowledge.data_source.add_dialog.title')} />
             <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden pr-1">
               <AddKnowledgeItemDialogSourceTabs
                 activeSource={activeSource}
-                noteMode={noteMode}
-                selectedNotes={selectedNotes}
-                noteDraft={noteDraft}
                 urlValue={urlValue}
-                onNoteModeChange={handleNoteModeChange}
-                onNoteToggle={handleNoteToggle}
-                onNoteSelectionChange={handleNoteSelectionChange}
-                onNoteDraftTitleChange={handleNoteDraftTitleChange}
-                onNoteDraftContentChange={handleNoteDraftContentChange}
                 onUrlValueChange={(value) => {
                   setSubmitErrorMessage('')
                   setUrlValue(value)
@@ -359,13 +290,9 @@ const AddKnowledgeItemDialog = ({ open, onOpenChange }: AddKnowledgeItemDialogPr
               />
             </div>
             <AddKnowledgeItemDialogFooter
-              activeSource={activeSource}
               canSubmit={canSubmit}
               errorMessage={submitErrorMessage}
               isSubmitting={isSubmitting}
-              // A draft submits exactly one note, and picks made before switching modes
-              // are not part of it — report nothing so the footer stays quiet.
-              selectedNoteCount={noteMode === 'create' ? 0 : selectedNotes.length}
               onSubmit={handleSubmit}
             />
           </DialogContent>

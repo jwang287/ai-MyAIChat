@@ -71,7 +71,7 @@ async function listMcpDescriptors(mcpIds: readonly string[]): Promise<{
     const server = mcpServerService.findByIdOrName(id)
     if (!server) continue
     try {
-      const tools = application.get('McpCatalogService').listTools(server.id)
+      const tools = application.get('McpToolCacheService').listTools(server.id)
 
       for (const tool of tools) {
         const sourceAccess = resolveMcpSourceToolAccess(server, tool)
@@ -103,10 +103,10 @@ export async function listClaudeAgentToolDescriptors(agent: Pick<AgentEntity, 'm
   descriptors: ClaudeToolDescriptor[]
   failedMcpIds: Set<string>
 }> {
-  const mcpCatalog = await listMcpDescriptors(agent.mcps ?? [])
+  const mcpToolCache = await listMcpDescriptors(agent.mcps ?? [])
   return {
-    descriptors: [...claudeRegistrySdkDescriptors(), ...mcpCatalog.descriptors],
-    failedMcpIds: mcpCatalog.failedMcpIds
+    descriptors: [...claudeRegistrySdkDescriptors(), ...mcpToolCache.descriptors],
+    failedMcpIds: mcpToolCache.failedMcpIds
   }
 }
 

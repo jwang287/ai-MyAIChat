@@ -81,7 +81,7 @@ export default function LaunchpadPage() {
     // Launchpad opens each app at its base entry (chat -> new conversation,
     // agents -> new session). Resuming the last-used instance is the sidebar's
     // job, not the launcher's.
-    const path = getSidebarMenuPath(favorite, '')
+    const path = getSidebarMenuPath(favorite)
     if (!path) return
     void navigateToUrl(path)
   }
@@ -126,7 +126,7 @@ export default function LaunchpadPage() {
   const appMenuItems = useMemo(
     () =>
       orderedAppIds.flatMap((favorite) => {
-        const path = getSidebarMenuPath(favorite, '')
+        const path = getSidebarMenuPath(favorite)
         const iconSrc = APP_ICON_SOURCES[favorite]
         if (!path || !iconSrc) return []
 

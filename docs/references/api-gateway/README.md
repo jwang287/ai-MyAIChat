@@ -15,6 +15,9 @@ plus Cherry REST and Streamable HTTP MCP endpoints. Compatible clients can point
 configured — Cherry becomes a universal translation gateway in front of every
 provider it knows.
 
+The gateway always binds to `127.0.0.1`; it does not expose a LAN or external
+network listener.
+
 Generation requests route through main's `AiStreamManager` as equal,
 **non-persisting** subscribers (alongside the renderer's `WebContentsListener`
 and the IM `ChannelAdapterListener`), and the resulting `UIMessageChunk` stream
@@ -288,18 +291,19 @@ model must use the gateway while the user's persisted gateway intent is off.
 | Key | Type | Default | Notes |
 |---|---|---|---|
 | `feature.api_gateway.enabled` | `boolean` | `false` | Auto-start on launch / toggled from settings |
-| `feature.api_gateway.host` | `string` | `'127.0.0.1'` | Bind address |
+| `feature.api_gateway.host` | `string` | `'127.0.0.1'` | Historic value retained but ignored; the gateway always binds loopback |
 | `feature.api_gateway.port` | `number` | `23333` | TCP port (UI clamps 1000–65535) |
 | `feature.api_gateway.api_key` | `string \| null` | `null` | Auto-generated `cs-sk-<uuid>` on first activate |
 
 Migrated from v1 `redux/settings/apiServer.{enabled,host,port,apiKey}` via the
-v2 preference migrators. Edit `classification.json` (not the generated schemas)
-to change these — see the v2 data-classify toolchain.
+v2 preference migrators. The historic `host` value is retained but ignored.
+Edit `classification.json` (not the generated schemas) to change these — see
+the v2 data-classify toolchain.
 
 ### Renderer
 
-`useApiGateway()` reads config (`enabled`/`host`/`port`/`apiKey`) from
-Preferences and `running` from the shared cache, exposes `loading`, and wraps
+`useApiGateway()` reads config (`enabled`/`port`/`apiKey`) from Preferences and
+uses the fixed loopback host. It reads `running` from the shared cache, exposes `loading`, and wraps
 the three IpcApi actions plus `setApiGatewayConfig`. Main owns writes to the
 `enabled` key inside start/stop so persisted intent and runtime state cannot diverge. The
 `ApiGatewaySettings` page renders the status indicator, start/stop/restart

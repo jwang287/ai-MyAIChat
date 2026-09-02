@@ -42,7 +42,7 @@ export class PiRuntimeDriver implements AgentSessionRuntimeDriver {
     }))
     // Bridged MCP tools, read cache-only from the same catalog the session bridge uses
     // (piMcpToolAdapter warms it). Third-party, so they prompt in the default mode.
-    const catalog = application.get('McpCatalogService')
+    const catalog = application.get('McpToolCacheService')
     const mcpTools: Tool[] = mcpIds.flatMap((idOrName) => {
       const server = mcpServerService.findByIdOrName(idOrName)
       if (!server) return []

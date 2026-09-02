@@ -100,12 +100,12 @@ describe('toolResponse adapter', () => {
     expect((response.tool as any).serverName).toBe('票据 OCR')
   })
 
-  it('keeps structured MCP arrays bare for dedicated tool renderers', () => {
+  it('keeps structured knowledge MCP arrays bare for dedicated tool renderers', () => {
     const results = [{ id: 1, title: 'Cherry Studio', url: 'https://example.com', content: 'result' }]
     const part = {
       type: 'dynamic-tool',
       toolCallId: 'call-search',
-      toolName: 'web_search',
+      toolName: 'kb_search',
       state: 'output-available',
       input: { query: 'Cherry Studio' },
       output: {
@@ -142,13 +142,13 @@ describe('toolResponse adapter', () => {
 
   it('parses the cherry-tools wire name into server + tool (no metadata path)', () => {
     // Real production shape (from the agent_session_message table): a dynamic-tool part whose
-    // toolName is the full `mcp__cherry-tools__web_search`, with NO output metadata. The single-
+    // toolName is the full `mcp__cherry-tools__kb_search`, with NO output metadata. The single-
     // underscore wire name splits cleanly on the last `__` into server `cherry-tools` / tool
-    // `web_search`.
+    // `kb_search`.
     const part = {
       type: 'dynamic-tool',
       toolCallId: 'call-cherry',
-      toolName: 'mcp__cherry-tools__web_search',
+      toolName: 'mcp__cherry-tools__kb_search',
       state: 'output-available',
       input: { query: 'latest news' },
       output: { content: '[]' }
@@ -158,7 +158,7 @@ describe('toolResponse adapter', () => {
     expect(response).toBeTruthy()
     if (!response) throw new Error('Expected tool response')
     expect(response.tool.type).toBe('mcp')
-    expect(response.tool.name).toBe('web_search')
+    expect(response.tool.name).toBe('kb_search')
     expect((response.tool as any).serverId).toBe('cherry-tools')
   })
 
@@ -351,22 +351,6 @@ describe('toolResponse adapter', () => {
     const response = buildToolResponseFromPart(part)
     expect(response?.tool.type).toBe('mcp')
     expect(response?.tool.name).toBe('read')
-  })
-
-  it('keeps migrated agent dynamic-tool calls without metadata on the provider renderer path', () => {
-    const part = {
-      type: 'dynamic-tool',
-      toolName: 'WebSearch',
-      toolCallId: 'legacy-call',
-      state: 'output-available',
-      input: { query: 'desktop clients' },
-      output: 'ok'
-    } as unknown as CherryMessagePart
-
-    const response = buildToolResponseFromPart(part)
-    expect(response?.status).toBe('done')
-    expect(response?.tool.type).toBe('provider')
-    expect(response?.tool.name).toBe('WebSearch')
   })
 
   it('parses Claude Code MCP tool ids as MCP tools without display metadata', () => {

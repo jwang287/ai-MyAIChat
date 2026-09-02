@@ -65,7 +65,6 @@ Cherry Studio is a desktop client that supports multiple LLM providers, availabl
 3. **Document & Data Processing**:
 
 - 📄 Supports Text, Images, Office, PDF, and more
-- ☁️ WebDAV File Management and Backup
 - 📊 Mermaid Chart Visualization
 - 💻 Code Syntax Highlighting
 
@@ -75,7 +74,6 @@ Cherry Studio is a desktop client that supports multiple LLM providers, availabl
 - 📝 Topic Management System
 - 🔤 AI-powered Translation
 - 🎯 Drag-and-drop Sorting
-- 🔌 Mini Program Support
 - ⚙️ MCP(Model Context Protocol) Server
 
 5. **Enhanced User Experience**:
@@ -95,11 +93,9 @@ We're actively working on the following features and improvements:
 - Selection Assistant with smart content selection enhancement
 - Deep Research with advanced research capabilities
 - Document Preprocessing with improved document handling
-- MCP Marketplace for Model Context Protocol ecosystem
 
 2. 🗂 **Knowledge Management**
 
-- Notes and Collections
 - Dynamic Canvas visualization
 - OCR capabilities
 - TTS (Text-to-Speech) support

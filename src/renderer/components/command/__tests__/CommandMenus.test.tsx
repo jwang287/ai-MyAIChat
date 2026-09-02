@@ -250,10 +250,10 @@ describe('CommandContextMenu', () => {
 
   it('passes command and extra items to the native menu and runs the selected extra action', async () => {
     const onSelect = vi.fn()
-    showNativePopupMenuMock.mockResolvedValueOnce({ type: 'custom', id: 'tool:web-search' })
+    showNativePopupMenuMock.mockResolvedValueOnce({ type: 'custom', id: 'tool:custom-action' })
 
     renderMenu({
-      extraItems: [{ type: 'item', id: 'tool:web-search', label: 'Web Search', checked: true, onSelect }]
+      extraItems: [{ type: 'item', id: 'tool:custom-action', label: 'Custom action', checked: true, onSelect }]
     })
     fireEvent.contextMenu(screen.getByRole('button', { name: 'trigger' }))
 
@@ -263,7 +263,7 @@ describe('CommandContextMenu', () => {
           location: 'chat.input.tools.context',
           items: expect.arrayContaining([
             expect.objectContaining({ type: 'command', command: 'topic.create' }),
-            expect.objectContaining({ type: 'custom', id: 'tool:web-search', checked: true })
+            expect.objectContaining({ type: 'custom', id: 'tool:custom-action', checked: true })
           ])
         }),
         expect.any(Object)
@@ -389,10 +389,10 @@ describe('CommandContextMenu', () => {
     const onSelect = vi.fn()
     preferenceValues['menu.presentation_mode'] = 'cherry'
 
-    renderMenu({ extraItems: [{ type: 'item', id: 'tool:web-search', label: 'Web Search', onSelect }] })
+    renderMenu({ extraItems: [{ type: 'item', id: 'tool:custom-action', label: 'Custom action', onSelect }] })
 
-    expect(screen.getByText('Web Search')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /Web Search/ }))
+    expect(screen.getByText('Custom action')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Custom action/ }))
 
     await waitFor(() => expect(onSelect).toHaveBeenCalledOnce())
   })
@@ -409,17 +409,17 @@ describe('CommandContextMenu', () => {
 
     const { unmount } = renderMenu({
       onOpenChange,
-      extraItems: [{ type: 'item', id: 'tool:web-search', label: 'Web Search', onSelect }]
+      extraItems: [{ type: 'item', id: 'tool:custom-action', label: 'Custom action', onSelect }]
     })
 
     fireEvent.contextMenu(screen.getByRole('button', { name: 'trigger' }))
-    fireEvent.click(screen.getByRole('button', { name: /Web Search/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Custom action/ }))
 
     expect(onOpenChange).toHaveBeenLastCalledWith(false)
     expect(requestFrameSpy).toHaveBeenCalledOnce()
     expect(onSelect).not.toHaveBeenCalled()
 
-    fireEvent.click(screen.getByRole('button', { name: /Web Search/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Custom action/ }))
     unmount()
 
     deferredActions[0]?.(0)
@@ -471,7 +471,7 @@ describe('CommandContextMenu', () => {
             <RegisteredTopicCreate onExecute={vi.fn()} />
             <CommandContextMenu
               location="webcontents.context"
-              extraItems={[{ type: 'item', id: 'tool:web-search', label: 'Web Search', onSelect: vi.fn() }]}>
+              extraItems={[{ type: 'item', id: 'tool:custom-action', label: 'Custom action', onSelect: vi.fn() }]}>
               <button type="button">trigger</button>
             </CommandContextMenu>
           </CommandProvider>

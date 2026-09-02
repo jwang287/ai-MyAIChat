@@ -18,7 +18,7 @@ vi.mock('@data/services/McpServerService', () => ({
 vi.mock('@application', () => ({
   application: {
     get: (name: string) => {
-      if (name === 'McpCatalogService') return { listTools: mocks.listTools }
+      if (name === 'McpToolCacheService') return { listTools: mocks.listTools }
       throw new Error(`unexpected service ${name}`)
     }
   }

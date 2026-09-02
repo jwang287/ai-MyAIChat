@@ -46,8 +46,7 @@ const REGISTRY_DATA_CHANGE_EFFECTS = [
   { endpoint: '/models', kind: 'projection' },
   { endpoint: '/models/:uniqueModelId*' },
   { endpoint: '/providers/:providerId/preset' },
-  { endpoint: '/providers/:providerId/models:resolve', kind: 'membership' },
-  { endpoint: '/providers/:providerId/models/:modelId*/image-generation-support' }
+  { endpoint: '/providers/:providerId/models:resolve', kind: 'membership' }
 ] satisfies DataApiDataChangeEffect[]
 
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000

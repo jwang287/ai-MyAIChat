@@ -4,7 +4,6 @@
 export {
   isAudioModel,
   isAudioModels,
-  isGenerateImageModels,
   isVideoModel,
   isVideoModels,
   isVisionModels
@@ -16,17 +15,13 @@ export { isGPT5SeriesReasoningModel } from './openai'
 // renderer's regex-table shadows were deleted with the #16598 migration
 // (vocabulary now comes from `@shared/ai/reasoning`).
 export {
-  canModelUseAssistantWebSearch,
-  hasModelBuiltinWebSearch,
   reconcileReasoningEffortForModel,
-  reconcileWebSearchForModel,
   resolveReasoningEffortForModel
 } from './reconcile'
 export { readDefaultModel, readQuickModel, readTranslateModel } from './resolve'
 export { getSearchMatchScore } from './search'
 export { isFunctionCallingModel } from './tooluse'
-export { isGenerateImageModel, isVisionModel } from './vision'
-export { isOpenAIWebSearchModel } from './websearch'
+export { isVisionModel } from './vision'
 export {
   getModelSupportedReasoningEffortOptions,
   isFixedReasoningModel,

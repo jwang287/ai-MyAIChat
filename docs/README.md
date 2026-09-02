@@ -11,7 +11,6 @@
 | [🌿 Branching Strategy](./contrib/branching-strategy.md) | Branch model for contributions, pull request guidelines, and version tag management targeting main |
 | [🖥️ Develop](./contrib/development.md) | Developer environment setup covering IDE configuration, Windows symlink support, and project install steps |
 | [BAChat 功能清单 v0.1](./contrib/feature-list-v0.1.md) | BAChat v0.1 精简核心版的功能范围、能力说明与取舍依据 |
-| [Feishu Notification Script](./contrib/feishu-notify.md) | CLI script that sends Feishu webhook card notifications from GitHub Actions workflows, with command reference |
 | [Linux Packaging](./contrib/linux-packaging.md) | Linux packaging flow using pinned better-sqlite3 prebuilds, with build commands and prebuild update steps |
 | [Release Workflow Operations](./contrib/release-workflow.md) | Maintainer runbook for preparing, validating, hotfixing, publishing, and synchronizing release branches |
 | [Test Plan](./contrib/test-plan.md) | The Test Plan process for beta and rc testing, covering user participation and maintainer PR workflow |
@@ -32,7 +31,6 @@
 | [Chat Attachments](./references/ai/chat-attachments.md) | Per-attachment routing to native file parts or capped extracted text, with read_file paging for truncated overflow |
 | [Core Architecture](./references/ai/core-architecture.md) | End-to-end chat turn flow from renderer IPC transport through AiStreamManager and Agent loop to persistence |
 | [Execution Overlay](./references/ai/execution-overlay.md) | Renderer stream overlay — TopicStreamSubscription demux by execution and anchor feeding readUIMessageStream snapshots |
-| [Image-Generation Parameterized Architecture](./references/ai/image-generation-parameters.md) | Data-driven image-generation params — registry supports to form fields, canonical bag to vendor wire via WireProfile |
 | [IPC Transport](./references/ai/ipc-transport.md) | IpcChatTransport bridging useChat to Main over ai.stream.* IpcApi routes, with dispatch ack coordination and detach vs abort |
 | [Model Retry & Fallback](./references/ai/model-retry.md) | User-configurable same-model retry plus fallback models via ai-retry wrapModel, driven by chat.retry.* preferences |
 | [Observability](./references/ai/observability.md) | OTel tracing for AI calls and agent runtimes — Cherry roots, SDK adapters, runtime spans, local projection, and sinks |
@@ -41,7 +39,7 @@
 | [Provider State Ownership](./references/ai/provider-state-ownership.md) | Ownership rules for provider facts, endpoint dialects, user connection overrides, and per-request controls |
 | [AiStreamManager](./references/ai/stream-manager.md) | AiStreamManager active-stream registry — listener fan-out, reconnect replay, abort, steering, and persistence triggers |
 | [Tool Approval](./references/ai/tool-approval.md) | Main-as-writer tool approval through ai.tool.respond_approval, approval-requested parts, and persistent MCP decisions |
-| [Tool Registry](./references/ai/tool-registry.md) | Unified aiSdk ToolEntry registry — built-in web/kb tools, MCP sync, meta-tools, and deferred exposition |
+| [Tool Registry](./references/ai/tool-registry.md) | Unified aiSdk ToolEntry registry — built-in knowledge/file tools, MCP sync, meta-tools, and deferred exposition |
 | [Text Translation](./references/ai/translation.md) | Text translation flow from renderer callers through translate.open to Main streaming, including Home message persistence ownership |
 
 ### API Gateway
@@ -173,12 +171,6 @@
 | [Knowledge Workflow Architecture](./references/knowledge/workflow-architecture.md) | Knowledge workflow architecture: scheduling model, durable JobManager jobs, per-base mutation lock, crash semantics |
 | [Knowledge Storage and Retrieval Implementation](./references/knowledge/experiment/knowledge-technical-design.md) | Current Knowledge storage and retrieval implementation - raw files, per-base index schema, invariants, and migration validation |
 
-### LAN Transfer
-
-| Document | Description |
-|----------|-------------|
-| [Cherry Studio LAN Transfer Protocol Specification](./references/lan-transfer/README.md) | LAN transfer protocol spec for desktop-mobile sync covering mDNS discovery, TCP handshake, and file transfer |
-
 ### Lifecycle
 
 | Document | Description |
@@ -202,20 +194,6 @@
 |----------|-------------|
 | [Memory Reference](./references/memory/README.md) | Entry point for the memory mechanisms — Agent File Memory, Knowledge Base, and MCP Memory — plus the status of the v1 Global Memory feature |
 | [Memory Feature Overview](./references/memory/overview.md) | Comparison of the three memory mechanisms in Cherry Studio — Agent File Memory, Knowledge Base, and MCP Memory — plus the status of the v1 Global Memory feature |
-
-### Mini App
-
-| Document | Description |
-|----------|-------------|
-| [Mini App Reference](./references/mini-app/README.md) | Entry point for building a Cherry Studio mini app — what a package is, the host API, and where each rule lives |
-| [Activity log](./references/mini-app/activity-log.md) | What the host records about a mini app's behaviour — every refusal, every call that leaves the sandbox, every permission decision — and what it never records |
-| [Capabilities](./references/mini-app/capabilities.md) | The window.cherry API method by method — signatures, return shapes, the seven error names, quotas and rate limits |
-| [Lifecycle](./references/mini-app/lifecycle.md) | How a mini app lives and dies — no shutdown notice, write-on-change persistence, visibility and locale events, quiesce during updates |
-| [Manifest](./references/mini-app/manifest.md) | Every manifest.json field, the appId rules, permission declarations and wildcard expansion, and the network host allowlist |
-| [Packaging](./references/mini-app/packaging.md) | Building a .miniapp archive, what the installer rejects, the install consent flow, distribution manifests, updates, rollback and uninstall |
-| [Runtime probes](./references/mini-app/probes.md) | The runtime measurements behind the sandbox — WebRTC escape, Web Storage ceiling, TransformStream terminal callbacks, host-cache reuse — recorded in enough detail to rebuild each probe when Electron moves |
-| [Sandbox](./references/mini-app/sandbox.md) | What a mini app cannot do — blocked Web Storage, default-deny network, CORS on own files, navigation and popups — and what to use instead |
-| [Theming](./references/mini-app/theming.md) | Matching Cherry's look from a mini app — the served /__cherry/theme.css, the stable CSS variable contract, dark mode, fonts and Tailwind mapping |
 
 ### Provider Model
 

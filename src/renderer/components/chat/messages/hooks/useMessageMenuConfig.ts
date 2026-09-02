@@ -7,11 +7,6 @@ const MESSAGE_EXPORT_MENU_PREFERENCE_KEYS = {
   image: 'data.export.menus.image',
   markdown: 'data.export.menus.markdown',
   markdown_reason: 'data.export.menus.markdown_reason',
-  notion: 'data.export.menus.notion',
-  yuque: 'data.export.menus.yuque',
-  joplin: 'data.export.menus.joplin',
-  obsidian: 'data.export.menus.obsidian',
-  siyuan: 'data.export.menus.siyuan',
   docx: 'data.export.menus.docx',
   plain_text: 'data.export.menus.plain_text'
 } as const

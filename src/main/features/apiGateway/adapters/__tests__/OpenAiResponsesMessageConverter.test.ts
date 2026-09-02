@@ -64,7 +64,7 @@ describe('OpenAiResponsesMessageConverter.toUIMessages', () => {
     const msgs = converter.toUIMessages(
       params({
         input: [
-          { type: 'function_call', call_id: 'c1', name: 'generate_image', arguments: '{}' },
+          { type: 'function_call', call_id: 'c1', name: 'mcp__local-tools__render_image', arguments: '{}' },
           {
             type: 'function_call_output',
             call_id: 'c1',
@@ -93,8 +93,18 @@ describe('OpenAiResponsesMessageConverter.toUIMessages', () => {
     const msgs = converter.toUIMessages(
       params({
         input: [
-          { type: 'function_call', call_id: 'c1', name: 'generate_image', arguments: '{"prompt":"first"}' },
-          { type: 'function_call', call_id: 'c2', name: 'generate_image', arguments: '{"prompt":"second"}' },
+          {
+            type: 'function_call',
+            call_id: 'c1',
+            name: 'mcp__local-tools__render_image',
+            arguments: '{"prompt":"first"}'
+          },
+          {
+            type: 'function_call',
+            call_id: 'c2',
+            name: 'mcp__local-tools__render_image',
+            arguments: '{"prompt":"second"}'
+          },
           {
             type: 'function_call_output',
             call_id: 'c2',

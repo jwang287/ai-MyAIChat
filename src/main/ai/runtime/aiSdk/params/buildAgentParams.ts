@@ -5,17 +5,8 @@ import { projectRuntimeReasoning, providerRegistryService } from '@data/services
 import { loggerService } from '@logger'
 import { resolveRequestedMaxOutputTokens } from '@main/ai/contextBuild/resolveOutputReservation'
 import { resolveKnowledgeBaseScope } from '@main/ai/utils/knowledgeScope'
-import { getProviderForCapability, isPermanentWebSearchConfigError } from '@main/services/webSearch'
-import {
-  FS_READ_TOOL_NAME,
-  KB_READ_TOOL_NAME,
-  KB_SEARCH_TOOL_NAME,
-  WEB_FETCH_TOOL_NAME,
-  WEB_SEARCH_TOOL_NAME
-} from '@shared/ai/builtinTools'
+import { FS_READ_TOOL_NAME, KB_READ_TOOL_NAME, KB_SEARCH_TOOL_NAME } from '@shared/ai/builtinTools'
 import type { CompactionSink } from '@shared/ai/compaction'
-import type { WebSearchCapability } from '@shared/data/preference/preferenceTypes'
-import { isWebSearchProviderReady } from '@shared/data/presets/webSearchProviders'
 import {
   type Assistant,
   DEFAULT_ASSISTANT_SETTINGS,
@@ -25,7 +16,6 @@ import {
 import { ENDPOINT_TYPE, type EndpointType, type Model } from '@shared/data/types/model'
 import type { Provider } from '@shared/data/types/provider'
 import { isFunctionCallingModel } from '@shared/utils/model'
-import { finalizeWebToolRoutes, resolveWebToolRoutes, type WebToolRoutes } from '@shared/utils/provider'
 import { stepCountIs, type StopCondition, type ToolSet, type UIMessage } from 'ai'
 
 import { resolveRequestContextSettings } from '../../../contextBuild/resolveRequestContextSettings'
@@ -51,7 +41,6 @@ import {
 import { registry, ToolRegistry } from '../../../tools/adapters/aiSdk/registry'
 import { createAiRepair } from '../../../tools/adapters/aiSdk/repair'
 import type { ToolEntry } from '../../../tools/adapters/aiSdk/types'
-import { resolveConfiguredPaintingModel } from '../../../tools/painting'
 import type { AiBaseRequest, CallOverrides } from '../../../types'
 import {
   adjustMaxOutputTokensForReasoning,
@@ -83,13 +72,7 @@ import { type NativeFileSupport, resolveNativeFileSupport } from './nativeFileSu
 import type { RequestScope, SdkConfig } from './scope'
 
 const logger = loggerService.withContext('buildAgentParams')
-const CITABLE_BUILTIN_TOOL_NAMES: ReadonlySet<string> = new Set([
-  WEB_SEARCH_TOOL_NAME,
-  WEB_FETCH_TOOL_NAME,
-  KB_SEARCH_TOOL_NAME,
-  KB_READ_TOOL_NAME
-])
-const NO_WEB_TOOL_ROUTES: WebToolRoutes = { webSearch: 'none', webFetch: 'none' }
+const CITABLE_BUILTIN_TOOL_NAMES: ReadonlySet<string> = new Set([KB_SEARCH_TOOL_NAME, KB_READ_TOOL_NAME])
 
 export interface BuildAgentParamsInput {
   request: AiBaseRequest & {
@@ -162,23 +145,6 @@ export async function buildAgentParams(input: BuildAgentParamsInput): Promise<Bu
     contextSettings.enabled && request.contextOwner !== 'caller' && hasAnchorRow(request.messageId) && hasReadBackStep
   const knowledgeBaseIds = resolveKnowledgeBaseScope(assistant?.knowledgeBaseIds, request.knowledgeBaseIds)
   const toolSignals = canModelConsumeTools(model) ? await resolveRequestToolSignals(request, assistant) : undefined
-  const webToolRoutes = await resolveRequestWebToolRoutes(model, provider, assistant, {
-    endpointType: resolvedEndpoint.endpointType,
-    hasFunctionToolSignals: toolSignals
-      ? toolSignals.mcpToolIds.size > 0 ||
-        // Same `applies` gate the mcp_resource_* tools use, so a resource-only assistant is not
-        // mistaken for a request that loads no function tool.
-        toolSignals.mcpResourceServerIds.size > 0 ||
-        // Mirrors the KB tools' own `applies`: owning a base is not enough, this request must also
-        // scope one. ORing the two made every user with any KB look like a function-tool conflict,
-        // which withheld the server web-search route on Gemini 2.5 for requests that load no tool.
-        (toolSignals.hasAnyKnowledgeBase && knowledgeBaseIds.length > 0) ||
-        hasFileAttachments ||
-        Object.keys(request.callOverrides?.tools ?? {}).length > 0 ||
-        assistant?.settings.enableGenerateImage === true
-      : false,
-    reasoningEffort: request.reasoningEffort ?? assistant?.settings.reasoning_effort
-  })
   const { tools, deferredEntries, hasCitableTools, mcpToolIds, mcpResourceServerIds } = toolSignals
     ? await resolveTools(
         request,
@@ -186,7 +152,6 @@ export async function buildAgentParams(input: BuildAgentParamsInput): Promise<Bu
         model,
         hasFileAttachments,
         knowledgeBaseIds,
-        webToolRoutes,
         toolSignals,
         hasPersistedOutputs,
         canOffloadToolOutputs
@@ -198,15 +163,7 @@ export async function buildAgentParams(input: BuildAgentParamsInput): Promise<Bu
         mcpToolIds: new Set<string>(),
         mcpResourceServerIds: new Set<string>()
       }
-  const hasFunctionTools = tools !== undefined && Object.keys(tools).length > 0
-  const finalWebToolRoutes = finalizeWebToolRoutes(webToolRoutes, model, provider, hasFunctionTools)
-  const capabilities = assistant
-    ? resolveCapabilities(model, provider, assistant, {
-        webToolRoutes: finalWebToolRoutes,
-        runtimeProviderId: sdkConfig.providerId,
-        serving: sdkConfig.providerSettings
-      })
-    : undefined
+  const capabilities = assistant ? resolveCapabilities(model, provider, assistant) : undefined
 
   const { endpointType } = resolvedEndpoint
   const aiSdkProviderId = resolveAiSdkProviderId(provider, endpointType)
@@ -282,7 +239,6 @@ export async function buildAgentParams(input: BuildAgentParamsInput): Promise<Bu
     contextSettings,
     compressionModel,
     compactionSink,
-    webToolRoutes: finalWebToolRoutes,
     hasFileAttachments,
     hasPersistedOutputs,
     canOffloadToolOutputs,
@@ -297,8 +253,7 @@ export async function buildAgentParams(input: BuildAgentParamsInput): Promise<Bu
     model,
     tools,
     deferredEntries,
-    hasCitableTools,
-    webSearchEnabled: finalWebToolRoutes.webSearch !== 'none'
+    hasCitableTools
   })
   const options = buildAgentOptions(
     scope,
@@ -395,12 +350,7 @@ function canModelConsumeTools(model: Model): boolean {
 }
 
 /**
- * Pre-tool-resolution signals — feed the web-tool routing and are reused by `resolveTools`.
- *
- * `mcpResourceServerIds` is resolved (and frozen) here rather than inside `resolveTools` because web
- * routing runs first and has to know that this request will carry function tools: a resource-only
- * assistant that reported "no function tools" would be routed to a provider's server web route, and
- * `finalizeWebToolRoutes` can only withdraw that route afterwards, not fall back to the client one.
+ * Pre-tool-resolution signals reused by `resolveTools`.
  */
 async function resolveRequestToolSignals(
   request: BuildAgentParamsInput['request'],
@@ -432,7 +382,6 @@ export async function resolveTools(
   model: Model,
   hasFileAttachments: boolean,
   knowledgeBaseIds: readonly string[],
-  webToolRoutes: WebToolRoutes = NO_WEB_TOOL_ROUTES,
   signals?: Awaited<ReturnType<typeof resolveRequestToolSignals>>,
   hasPersistedOutputs: boolean = false,
   canOffloadToolOutputs: boolean = false
@@ -451,18 +400,15 @@ export async function resolveTools(
     await syncMcpToolsToRegistry(undefined, { selectedToolIds: mcpToolIds })
   }
 
-  const paintingModel = resolveConfiguredPaintingModel()
   const selected = registry.selectActive({
     assistant,
-    paintingModel: paintingModel ?? undefined,
     mcpToolIds,
     mcpResourceServerIds,
     hasFileAttachments,
     hasPersistedOutputs,
     canOffloadToolOutputs,
     hasAnyKnowledgeBase,
-    knowledgeBaseIds,
-    webToolRoutes
+    knowledgeBaseIds
   })
   // Client tools (no `execute`) from assistant-less callers; merged below so
   // they share the registry/defer-exposition path.
@@ -501,51 +447,6 @@ export async function resolveTools(
     hasCitableTools,
     mcpToolIds,
     mcpResourceServerIds
-  }
-}
-
-async function resolveRequestWebToolRoutes(
-  model: Model,
-  provider: Provider,
-  assistant: Assistant | undefined,
-  requestContext: {
-    endpointType: EndpointType | undefined
-    hasFunctionToolSignals: boolean
-    reasoningEffort: string | undefined
-  }
-): Promise<WebToolRoutes> {
-  if (!assistant) return NO_WEB_TOOL_ROUTES
-
-  const preferenceService = application.get('PreferenceService')
-  const clientWebToolsEnabled = assistant.settings.enableWebSearch === true
-  const [clientSearchAvailable, clientFetchAvailable] = clientWebToolsEnabled
-    ? await Promise.all([
-        resolveClientWebCapabilityAvailability('searchKeywords'),
-        resolveClientWebCapabilityAvailability('fetchUrls')
-      ])
-    : [false, false]
-  const clientToolsPreferred = preferenceService.get('chat.web_search.client_tools_preferred')
-
-  return resolveWebToolRoutes(model, provider, {
-    webSearchEnabled: clientWebToolsEnabled,
-    clientSearchAvailable,
-    clientFetchAvailable,
-    clientToolsPreferred,
-    endpointType: requestContext.endpointType,
-    hasFunctionToolSignals: requestContext.hasFunctionToolSignals,
-    reasoningEffort: requestContext.reasoningEffort
-  })
-
-  async function resolveClientWebCapabilityAvailability(capability: WebSearchCapability): Promise<boolean> {
-    try {
-      const clientProvider = await getProviderForCapability(undefined, capability, preferenceService)
-      return isWebSearchProviderReady(clientProvider, capability)
-    } catch (error) {
-      if (!isPermanentWebSearchConfigError(error)) {
-        logger.warn(`Failed to resolve the client ${capability} provider; falling back to the server tool`, { error })
-      }
-      return false
-    }
   }
 }
 
@@ -597,9 +498,7 @@ function buildAgentOptions(
     model,
     provider,
     {
-      enableReasoning: capabilities ? capabilities.enableReasoning : request.reasoningEffort !== undefined,
-      enableGenerateImage: capabilities?.enableGenerateImage ?? false,
-      enableWebSearch: capabilities ? scope.webToolRoutes?.webSearch === 'server' : false
+      enableReasoning: capabilities ? capabilities.enableReasoning : request.reasoningEffort !== undefined
     },
     {
       aiSdkProviderId,

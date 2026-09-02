@@ -8,11 +8,8 @@ import type { AgentSessionCompactionState } from '../../ai/agentSessionCompactio
 import type { AgentSessionContextUsage } from '../../ai/agentSessionContextUsage'
 import type { AgentSessionFlowParts } from '../../ai/agentSessionFlowParts'
 import type { AgentSessionSlashCommand } from '../../ai/agentSessionSlashCommands'
-import type { McpServer } from '../types/mcpServer'
-import type { MiniApp } from '../types/miniApp'
 import type { UniqueModelId } from '../types/model'
 import type { ComposerMessageTokenKind } from '../types/uiParts'
-import type { WebSearchStatus } from '../types/webSearch'
 
 export type CacheAppUpdateState = {
   info: UpdateInfo | null
@@ -26,11 +23,6 @@ export type CacheAppUpdateState = {
   manualCheck: boolean
 }
 
-export type CacheActiveSearches = Record<string, WebSearchStatus>
-
-// For cache schema, we use any for complex types to avoid circular dependencies
-// The actual type checking will be done at runtime by the cache system
-export type CacheMiniAppType = MiniApp
 export type CacheMcpTool = McpTool
 
 export type McpRuntimeStatus = {
@@ -40,19 +32,12 @@ export type McpRuntimeStatus = {
 }
 
 /**
- * MCP registry "available servers" fetched per marketplace provider, keyed by
- * provider key. Re-fetchable network data, so it lives in persist cache rather
- * than Preference/DataApi.
- */
-export type McpAvailableServers = Record<string, McpServer[]>
-
-/**
  * Tab type for browser-like tabs
  *
  * - 'route': Internal app routes rendered via MemoryRouter
  * - 'webview': External web content rendered via Electron webview
  */
-export type TabType = 'route' | 'webview'
+export type TabType = 'route'
 
 /**
  * Tab saved state for hibernation recovery
@@ -175,13 +160,6 @@ export interface CacheAgentComposerDraft extends CacheComposerDraftBase {
 
 export type ExternalOpenTargetPreferences = Record<string, string>
 
-export type CachePaintingGenerationState = {
-  status: 'running' | 'failed' | 'canceled'
-  taskId: string | null
-  error: string | null
-  progress: number | null
-}
-
 export type CacheAgentSessionContextUsage = AgentSessionContextUsage | null
 export type CacheAgentSessionCompactionState = AgentSessionCompactionState | null
 export type CacheAgentSessionApiRetryState = AgentSessionApiRetryState | null
@@ -210,18 +188,4 @@ export type WindowBoundsState = {
    *  window back onto the same display (clamping into it if the saved rect no
    *  longer fits), instead of resetting to the primary display. */
   displayBounds: { x: number; y: number; width: number; height: number }
-}
-
-/**
- * Why a mini app's tile carries a dot. Derived by main, identical in every window; an
- * entry exists only while at least one reason does.
- */
-export type CacheMiniAppAttention = {
-  appId: string
-  /** The version the last update check found, or null. */
-  updateVersion: string | null
-  /** Leaves a Cherry release added under a namespace the app declared, still awaiting the user. */
-  pendingPermissions: string[]
-  /** An update in flight: the version landing, and how far its download is (`null` = not measurable yet). */
-  updating: { version: string; fraction: number | null } | null
 }

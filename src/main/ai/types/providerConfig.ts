@@ -12,7 +12,7 @@ export type ProviderConfig<T extends StringKeys<AppProviderSettingsMap> = String
 > & {
   /**
    * API endpoint path extracted from baseURL
-   * Used for identifying image generation endpoints and other special cases
+   * Used for identifying legacy endpoint types and other special cases
    * @example 'chat/completions', 'images/generations', 'predict'
    */
   endpoint?: string
@@ -25,10 +25,6 @@ export type ProviderConfig<T extends StringKeys<AppProviderSettingsMap> = String
 export interface ProviderCapabilities {
   /** Whether reasoning/thinking parameters should be sent to the provider. */
   enableReasoning: boolean
-  /** Whether provider-native web search should be enabled. */
-  enableWebSearch: boolean
-  /** Whether the model should generate images inline. */
-  enableGenerateImage: boolean
 }
 
 /**

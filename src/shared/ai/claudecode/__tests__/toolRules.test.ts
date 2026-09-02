@@ -21,12 +21,6 @@ describe('Claude Code tool rules', () => {
     origin: 'builtin'
   }
 
-  const webSearch: ClaudeToolDescriptor = {
-    id: 'WebSearch',
-    name: 'WebSearch',
-    origin: 'builtin'
-  }
-
   const mcpSearch: ClaudeToolDescriptor = {
     id: buildClaudeMcpToolName('docs', 'search_docs'),
     name: 'search_docs',
@@ -56,16 +50,13 @@ describe('Claude Code tool rules', () => {
   })
 
   it('applies mode, safe, and manual defaults in order', () => {
-    expect(resolveClaudeToolAccess(webSearch, { permissionMode: 'bypassPermissions' }).approval).toBe('auto')
     expect(resolveClaudeToolAccess(edit, { permissionMode: 'acceptEdits' }).approval).toBe('auto')
     expect(resolveClaudeToolAccess(read, {}).approval).toBe('auto')
-    expect(resolveClaudeToolAccess(webSearch, {}).approval).toBe('prompt')
   })
 
   it('treats auto mode as default — the SDK classifier decides, so nothing is pre-approved', () => {
     expect(resolveClaudeToolAccess(read, { permissionMode: 'auto' }).approval).toBe('auto')
     expect(resolveClaudeToolAccess(edit, { permissionMode: 'auto' }).approval).toBe('prompt')
-    expect(resolveClaudeToolAccess(webSearch, { permissionMode: 'auto' }).approval).toBe('prompt')
   })
 
   it('applies invocation-level acceptEdits Bash defaults', () => {

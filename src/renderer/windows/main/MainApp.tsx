@@ -85,18 +85,17 @@ function MainWindowRuntime(): null {
 export function MainWindowContent(): React.ReactElement {
   const [providerSetupStatus] = usePreference('app.onboarding.provider_setup.status')
   const [sidebarFavorites] = usePreference('ui.sidebar.favorites')
-  const [defaultPaintingProvider] = usePreference('feature.paintings.default_provider')
 
   const initialDefaultTab = useMemo<Tab>(
     () => ({
       id: 'home',
       type: 'route',
-      url: getSidebarDefaultLandingUrl(sidebarFavorites, defaultPaintingProvider) || '/app/launchpad',
+      url: getSidebarDefaultLandingUrl(sidebarFavorites) || '/app/launchpad',
       title: '',
       lastAccessTime: Date.now(),
       isDormant: false
     }),
-    [defaultPaintingProvider, sidebarFavorites]
+    [sidebarFavorites]
   )
 
   return (

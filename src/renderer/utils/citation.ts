@@ -11,8 +11,8 @@
  */
 
 import type { GroundingSupport } from '@google/genai'
+import { CITATION_SOURCE, type CitationSource } from '@renderer/types/citationProvider'
 import type { Citation } from '@renderer/types/message'
-import { WEB_SEARCH_SOURCE, type WebSearchSource } from '@renderer/types/webSearchProvider'
 import { cleanMarkdownContent } from '@renderer/utils/formats'
 
 const MARKDOWN_CODE_PATTERN = /```[\s\S]*?```|`[^`\n]*`/gm
@@ -42,8 +42,8 @@ export function toTooltipCitation(citation: Citation): Citation {
 
 /** Pick the first valid source identifier out of a citation-reference list. */
 export function determineCitationSource(
-  citationReferences: Array<{ citationBlockId?: string; citationBlockSource?: WebSearchSource }> | undefined
-): WebSearchSource | undefined {
+  citationReferences: Array<{ citationBlockId?: string; citationBlockSource?: CitationSource }> | undefined
+): CitationSource | undefined {
   if (citationReferences?.length) {
     const validReference = citationReferences.find((ref) => ref.citationBlockSource)
     return validReference?.citationBlockSource
@@ -60,7 +60,7 @@ export function determineCitationSource(
  * Pre-cleans each citation's `content` field with `cleanMarkdownContent` so
  * the tooltip preview shows tidy plain text instead of raw markdown.
  */
-export function withCitationTags(content: string, citations: Citation[], sourceType?: WebSearchSource): string {
+export function withCitationTags(content: string, citations: Citation[], sourceType?: CitationSource): string {
   if (!content || citations.length === 0) return content
   const cleaned = citations.map(toTooltipCitation)
   const citationMap = new Map(cleaned.map((c) => [c.number, c]))
@@ -75,7 +75,7 @@ export function withCitationTags(content: string, citations: Citation[], sourceT
 export function normalizeCitationMarks(
   content: string,
   citationMap: Map<number, Citation>,
-  sourceType?: WebSearchSource
+  sourceType?: CitationSource
 ): string {
   const codeBlockRegex = MARKDOWN_CODE_PATTERN
   const getSkipRanges = () => {
@@ -129,10 +129,10 @@ export function normalizeCitationMarks(
   }
 
   switch (sourceType) {
-    case WEB_SEARCH_SOURCE.OPENAI:
-    case WEB_SEARCH_SOURCE.OPENAI_RESPONSE:
-    case WEB_SEARCH_SOURCE.AISDK:
-    case WEB_SEARCH_SOURCE.PERPLEXITY: {
+    case CITATION_SOURCE.OPENAI:
+    case CITATION_SOURCE.OPENAI_RESPONSE:
+    case CITATION_SOURCE.AISDK:
+    case CITATION_SOURCE.PERPLEXITY: {
       applyReplacements(/\[<sup>(\d+)<\/sup>\]\([^)]*\)/g, (m) => {
         const citationNum = parseInt(m[1], 10)
         return citationMap.has(citationNum) ? `[cite:${citationNum}]` : null
@@ -140,7 +140,7 @@ export function normalizeCitationMarks(
       normalizePlainBracketMarks()
       break
     }
-    case WEB_SEARCH_SOURCE.GEMINI: {
+    case CITATION_SOURCE.GEMINI: {
       const firstCitation = Array.from(citationMap.values())[0]
       const metadata = firstCitation?.metadata as GroundingSupport[] | undefined
       if (metadata?.length) {
@@ -180,7 +180,7 @@ export function normalizeCitationMarks(
       }
       break
     }
-    case WEB_SEARCH_SOURCE.GROK: {
+    case CITATION_SOURCE.GROK: {
       applyReplacements(/\[\[(\d+)\]\]\([^)]*\)/g, (m) => {
         const citationNum = parseInt(m[1], 10)
         return citationMap.has(citationNum) ? `[cite:${citationNum}]` : null

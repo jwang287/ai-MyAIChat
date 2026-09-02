@@ -254,7 +254,6 @@ describe('modelListDerivedState', () => {
     expect(derivedState.capabilityModelCounts).toEqual({
       all: 5,
       text: 3,
-      image: 0,
       embedding: 1,
       audio: 0,
       video: 0,
@@ -278,7 +277,6 @@ describe('modelListDerivedState', () => {
     expect(derivedState.capabilityModelCounts).toEqual({
       all: 3,
       text: 2,
-      image: 0,
       embedding: 1,
       audio: 0,
       video: 0,
@@ -303,7 +301,6 @@ describe('modelListDerivedState', () => {
     expect(derivedState.capabilityModelCounts).toEqual({
       all: 0,
       text: 0,
-      image: 0,
       embedding: 0,
       audio: 0,
       video: 0,

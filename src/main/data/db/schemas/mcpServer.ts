@@ -1,8 +1,13 @@
-import type { McpConfigSample } from '@shared/data/types/mcpServer'
 import { sql } from 'drizzle-orm'
 import { check, index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 import { createUpdateTimestamps, uuidPrimaryKey } from './_columnHelpers'
+
+type McpConfigSample = {
+  command: string
+  args: string[]
+  env?: Record<string, string>
+}
 
 /**
  * MCP Server table - stores user-configured MCP server definitions

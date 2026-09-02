@@ -47,13 +47,10 @@ export {
 export { ExtensionRegistry, extensionRegistry } from './core/ExtensionRegistry'
 export type { ProviderVariant } from './types'
 export type {
-  ExtractToolConfig,
-  ExtractToolConfigMap,
   ProviderId,
   RegisteredProviderId,
   ToolCapability,
   ToolFactory,
   ToolFactoryMap,
-  ToolFactoryPatch,
-  WebSearchToolConfigMap
+  ToolFactoryPatch
 } from './types'

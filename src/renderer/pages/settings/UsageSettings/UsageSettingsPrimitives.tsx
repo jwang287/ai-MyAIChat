@@ -13,9 +13,8 @@ import { displayModelId } from './usageAnalytics'
 
 const SOURCE_TYPE_FALLBACK = {
   assistant: 'A',
-  agent: 'G',
-  'mini-app': 'M'
-} satisfies Record<AiUsageRecordSourceType, string>
+  agent: 'G'
+} satisfies Partial<Record<AiUsageRecordSourceType, string>>
 
 export function UsageModelAvatar({
   modelId,

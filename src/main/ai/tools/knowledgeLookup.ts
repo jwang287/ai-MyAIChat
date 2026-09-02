@@ -13,11 +13,10 @@
  *
  * `searchKnowledge` never throws: an infrastructure failure (every targeted
  * base errored) returns `{ error }` so it is distinguishable from "ran fine,
- * found nothing" (`[]`) — mirroring the web core.
+ * found nothing" (`[]`).
  *
  * Cancellation: `KnowledgeService` exposes no `AbortSignal` plumbing, so these
- * functions intentionally take no signal (unlike the web core, whose
- * `WebSearchService` honours one). Add one here only once the service does.
+ * functions intentionally take no signal. Add one here only once the service does.
  */
 
 import { basename } from 'node:path'
@@ -51,7 +50,6 @@ import * as z from 'zod'
 const logger = loggerService.withContext('KnowledgeLookup')
 
 const SAMPLE_LIMIT = 8
-const NOTE_SNIPPET_MAX_CHARS = 80
 /**
  * Max concurrent `listRootItems` reads behind one bounded kb_list page. Eight in-flight keeps the
  * agent loop responsive without overwhelming the knowledge service. (listRootItems is a pure
@@ -73,10 +71,10 @@ const KNOWLEDGE_BASE_NOT_FOUND_RESOURCE = 'KnowledgeBase'
  */
 const KNOWLEDGE_CONCEPT_CONTENT_NOT_FOUND_RESOURCE = 'Knowledge concept content'
 
-export const KNOWLEDGE_SEARCH_DESCRIPTION = `Search the user's private knowledge base — local documents, notes, web clippings.
+export const KNOWLEDGE_SEARCH_DESCRIPTION = `Search the user's private knowledge base — local documents and web clippings.
 
 Use this when:
-- The user references "my notes" / "my documents" / their own materials
+- The user references "my documents" / their own materials
 - The question references topics likely covered in stored documents
 - Specific factual lookup that isn't general knowledge
 
@@ -85,7 +83,7 @@ Workflow: when a relevant base ID is already known (for example, from an attache
 export const KNOWLEDGE_LIST_DESCRIPTION = `Browse the user's knowledge bases and their structure.
 
 Two modes, selected by \`baseId\`:
-- Omit \`baseId\` to list one page of available bases — each with its name, group, item count, and a few sample sources (filenames, URLs, note titles) so you can judge what it covers. Use \`query\` to filter by base name or source. If \`nextCursor\` is returned, pass it as \`cursor\` to continue. Call this first when the user asks about their materials and you don't already know which base is relevant, then call kb_search with the chosen baseIds. If a base comes back with \`itemsUnavailable: true\` its contents could not be read this call (not that it is empty) — do not tell the user it holds nothing; retry or use kb_search.
+- Omit \`baseId\` to list one page of available bases — each with its name, group, item count, and a few sample sources (filenames and URLs) so you can judge what it covers. Use \`query\` to filter by base name or source. If \`nextCursor\` is returned, pass it as \`cursor\` to continue. Call this first when the user asks about their materials and you don't already know which base is relevant, then call kb_search with the chosen baseIds. If a base comes back with \`itemsUnavailable: true\` its contents could not be read this call (not that it is empty) — do not tell the user it holds nothing; retry or use kb_search.
 - Pass a \`baseId\` to outline that base instead: a flat top-down list of its folders and documents, each with a \`depth\`, title, type, \`status\`, and — for a readable document — a \`conceptId\` you can pass to kb_read. A node only carries a \`conceptId\` once its \`status\` is "completed"; a still-indexing or failed document has none. Use this to see how a base is organized, or to find a document's conceptId, without searching.
 
 This tool returns metadata and structure, not retrieved evidence. Do not answer content questions from names or sampleSources; use kb_search for relevant passages or kb_read for a known document.`
@@ -101,7 +99,7 @@ Cite: append [cite:id] immediately after each statement this document supports, 
 export const KNOWLEDGE_MANAGE_DESCRIPTION = `Modify a knowledge base: add a new source, or delete / re-index existing documents. Destructive — every call modifies the base and is gated behind user approval.
 
 Set \`action\`:
-- "add": import one new source. Set \`type\` and its field — "file" (\`path\`: an absolute local file path), "url" (\`url\`), or "note" (\`content\`, optional \`title\`). The source is copied in and indexed.
+- "add": import one new source. Set \`type\` and its field — "file" (\`path\`: an absolute local file path) or "url" (\`url\`). The source is copied in and indexed.
 - "delete": permanently remove documents. Set \`conceptIds\` to the Concept IDs (the \`conceptId\` field of a kb_search hit or a kb_list outline) to remove.
 - "refresh": re-index documents (re-read the source, rebuild chunks/embeddings). Set \`conceptIds\`.
 
@@ -219,7 +217,7 @@ export async function searchKnowledge(
     // Provenance so the model can follow a hit with kb_read. baseId pairs with
     // conceptId to identify the document (conceptId is base-relative). conceptId
     // is absent only for a not-yet-indexed snapshot (no relativePath); title is
-    // always set. type is the item kind (file / url / note); `?.` keeps the map
+    // always set. type is the item kind (file / url); `?.` keeps the map
     // resilient to a result without metadata (none in production).
     baseId,
     conceptId: result.conceptId,
@@ -460,18 +458,13 @@ export async function listOrOutlineKnowledge(
   return listKnowledgeBases(input, allowedIds)
 }
 
-/** Longest a derived note title (its first line) may be before it is truncated. */
-const NOTE_TITLE_MAX_CHARS = 80
-
 /** kb_manage input shape — the fields the chosen `action` does not use are simply absent. */
 type ManageKnowledgeInput = {
   baseId: string
   action: 'add' | 'delete' | 'refresh'
-  type?: 'file' | 'url' | 'note'
+  type?: 'file' | 'url'
   path?: string
   url?: string
-  content?: string
-  title?: string
   conceptIds?: string[]
 }
 
@@ -572,15 +565,8 @@ function buildAddInput(input: ManageKnowledgeInput): AddInputResult {
       }
       return validateAddInput({ type: 'url', data: { source: input.url, url: input.url } }, input.url)
     }
-    case 'note': {
-      if (!input.content) {
-        return { ok: false, error: 'kb_manage add with type "note" requires `content`.' }
-      }
-      const source = deriveNoteSource(input.content, input.title)
-      return validateAddInput({ type: 'note', data: { source, content: input.content } }, source)
-    }
     default:
-      return { ok: false, error: 'kb_manage add requires `type` to be "file", "url", or "note".' }
+      return { ok: false, error: 'kb_manage add requires `type` to be "file" or "url".' }
   }
 }
 
@@ -593,25 +579,6 @@ function validateAddInput(candidate: unknown, source: string): AddInputResult {
     }
   }
   return { ok: true, input: parsed.data, source }
-}
-
-/** First non-empty, trimmed line of `content`, or undefined if every line is blank. */
-function firstNonEmptyLine(content: string): string | undefined {
-  return content
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .find((line) => line.length > 0)
-}
-
-/** A note's display source: the caller-supplied title, else its first non-empty line (truncated), else a placeholder. */
-function deriveNoteSource(content: string, title?: string | null): string {
-  const explicit = title?.trim()
-  if (explicit) return explicit
-  // Truncation here differs by role from deriveSampleSource's note branch (a stored id, plain-clipped;
-  // vs a display sample, ellipsised), so only the first-non-empty-line extraction is shared.
-  const firstLine = firstNonEmptyLine(content)
-  if (!firstLine) return 'Untitled note'
-  return firstLine.length > NOTE_TITLE_MAX_CHARS ? firstLine.slice(0, NOTE_TITLE_MAX_CHARS) : firstLine
 }
 
 async function listKnowledgeBases(
@@ -765,13 +732,6 @@ function deriveSampleSource(item: KnowledgeItem): string | null {
       return item.data.url.trim() || null
     case 'directory':
       return item.data.source.trim() || null
-    case 'note': {
-      const firstLine = firstNonEmptyLine(item.data.content)
-      if (!firstLine) return null
-      return firstLine.length > NOTE_SNIPPET_MAX_CHARS
-        ? `${firstLine.slice(0, NOTE_SNIPPET_MAX_CHARS - 1)}…`
-        : firstLine
-    }
     default:
       return null
   }

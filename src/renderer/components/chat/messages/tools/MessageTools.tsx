@@ -8,8 +8,7 @@ import { useMemo } from 'react'
 
 import { useMessagePartsScopeId } from '../blocks/MessagePartsContext'
 import { useOptionalMessageListTopicId } from '../MessageListProvider'
-import { agentInlineResultPresentationRegistry, isReportArtifactsToolResponse, MessageChannelConfigTool } from './agent'
-import { isChannelAuthQrToolResponse } from './channelConfigTool'
+import { agentInlineResultPresentationRegistry, isReportArtifactsToolResponse } from './agent'
 import MessageMcpTool from './mcp/MessageMcpTool'
 import MessageTool, { canRenderMessageToolResponse } from './MessageTool'
 import { normalizeToolErrorResponse } from './toolResponse'
@@ -19,8 +18,8 @@ interface Props {
 }
 
 /**
- * In-process cherry / agent-memory tools are MCP-typed but have dedicated cards (web search,
- * knowledge, memory) — route them through `chooseTool` instead of the generic MCP renderer.
+ * In-process cherry / agent-memory tools are MCP-typed but have dedicated cards (knowledge,
+ * memory) — route them through `chooseTool` instead of the generic MCP renderer.
  * Other MCP servers keep the generic card.
  */
 const DEDICATED_AGENT_SERVERS = new Set(['cherry-tools', 'agent-memory'])
@@ -36,7 +35,6 @@ function rendersThroughChooseTool(toolResponse: McpToolResponse | NormalToolResp
 
 export function canRenderMessageTool(toolResponse: McpToolResponse | NormalToolResponse) {
   if (isReportArtifactsToolResponse(toolResponse)) return false
-  if (isChannelAuthQrToolResponse(toolResponse)) return true
   if (toolResponse.tool.type === 'mcp' && !rendersThroughChooseTool(toolResponse)) return true
   return canRenderMessageToolResponse(toolResponse as NormalToolResponse)
 }
@@ -90,11 +88,8 @@ export default function MessageTools({ toolResponse }: Props) {
   const agentInlineResult = agentInlineResultPresentationRegistry.renderResult(resolvedToolResponse)
   if (agentInlineResult) return agentInlineResult
   if (isReportArtifactsToolResponse(resolvedToolResponse)) return null
-  if (isChannelAuthQrToolResponse(resolvedToolResponse)) {
-    return <MessageChannelConfigTool toolResponse={resolvedToolResponse} />
-  }
   if (rendersThroughChooseTool(resolvedToolResponse)) {
     return <MessageTool toolResponse={resolvedToolResponse as NormalToolResponse} />
   }
-  return <MessageMcpTool toolResponse={resolvedToolResponse} />
+  return <MessageMcpTool toolResponse={resolvedToolResponse as McpToolResponse} />
 }

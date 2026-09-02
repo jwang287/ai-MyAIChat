@@ -13,10 +13,6 @@ export async function loadKnowledgeItemDocuments(item: IndexableKnowledgeItem): 
       const { loadSnapshotDocuments } = await import('./KnowledgeSnapshotReader')
       return await loadSnapshotDocuments(item, 'URL')
     }
-    case 'note': {
-      const { loadSnapshotDocuments } = await import('./KnowledgeSnapshotReader')
-      return await loadSnapshotDocuments(item, 'note')
-    }
     default:
       throw new Error(`Unsupported knowledge item type: ${(item as KnowledgeItem).type}`)
   }

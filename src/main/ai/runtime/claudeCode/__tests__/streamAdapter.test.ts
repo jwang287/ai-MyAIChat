@@ -1036,58 +1036,6 @@ describe('ClaudeCodeStreamAdapter', () => {
     })
   })
 
-  it('maps assistant server tool use and server tool result blocks', () => {
-    const { adapter, parts } = createAdapter()
-
-    adapter.handleMessage({
-      type: 'assistant',
-      parent_tool_use_id: null,
-      session_id: 'sdk-1',
-      uuid: crypto.randomUUID(),
-      message: {
-        content: [
-          {
-            type: 'server_tool_use',
-            id: 'srv-1',
-            name: 'web_search',
-            input: { query: 'agent sdk' }
-          },
-          {
-            type: 'web_search_tool_result',
-            tool_use_id: 'srv-1',
-            content: [
-              {
-                type: 'web_search_result',
-                title: 'Docs',
-                url: 'https://example.com',
-                encrypted_content: '',
-                page_age: null
-              }
-            ]
-          }
-        ]
-      }
-    } as any)
-
-    expect(parts.map((part) => part.type)).toEqual([
-      'tool-input-start',
-      'tool-input-delta',
-      'tool-input-available',
-      'tool-output-available'
-    ])
-    expect(parts[2]).toMatchObject({
-      type: 'tool-input-available',
-      toolCallId: 'srv-1',
-      toolName: 'web_search',
-      input: { query: 'agent sdk' }
-    })
-    expect(parts[3]).toMatchObject({
-      type: 'tool-output-available',
-      toolCallId: 'srv-1',
-      output: [{ title: 'Docs', url: 'https://example.com' }]
-    })
-  })
-
   it('maps success result to finish metadata', () => {
     const { adapter, parts, sessionIds } = createAdapter()
 

@@ -1,4 +1,3 @@
-import { useMiniAppPopup } from '@renderer/hooks/useMiniAppPopup'
 import { ipcApi, useIpcOn } from '@renderer/ipc'
 import { loggerService } from '@renderer/services/LoggerService'
 import { toast } from '@renderer/services/toast'
@@ -43,7 +42,6 @@ export function useHermesDashboardController(
   { onConfigMayHaveChanged }: HermesDashboardControllerOptions = {}
 ): HermesDashboardController {
   const { t } = useTranslation()
-  const { openSmartMiniApp } = useMiniAppPopup()
   const [status, setStatus] = useState<HermesDashboardStatus>('stopped')
   const [pendingOperation, setPendingOperation] = useState<'launch' | 'stop' | null>(null)
   const statusRef = useRef(status)
@@ -74,19 +72,11 @@ export function useHermesDashboardController(
     [applyStatus]
   )
 
-  const openDashboard = useCallback(
-    (dashboardUrl: string) => {
-      const target = new URL(dashboardUrl)
-      target.searchParams.set('cherry_navigation_revision', String(Date.now()))
-      openSmartMiniApp({
-        appId: 'hermes-dashboard',
-        name: t('code.cli_tools.hermes'),
-        url: target.toString(),
-        logo: 'nousresearch'
-      })
-    },
-    [openSmartMiniApp, t]
-  )
+  const openDashboard = useCallback((dashboardUrl: string) => {
+    const target = new URL(dashboardUrl)
+    target.searchParams.set('cherry_navigation_revision', String(Date.now()))
+    return ipcApi.request('system.shell.open_website', target.toString())
+  }, [])
 
   const onLaunch = useCallback(async () => {
     const operationEpoch = ++statusEpochRef.current
@@ -103,7 +93,7 @@ export function useHermesDashboardController(
         return
       }
       applyStatus('running')
-      openDashboard(result.url)
+      await openDashboard(result.url)
     } catch (error) {
       if (operationEpoch !== statusEpochRef.current) return
       applyStatus('error', true)
@@ -153,7 +143,7 @@ export function useHermesDashboardController(
       if (operationEpoch !== statusEpochRef.current || operationInFlightRef.current) return
       if (current.status !== 'running' || !current.url) throw new Error('Hermes Dashboard is not running')
       applyStatus('running')
-      openDashboard(current.url)
+      await openDashboard(current.url)
     } catch (error) {
       if (operationEpoch !== statusEpochRef.current) return
       logger.error('Failed to open Hermes Dashboard', error as Error)

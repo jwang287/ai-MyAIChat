@@ -26,9 +26,7 @@ import {
   Package,
   Palette,
   PictureInPicture2,
-  Radio,
   ScanText,
-  Search,
   Settings2,
   Terminal,
   TextCursorInput,
@@ -124,14 +122,6 @@ const SettingsPage: FC = () => {
               <MenuItem
                 className={settingsSubmenuItemClassName}
                 labelClassName={settingsSubmenuItemLabelClassName}
-                icon={<Search />}
-                label={t('settings.tool.websearch.title')}
-                active={isActive('/settings/websearch')}
-                onClick={() => go('/settings/websearch')}
-              />
-              <MenuItem
-                className={settingsSubmenuItemClassName}
-                labelClassName={settingsSubmenuItemLabelClassName}
                 icon={<FileCode />}
                 label={t('settings.tool.file_processing.features.document_to_markdown.title')}
                 active={isActive('/settings/file-processing')}
@@ -189,14 +179,6 @@ const SettingsPage: FC = () => {
               />
               <MenuDivider className={settingsSubmenuDividerClassName} />
               <div className={settingsSubmenuSectionTitleClassName}>{t('settings.menuGroups.automation')}</div>
-              <MenuItem
-                className={settingsSubmenuItemClassName}
-                labelClassName={settingsSubmenuItemLabelClassName}
-                icon={<Radio />}
-                label={t('settings.channels.title')}
-                active={isActive('/settings/channels')}
-                onClick={() => go('/settings/channels')}
-              />
               <MenuItem
                 className={settingsSubmenuItemClassName}
                 labelClassName={settingsSubmenuItemLabelClassName}

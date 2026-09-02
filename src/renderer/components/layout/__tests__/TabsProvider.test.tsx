@@ -14,6 +14,16 @@ let currentLanguage = 'en'
 const PINNED_FILES_TAB: Tab = {
   id: 'files',
   type: 'route',
+  url: '/app/launchpad',
+  title: 'Launchpad',
+  lastAccessTime: 0,
+  isDormant: false,
+  isPinned: true
+}
+
+const LEGACY_FILE_WORKSPACE_TAB: Tab = {
+  id: 'legacy-files',
+  type: 'route',
   url: '/app/files',
   title: 'Files',
   lastAccessTime: 0,
@@ -105,7 +115,6 @@ vi.mock('@renderer/utils/routeTitle', async () => {
   const titles: Record<string, Record<string, string>> = {
     '/app/agents': { en: 'Agent', zh: '代理' },
     '/app/chat': { en: 'Chat', zh: '聊天' },
-    '/app/files': { en: 'Files', zh: '文件' },
     '/app/launchpad': { en: 'Launchpad', zh: '启动台' }
   }
   return {
@@ -167,8 +176,8 @@ function ConversationTabMutationControls() {
           addTab({
             id: 'unrelated-tab',
             type: 'route',
-            url: '/app/files',
-            title: 'Files',
+            url: '/app/code',
+            title: 'Code',
             lastAccessTime: 0,
             isDormant: false
           })
@@ -374,31 +383,6 @@ function PinnedOverflowSeeder() {
   )
 }
 
-function TransientMiniAppPinner() {
-  const { openTab, pinTab, tabs } = useTabsContext()
-  const didOpenRef = useRef(false)
-  const didPinRef = useRef(false)
-
-  useEffect(() => {
-    if (didOpenRef.current) return
-    didOpenRef.current = true
-    openTab('/app/mini-app/deepseek-harness', {
-      id: 'transient-mini-app',
-      title: 'DeepSeek Harness',
-      metadata: { transientMiniApp: true },
-      forceNew: true
-    })
-  }, [openTab])
-
-  useEffect(() => {
-    if (didPinRef.current || !tabs.some((tab) => tab.id === 'transient-mini-app')) return
-    didPinRef.current = true
-    pinTab('transient-mini-app')
-  }, [pinTab, tabs])
-
-  return <div data-testid="transient-tab-ids">{tabs.map((tab) => tab.id).join(',')}</div>
-}
-
 beforeEach(() => {
   currentLanguage = 'en'
   pinnedTabsValue = [PINNED_FILES_TAB]
@@ -472,14 +456,14 @@ describe('TabsProvider', () => {
     )
     const { rerender } = render(renderUi())
 
-    await waitFor(() => expect(screen.getByTestId('files-title')).toHaveTextContent('Files'))
+    await waitFor(() => expect(screen.getByTestId('files-title')).toHaveTextContent('Launchpad'))
 
     // Switch language and re-render: the tabs useMemo must recompute via its
     // i18n.language dependency so the route-derived title re-localizes.
     currentLanguage = 'zh'
     rerender(renderUi())
 
-    await waitFor(() => expect(screen.getByTestId('files-title')).toHaveTextContent('文件'))
+    await waitFor(() => expect(screen.getByTestId('files-title')).toHaveTextContent('启动台'))
   })
 
   it('keeps isPinned on a tab materialized in a sub-window so it round-trips on re-attach', async () => {
@@ -504,17 +488,6 @@ describe('TabsProvider', () => {
     )
 
     await waitFor(() => expect(setPinnedTabsMock).toHaveBeenCalled())
-  })
-
-  it('keeps a transient mini-app tab visible when pinning is requested programmatically', async () => {
-    render(
-      <TabsProvider initialDefaultTab={HOME_TAB}>
-        <TransientMiniAppPinner />
-      </TabsProvider>
-    )
-
-    await waitFor(() => expect(screen.getByTestId('transient-tab-ids')).toHaveTextContent('transient-mini-app'))
-    expect(setPinnedTabsMock.mock.calls.some(([arg]) => typeof arg === 'function')).toBe(false)
   })
 
   it('removes a menu-closed pinned tab from the persistent pinned list', async () => {
@@ -561,7 +534,7 @@ describe('TabsProvider', () => {
       </TabsProvider>
     )
 
-    expect(screen.getByTestId('tab-urls')).toHaveTextContent('/app/code,/app/files,/app/chat')
+    expect(screen.getByTestId('tab-urls')).toHaveTextContent('/app/code,/app/launchpad,/app/chat')
     await waitFor(() =>
       expect(setPinnedTabsMock).toHaveBeenCalledWith([
         { ...PINNED_OPENCLAW_TAB, url: '/app/code', title: '/app/code', isDormant: true },
@@ -838,8 +811,24 @@ describe('TabsProvider session restore', () => {
     expect(screen.getByTestId('session-tabs').textContent ?? '').toContain('a:awake')
   })
 
+  it('drops legacy File Workspace tabs from the restored normal session', async () => {
+    pinnedTabsValue = []
+    normalTabsValue = [LEGACY_FILE_WORKSPACE_TAB, { ...PINNED_CODE_TAB, isPinned: false }]
+    activeTabIdValue = 'legacy-files'
+
+    render(
+      <TabsProvider initialDefaultTab={null}>
+        <SessionInspector />
+      </TabsProvider>
+    )
+
+    await waitFor(() => expect(screen.getByTestId('session-ids')).toHaveTextContent('code'))
+    expect(screen.getByTestId('active')).toHaveTextContent('code')
+    expect(setNormalTabsMock).toHaveBeenCalledWith([{ ...PINNED_CODE_TAB, isPinned: false, isDormant: false }])
+  })
+
   it('honors a pinned active tab when no unpinned tabs were open', async () => {
-    // Last session had zero normal tabs but the active tab was the pinned "files" tab — restore must
+    // Last session had zero normal tabs but the active tab was the pinned launchpad tab — restore must
     // reselect it (the default tab stays present but dormant) instead of falling back to default.
     pinnedTabsValue = [{ ...PINNED_FILES_TAB, isDormant: true }]
     normalTabsValue = []
@@ -960,6 +949,12 @@ describe('migratePinnedTabs', () => {
 
   it('drops legacy library pins', () => {
     const { tabs, changed } = migratePinnedTabs([LEGACY_LIBRARY_PINNED_TAB, PINNED_FILES_TAB])
+    expect(changed).toBe(true)
+    expect(tabs).toEqual([PINNED_FILES_TAB])
+  })
+
+  it('drops legacy File Workspace pins', () => {
+    const { tabs, changed } = migratePinnedTabs([LEGACY_FILE_WORKSPACE_TAB, PINNED_FILES_TAB])
     expect(changed).toBe(true)
     expect(tabs).toEqual([PINNED_FILES_TAB])
   })

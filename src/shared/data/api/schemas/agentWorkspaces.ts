@@ -55,7 +55,6 @@ export interface AgentWorkspaceReferenceList {
 
 export interface AgentWorkspaceReferences {
   sessions: AgentWorkspaceReferenceList
-  channels: AgentWorkspaceReferenceList
   tasks: AgentWorkspaceReferenceList
 }
 

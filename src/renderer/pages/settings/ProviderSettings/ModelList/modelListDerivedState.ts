@@ -5,7 +5,6 @@ import {
   deriveModelGroupName,
   isEmbeddingModel,
   isGenerateAudioModel,
-  isGenerateImageModel,
   isGenerateVideoModel,
   isNonChatModel,
   isRerankModel,
@@ -26,7 +25,6 @@ interface GroupModelsOptions {
 export const MODEL_LIST_CAPABILITY_FILTERS = [
   'all',
   'text',
-  'image',
   'embedding',
   'audio',
   'video',
@@ -102,8 +100,6 @@ export const matchesCapabilityFilter = (model: Model, selectedCapabilityFilter: 
   switch (selectedCapabilityFilter) {
     case 'text':
       return !isNonChatModel(model)
-    case 'image':
-      return isGenerateImageModel(model)
     case 'embedding':
       return isEmbeddingModel(model)
     case 'audio':

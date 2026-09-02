@@ -23,8 +23,8 @@ export const claudeCodeBuiltinTools: Tool[] = [
   builtinTool('Read', 'Reads the contents of files', false),
   builtinTool('Task', 'Runs a sub-agent to handle complex, multi-step tasks', false),
   builtinTool('TodoWrite', 'Creates and manages structured task lists', false),
+  builtinTool('WebSearch', 'Searches the web for information', true),
   builtinTool('WebFetch', 'Fetches content from a specified URL', true),
-  builtinTool('WebSearch', 'Performs web searches with domain filtering', true),
   builtinTool('Write', 'Creates or overwrites files', true)
 ]
 

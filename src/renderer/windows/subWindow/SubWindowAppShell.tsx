@@ -1,7 +1,6 @@
 import { WindowFrameProvider } from '@renderer/components/chat/shell/WindowFrameContext'
 import { TabRouter } from '@renderer/components/layout/TabRouter'
 import { TITLE_BAR_HEIGHT_CLASS } from '@renderer/components/layout/titleBar'
-import MiniAppTabsPool from '@renderer/components/MiniApp/MiniAppTabsPool'
 import { ResourceViewSourceProvider } from '@renderer/components/ResourceViewSourceProvider'
 import { useHasWindowControls, WindowControls } from '@renderer/components/WindowControls'
 import { useTabs } from '@renderer/hooks/tab'
@@ -11,21 +10,11 @@ import { useWindowInitData } from '@renderer/hooks/useWindowInitData'
 import { getDefaultRouteTitle, isPageTitledRoute } from '@renderer/utils/routeTitle'
 import { cn } from '@renderer/utils/style'
 import type { SubWindowInitData } from '@shared/types/subWindow'
-import { Activity, type CSSProperties, useEffect, useRef } from 'react'
+import { type CSSProperties, useEffect, useRef } from 'react'
 
 import { SubWindowTitleBar } from './SubWindowTitleBar'
 
 const WINDOW_FRAME: WindowFrame = { mode: 'window' }
-
-// Mock Webview component (TODO: Replace with actual MinApp/Webview)
-const WebviewContainer = ({ url, isActive }: { url: string; isActive: boolean }) => (
-  <Activity mode={isActive ? 'visible' : 'hidden'}>
-    <div className="flex h-full w-full flex-col items-center justify-center bg-background">
-      <div className="mb-2 font-bold text-lg">Webview App</div>
-      <code className="rounded bg-muted p-2">{url}</code>
-    </div>
-  </Activity>
-)
 
 export const SubWindowAppShell = () => {
   const { tabs, activeTabId, updateTab, openTab } = useTabs()
@@ -51,8 +40,7 @@ export const SubWindowAppShell = () => {
   }, [init, openTab])
 
   // Sync internal navigation back to tab state. Mirror the main AppShell:
-  // clear the per-entity icon override so a mini-app logo doesn't stick onto
-  // an unrelated route after navigation inside the same tab.
+  // clear the per-entity icon override after navigation inside the same tab.
   const handleUrlChange = (tabId: string, url: string) => {
     // Chat / agent tabs are page-titled (topic / session name + emoji set by
     // their page); only sync the url so navigating topics doesn't wipe them.
@@ -98,19 +86,6 @@ export const SubWindowAppShell = () => {
                 />
               ))}
           </ResourceViewSourceProvider>
-
-          {/* Webview Tabs: Only render non-dormant tabs */}
-          {tabs
-            .filter((t) => t.type === 'webview' && !t.isDormant)
-            .map((tab) => (
-              <WebviewContainer key={tab.id} url={tab.url} isActive={tab.id === activeTabId} />
-            ))}
-
-          {/* Mini-app keep-alive WebView pool — needed for /app/mini-app/<id>
-              route tabs, same as the main AppShell. The cache backing the pool
-              is per-window (Memory tier) so this sub-window manages its own
-              list independently of the main window. */}
-          <MiniAppTabsPool />
         </main>
 
         {/* OS window controls overlay — flush in the corner, above the title bar (z-[9999]),

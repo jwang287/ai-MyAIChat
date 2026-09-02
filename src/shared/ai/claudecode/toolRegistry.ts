@@ -12,7 +12,7 @@
 
 import type { ClaudeToolDescriptor } from './toolRules'
 
-export type ClaudeToolCategory = 'shell' | 'file' | 'search' | 'orchestration' | 'media' | 'context'
+export type ClaudeToolCategory = 'shell' | 'file' | 'search' | 'orchestration' | 'context'
 
 /**
  * Tool visibility / availability policy:
@@ -45,7 +45,7 @@ export interface ClaudeToolDescriptorDef {
 
 /**
  * The registry. Keys are stable friendly identifiers; `name` is the runtime tool name.
- * For SDK tools key === name; for MCP tools key is friendly (e.g. `CherryWebSearch`).
+ * For SDK tools key === name; for MCP tools key is friendly (e.g. `CherryKnowledgeSearch`).
  */
 const CLAUDE_TOOL_REGISTRY = {
   // ── shell ────────────────────────────────────────────────────────
@@ -251,12 +251,11 @@ const CLAUDE_TOOL_REGISTRY = {
   },
 
   // ── context (external / persistent context) ──────────────────────
-  // Native Web* are replaced by the cherry-tools equivalents below.
   WebSearch: {
     name: 'WebSearch',
     category: 'context',
     exposure: 'disabled',
-    description: 'Performs web searches with domain filtering'
+    description: 'Searches the web for information'
   },
   WebFetch: {
     name: 'WebFetch',
@@ -267,20 +266,6 @@ const CLAUDE_TOOL_REGISTRY = {
 
   // ── in-process MCP tools ─────────────────────────────────────────
   // cherry-tools (always injected today)
-  CherryWebSearch: {
-    name: 'mcp__cherry-tools__web_search',
-    category: 'context',
-    exposure: 'user',
-    description: 'Searches the web via your configured provider',
-    mcpServer: 'cherry-tools'
-  },
-  CherryWebFetch: {
-    name: 'mcp__cherry-tools__web_fetch',
-    category: 'context',
-    exposure: 'user',
-    description: 'Fetches and reads a web page',
-    mcpServer: 'cherry-tools'
-  },
   CherryKbSearch: {
     name: 'mcp__cherry-tools__kb_search',
     category: 'context',
@@ -333,7 +318,7 @@ const CLAUDE_TOOL_REGISTRY = {
     description: 'Markdown is easier for the agent to read',
     mcpServer: 'cherry-tools'
   },
-  // agent autonomy / channels (hosted by cherry-tools). notify needs a connected channel to do anything.
+  // Agent autonomy tools hosted by cherry-tools.
   CherryCron: {
     name: 'mcp__cherry-tools__cron',
     category: 'orchestration',
@@ -341,30 +326,11 @@ const CLAUDE_TOOL_REGISTRY = {
     description: 'Manages the in-app scheduler',
     mcpServer: 'cherry-tools'
   },
-  // notify is user-exposed and NOT channel-gated: it self-degrades at call time (reports "no connected
-  // channels") when the agent has none — see cherryAutonomyTools.ts sendNotification. Do not re-add a
-  // channel enable-predicate, or an agent can't notify in the same run it uses config to add its first channel.
-  CherryNotify: {
-    name: 'mcp__cherry-tools__notify',
-    category: 'orchestration',
-    exposure: 'user',
-    description: 'Sends a notification through a connected channel',
-    mcpServer: 'cherry-tools'
-  },
   CherryConfig: {
     name: 'mcp__cherry-tools__config',
     category: 'orchestration',
     exposure: 'user',
-    description: 'Inspects and manages this agent configuration and channels',
-    mcpServer: 'cherry-tools'
-  },
-  // media (image generation). Hosted by cherry-tools; requires per-call approval and returns a
-  // "configure a painting model" note at runtime when none is set (see builtinToolPolicy.ts).
-  CherryGenerateImage: {
-    name: 'mcp__cherry-tools__generate_image',
-    category: 'media',
-    exposure: 'user',
-    description: 'Generates an image from a text prompt using your configured painting model',
+    description: 'Inspects and manages this agent configuration',
     mcpServer: 'cherry-tools'
   },
   // agent-memory (cross-session memory)
@@ -434,8 +400,7 @@ export const CLAUDE_TOOL_CATEGORIES: readonly ClaudeToolCategory[] = [
   'shell',
   'search',
   'context',
-  'orchestration',
-  'media'
+  'orchestration'
 ]
 
 export interface ClaudeUserFacingTool {
@@ -450,16 +415,12 @@ export interface ClaudeUserFacingTool {
 
 /** Friendly labels for MCP wire tools whose `name` is an opaque `mcp__server__wire` id. */
 const MCP_TOOL_LABELS: Record<string, string> = {
-  'mcp__cherry-tools__web_search': 'Web Search',
-  'mcp__cherry-tools__web_fetch': 'Web Fetch',
   'mcp__cherry-tools__kb_search': 'Knowledge Search',
   'mcp__cherry-tools__kb_manage': 'Manage Knowledge',
   'mcp__cherry-tools__to_markdown': 'File to Markdown',
   'mcp__agent-memory__memory': 'Memory',
   'mcp__cherry-tools__cron': 'Scheduler',
-  'mcp__cherry-tools__notify': 'Notify',
-  'mcp__cherry-tools__config': 'Configuration',
-  'mcp__cherry-tools__generate_image': 'Generate Image'
+  'mcp__cherry-tools__config': 'Configuration'
 }
 
 /**

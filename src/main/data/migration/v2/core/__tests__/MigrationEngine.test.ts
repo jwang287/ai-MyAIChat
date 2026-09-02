@@ -46,7 +46,6 @@ const mockPaths: MigrationPaths = {
   claudeConfigDir: '/tmp/test-userdata/Data/Agents/.claude',
   claudeProjectsDir: '/tmp/test-userdata/Data/Agents/.claude/projects',
   agentSystemWorkspacesDir: '/tmp/test-userdata/Data/Agents/system',
-  customMiniAppsFile: '/tmp/test-userdata/Data/Files/custom-minapps.json',
   migrationTempDir: '/tmp/test-userdata/migration_temp',
   migrationReduxExportDir: '/tmp/test-userdata/migration_temp/redux_export',
   migrationDexieExportDir: '/tmp/test-userdata/migration_temp/dexie_export',
@@ -366,7 +365,7 @@ describe('MigrationEngine', () => {
     await (engine as any).verifyAndClearNewTables()
 
     expect(deletedTables).toContain(providerLogoFileRefTable)
-    expect(deletedTables).toContain(miniAppLogoFileRefTable)
+    expect(deletedTables).not.toContain(miniAppLogoFileRefTable)
     expect(deletedTables).toContain(groupTable)
     expect(deletedTables).toContain(entityTagTable)
     expect(deletedTables).toContain(tagTable)

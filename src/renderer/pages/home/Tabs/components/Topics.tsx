@@ -48,7 +48,6 @@ import { useAssistantMutations, useAssistantsApi } from '@renderer/hooks/useAssi
 import { useConversationNavigation } from '@renderer/hooks/useConversationNavigation'
 import { useGroupReorder, useGroups } from '@renderer/hooks/useGroups'
 import { useImageCaptureTargets } from '@renderer/hooks/useImageCaptureTargets'
-import { useNotesSettings } from '@renderer/hooks/useNotesSettings'
 import { useOptimisticResourceName } from '@renderer/hooks/useOptimisticResourceName'
 import { usePins } from '@renderer/hooks/usePins'
 import { useSidebarFavorites } from '@renderer/hooks/useSidebarFavorites'
@@ -125,14 +124,9 @@ const TOPIC_ASSISTANT_UNGROUPED_SECTION_ID = `${TOPIC_ASSISTANT_GROUP_SECTION_PR
 const TOPIC_EXPORT_MENU_PREFERENCE_KEYS = {
   docx: 'data.export.menus.docx',
   image: 'data.export.menus.image',
-  joplin: 'data.export.menus.joplin',
   markdown: 'data.export.menus.markdown',
   markdown_reason: 'data.export.menus.markdown_reason',
-  notion: 'data.export.menus.notion',
-  obsidian: 'data.export.menus.obsidian',
-  plain_text: 'data.export.menus.plain_text',
-  siyuan: 'data.export.menus.siyuan',
-  yuque: 'data.export.menus.yuque'
+  plain_text: 'data.export.menus.plain_text'
 } as const
 
 interface Props {
@@ -291,7 +285,6 @@ export function Topics({
     }
   }, [])
 
-  const { notesPath } = useNotesSettings()
   const {
     updateTopic: patchTopic,
     deleteTopic: deleteTopicById,
@@ -1550,7 +1543,6 @@ export function Topics({
           isNewlyRenamed={isNewlyRenamed}
           isRenaming={isRenaming}
           listRef={listRef}
-          notesPath={notesPath}
           onAutoRename={handleAutoRename}
           onClearMessages={handleClearMessages}
           onConfirmDelete={handleConfirmDeleteTopic}
@@ -1647,7 +1639,6 @@ interface TopicListBodyProps {
   isNewlyRenamed: (topicId: string) => boolean
   isRenaming: (topicId: string) => boolean
   listRef: RefObject<HTMLDivElement | null>
-  notesPath: string
   onAutoRename: (topic: Topic) => Promise<void>
   onClearMessages: (topic: Topic) => void
   onConfirmDelete: (topic: Topic, event?: MouseEvent) => Promise<void>
@@ -1678,7 +1669,6 @@ function TopicListBody(props: TopicListBodyProps) {
     isNewlyRenamed,
     isRenaming,
     listRef,
-    notesPath,
     onAutoRename,
     onClearMessages,
     onConfirmDelete,
@@ -1704,7 +1694,6 @@ function TopicListBody(props: TopicListBodyProps) {
       exportMenuOptions,
       isNewlyRenamed,
       isRenaming,
-      notesPath,
       onAutoRename,
       onClearMessages,
       onConfirmDelete,
@@ -1727,7 +1716,6 @@ function TopicListBody(props: TopicListBodyProps) {
       exportMenuOptions,
       isNewlyRenamed,
       isRenaming,
-      notesPath,
       onAutoRename,
       onClearMessages,
       onConfirmDelete,
@@ -1781,7 +1769,6 @@ const TopicRow = memo(function TopicRow({
   isActive,
   isNewlyRenamed,
   isRenaming,
-  notesPath,
   onAutoRename,
   onClearMessages,
   onConfirmDelete,
@@ -1843,7 +1830,6 @@ const TopicRow = memo(function TopicRow({
     exportMenuOptions,
     isActiveInCurrentTab: isActive,
     isRenaming: isRenaming(topic.id),
-    notesPath,
     assistantMoveTargets,
     onAutoRename,
     onClearMessages,

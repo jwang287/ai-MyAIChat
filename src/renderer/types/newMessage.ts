@@ -4,13 +4,12 @@ import type { McpServer } from '@shared/data/types/mcpServer'
 import type { CherryMessagePart } from '@shared/data/types/message'
 import type { ProviderMetadata } from 'ai'
 
+import type { CitationSource } from './citationProvider'
 import type { SerializedError } from './error'
 import type { FileMetadata } from './file'
-import type { GenerateImageResponse } from './image'
 import type { McpToolResponse, NormalToolResponse } from './mcpTool'
 import type { Metrics, Usage } from './message'
 import type { Model } from './model'
-import type { WebSearchResponse, WebSearchSource } from './webSearchProvider'
 
 // MessageBlock 类型枚举 - 根据实际API返回特性优化
 export enum MessageBlockType {
@@ -62,7 +61,7 @@ export interface MainTextMessageBlock extends BaseMessageBlock {
   // Citation references
   citationReferences?: {
     citationBlockId?: string
-    citationBlockSource?: WebSearchSource
+    citationBlockSource?: CitationSource
   }[]
 }
 
@@ -96,7 +95,6 @@ export interface ImageMessageBlock extends BaseMessageBlock {
   metadata?: BaseMessageBlock['metadata'] & {
     prompt?: string
     negativePrompt?: string
-    generateImageResponse?: GenerateImageResponse
   }
 }
 
@@ -158,7 +156,6 @@ export enum UserMessageStatus {
 export enum AssistantMessageStatus {
   PROCESSING = 'processing',
   PENDING = 'pending',
-  SEARCHING = 'searching',
   SUCCESS = 'success',
   PAUSED = 'paused',
   ERROR = 'error'
@@ -214,9 +211,7 @@ export interface Response {
   reasoning_content?: string
   usage?: Usage
   metrics?: Metrics
-  webSearch?: WebSearchResponse
   mcpToolResponse?: McpToolResponse[]
-  generateImage?: GenerateImageResponse
   error?: ResponseError
 }
 

@@ -15,12 +15,6 @@ describe('PRESET_MCP_SERVERS', () => {
     )
   })
 
-  it('models the online-package server as stdio instead of in-memory', () => {
-    expect(preset(BuiltinMcpServerNames.mcpAutoInstall)).toEqual(
-      expect.objectContaining({ type: 'stdio', command: 'npx' })
-    )
-  })
-
   it('models QVeris as a configurable hosted built-in server', () => {
     expect(preset(BuiltinMcpServerNames.qveris)).toEqual(
       expect.objectContaining({

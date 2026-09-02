@@ -7,14 +7,9 @@ const t = ((key: string) => key) as SessionActionContext['t']
 const exportMenuOptions: SessionActionContext['exportMenuOptions'] = {
   docx: true,
   image: true,
-  joplin: true,
   markdown: true,
   markdown_reason: true,
-  notion: true,
-  obsidian: true,
-  plain_text: true,
-  siyuan: true,
-  yuque: true
+  plain_text: true
 }
 
 function createSessionActionFixture(overrides: Partial<SessionActionContext> = {}): SessionActionContext {
@@ -27,16 +22,10 @@ function createSessionActionFixture(overrides: Partial<SessionActionContext> = {
     onCopyPlainText: vi.fn(),
     onDelete: vi.fn(),
     onExportImage: vi.fn(),
-    onExportJoplin: vi.fn(),
     onExportMarkdown: vi.fn(),
     onExportMarkdownReason: vi.fn(),
-    onExportNotion: vi.fn(),
-    onExportObsidian: vi.fn(),
-    onExportSiyuan: vi.fn(),
     onExportWord: vi.fn(),
-    onExportYuque: vi.fn(),
     onSaveToKnowledge: vi.fn(),
-    onSaveToNotes: vi.fn(),
     onSetPanePosition: vi.fn(),
     panePosition: 'left',
     pinned: false,
@@ -55,7 +44,6 @@ describe('session item actions', () => {
       'session.auto-rename',
       'session.rename',
       'session.position',
-      'session.save-notes',
       'session.save-knowledge',
       'session.export',
       'session.copy',
@@ -78,7 +66,6 @@ describe('session item actions', () => {
       'session.rename',
       'session.toggle-pin',
       'session.position',
-      'session.save-notes',
       'session.save-knowledge',
       'session.export',
       'session.copy'
@@ -108,7 +95,6 @@ describe('session item actions', () => {
       'session.auto-rename',
       'session.rename',
       'session.position',
-      'session.save-notes',
       'session.save-knowledge',
       'session.export',
       'session.copy',
@@ -129,7 +115,6 @@ describe('session item actions', () => {
       'session.rename',
       'session.position',
       'session.open-in-new-window',
-      'session.save-notes',
       'session.save-knowledge',
       'session.export',
       'session.copy',
@@ -175,25 +160,5 @@ describe('session item actions', () => {
     const deleteAction = actions.find((action) => action.id === 'session.delete')
 
     expect(deleteAction?.confirm?.cancelText).toBe('common.cancel')
-  })
-
-  it('keeps Save to Notes independent from export and copy preferences', () => {
-    const actions = resolveSessionMenuActions(
-      createSessionActionFixture({
-        exportMenuOptions: {
-          ...exportMenuOptions,
-          image: false,
-          plain_text: false
-        }
-      })
-    )
-
-    expect(actions.map((action) => action.id)).toContain('session.save-notes')
-
-    const copyAction = actions.find((action) => action.id === 'session.copy')
-    expect(copyAction?.children.map((action) => action.id)).toEqual(['session.copy.markdown'])
-
-    const exportAction = actions.find((action) => action.id === 'session.export')
-    expect(exportAction?.children.map((action) => action.id)).not.toContain('session.export.image')
   })
 })

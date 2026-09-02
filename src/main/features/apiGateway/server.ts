@@ -61,7 +61,7 @@ export class ApiGateway {
     // Load config from preference service
     const preferenceService = application.get('PreferenceService')
     const port = preferenceService.get('feature.api_gateway.port')
-    const host = preferenceService.get('feature.api_gateway.host')
+    const host = '127.0.0.1'
 
     const app = buildApp({ host, port, mcpSessions: this.mcpSessions })
     this.app = app

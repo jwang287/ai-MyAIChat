@@ -1,4 +1,3 @@
-import { useMiniAppPopup } from '@renderer/hooks/useMiniAppPopup'
 import { ipcApi } from '@renderer/ipc'
 import { loggerService } from '@renderer/services/LoggerService'
 import { toast } from '@renderer/services/toast'
@@ -42,7 +41,6 @@ export function useDeepSeekHarnessController({
   setCurrentProvider
 }: UseDeepSeekHarnessControllerOptions): DeepSeekHarnessController {
   const { t } = useTranslation()
-  const { openSmartMiniApp } = useMiniAppPopup()
   const isDeepSeekHarness = selectedCliTool === CodeCli.DEEPSEEK_HARNESS
   // Status comes from main-pushed events (single source of truth); only the local
   // launching/stopping intents live here, covering the gap until events arrive.
@@ -54,19 +52,11 @@ export function useDeepSeekHarnessController({
     [currentProviderConfig?.config]
   )
 
-  const openWebUi = useCallback(
-    (webUrl: string) => {
-      const target = new URL(webUrl)
-      target.searchParams.set('cherry_navigation_revision', String(Date.now()))
-      openSmartMiniApp({
-        appId: 'deepseek-harness-web',
-        name: 'DeepSeek Harness',
-        url: target.toString(),
-        logo: 'deepseek'
-      })
-    },
-    [openSmartMiniApp]
-  )
+  const openWebUi = useCallback((webUrl: string) => {
+    const target = new URL(webUrl)
+    target.searchParams.set('cherry_navigation_revision', String(Date.now()))
+    return ipcApi.request('system.shell.open_website', target.toString())
+  }, [])
 
   const handleLaunch = useCallback(async () => {
     const parsedModelId = await resolveLaunchModelId({
@@ -90,7 +80,7 @@ export function useDeepSeekHarnessController({
         toast.error(result.message)
         return
       }
-      openWebUi(result.url)
+      await openWebUi(result.url)
     } catch (error) {
       logger.error('Failed to launch DeepSeek Harness', error as Error)
       toast.error(t('code.launch.error'))
@@ -120,12 +110,12 @@ export function useDeepSeekHarnessController({
   const handleOpenWebUi = useCallback(async () => {
     try {
       if (url) {
-        openWebUi(url)
+        await openWebUi(url)
         return
       }
       const current = await ipcApi.request('deepseek_harness.get_status')
       if (current.status !== 'running' || !current.url) throw new Error('DeepSeek Harness Web UI is not running')
-      openWebUi(current.url)
+      await openWebUi(current.url)
     } catch (error) {
       logger.error('Failed to open DeepSeek Harness Web UI', error as Error)
       toast.error(t('code.launch.error'))

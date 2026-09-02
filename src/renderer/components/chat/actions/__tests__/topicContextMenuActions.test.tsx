@@ -8,14 +8,9 @@ const t = ((key: string) => key) as TopicActionContext['t']
 const exportMenuOptions: TopicActionContext['exportMenuOptions'] = {
   docx: true,
   image: true,
-  joplin: true,
   markdown: true,
   markdown_reason: true,
-  notion: true,
-  obsidian: true,
-  plain_text: true,
-  siyuan: true,
-  yuque: true
+  plain_text: true
 }
 
 const topic: Topic = {
@@ -43,17 +38,11 @@ function createTopicActionFixture(overrides: Partial<TopicActionContext> = {}): 
     onCopyPlainText: vi.fn(),
     onDelete: vi.fn(),
     onExportImage: vi.fn(),
-    onExportJoplin: vi.fn(),
     onExportMarkdown: vi.fn(),
     onExportMarkdownReason: vi.fn(),
-    onExportNotion: vi.fn(),
-    onExportObsidian: vi.fn(),
-    onExportSiyuan: vi.fn(),
     onExportWord: vi.fn(),
-    onExportYuque: vi.fn(),
     onPinTopic: vi.fn(),
     onSaveToKnowledge: vi.fn(),
-    onSaveToNotes: vi.fn(),
     onStartRename: vi.fn(),
     t,
     topic,
@@ -63,26 +52,6 @@ function createTopicActionFixture(overrides: Partial<TopicActionContext> = {}): 
 }
 
 describe('topic context menu actions', () => {
-  it('keeps Save to Notes independent from export and copy preferences', () => {
-    const actions = resolveTopicMenuActions(
-      createTopicActionFixture({
-        exportMenuOptions: {
-          ...exportMenuOptions,
-          image: false,
-          plain_text: false
-        }
-      })
-    )
-
-    expect(actions.map((action) => action.id)).toContain('topic.save-notes')
-
-    const copyAction = actions.find((action) => action.id === 'topic.copy')
-    expect(copyAction?.children.map((action) => action.id)).toEqual(['topic.copy.markdown'])
-
-    const exportAction = actions.find((action) => action.id === 'topic.export')
-    expect(exportAction?.children.map((action) => action.id)).not.toContain('topic.export.image')
-  })
-
   it('runs a move-to-assistant submenu action', async () => {
     const onMoveToAssistant = vi.fn()
     const context = createTopicActionFixture({

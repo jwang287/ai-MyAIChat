@@ -17,6 +17,8 @@
 > - **FileMetadata 消费现状**（96 个文件的全量审计）：见 [`filemetadata-consumer-audit.md`](./filemetadata-consumer-audit.md)
 > - **架构语义**：见 [`docs/references/file/architecture.md`](../../../docs/references/file/architecture.md) / [`file-manager-architecture.md`](../../../docs/references/file/file-manager-architecture.md)
 >
+> **BAChat Phase 2 更新**：独立文件工作区（`/app/files`、`FilesPage` 及其列表/管理 UI）已移除。下文中与 FilesPage 相关的条目保留为迁移计划的历史上下文，不应重新实现；FileManager、FileEntry、通用 File IPC/DataApi、附件、翻译产物和知识库本地文件/目录导入仍在范围内。
+>
 > **本文档与 RFC 的关系**：RFC §10（迁移策略）和 §11（分阶段实施计划）描述**数据层迁移**（Dexie → SQLite 的一次性数据搬运）与**总体阶段划分**。本文档深入到**字段级 / 消费者级**的具体落地动作，是 RFC 的展开。
 
 ---
@@ -841,7 +843,6 @@ C4 的 AgentSessionInputbar 是真的需要 FileMetadata.path，因为 agent 的
 | 位置                                                            | 操作                                                   |
 | --------------------------------------------------------------- | ------------------------------------------------------ |
 | `src/renderer/pages/translate/TranslatePage.tsx:492`        | `getFileExtension(file.path)` —— 但 `file.ext` 已经有  |
-| `src/renderer/components/ObsidianExportDialog.tsx:110, 289` | fullPath 作为 key，`files.find(f => f.path === value)` |
 
 **C6. OCR / 第三方库（main 侧）**（5 个）：
 
@@ -1010,7 +1011,6 @@ Renderer helper 方案、DataApi opt-in 方案、IPC 双方法方案皆已作废
 | #   | 文件                                | 改动                                                             |
 | --- | ----------------------------------- | ---------------------------------------------------------------- |
 | F1  | `TranslatePage.tsx:492`             | `getFileExtension(file.path)` → `file.ext`                       |
-| F2  | `ObsidianExportDialog.tsx:110, 289` | 用 `entry.id` 或 `entry.name` 作为 key，不再依赖 path 字符串匹配 |
 
 **Step G: C6 OCR 第三方库迁移（main 侧）**
 
@@ -1068,7 +1068,6 @@ IPC 批量方法内部 `Promise.all` 一次 RT 完成——效率等同旧方案
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **危险文件防护丢失**                       | `entryToSafePath` 必须继承 `isDangerFile` 逻辑；FileManager IPC `open(handle)` 对 danger ext 应该 refuse 或 open dirname                                               |
 | **Image render 性能**（C1 大列表）         | Helper 同步拼接，比原 `getSafePath` 还快（无 db.files.get 调用）                                                                                                       |
-| **路径字符串作为 key 的代码**（C5 F2）     | Obsidian dialog 等改为用 entry.id 作为 key，避免 path 字符串字面比较                                                                                                   |
 | **主 `readExternal` 的调用签名迁移**       | `readExternal` 可以临时保留（别名到 `read({ kind: 'path', path })`），逐步淘汰                                                                                         |
 | **历史 message block 里内嵌 FileMetadata** | ChatMigrator 抽取 `file.id` 建立 file_ref（`sourceType='chat_message'`）；新 message block JSON 只存 `fileEntryId`；渲染时查 FileEntry。**不需要 shim**，见 §2.6.10 Q3 |
 | **Drag-drop 出 Cherry 给 OS**              | Electron drag-drop 需要绝对路径；用 `entryToAbsolutePath(entry)` 获取                                                                                                  |
@@ -1174,7 +1173,7 @@ IPC 批量方法内部 `Promise.all` 一次 RT 完成——效率等同旧方案
 | `src/renderer/pages/knowledge/components/KnowledgeSearchItem/hooks.ts:54` | `href: http://file/${item.file.name}`                                                                                                        |
 | `src/renderer/hooks/useKnowledge.ts:134, 138`                             | `window.api.file.delete(file.name)` 传存储名给删除 API                                                                                       |
 
-**注意**：很多 `file.name` 实际是 **Electron 扩展的 browser `File` 对象 `.name`**（非 FileMetadata）：`PasteService.ts:72-73`, `useRichEditor.ts:493`, `ObsidianExportDialog.tsx:112`, `VideoPopup.tsx:98-109`, `NotesService.ts:321`（Dirent）等。这些和本次迁移**无关**。
+**注意**：很多 `file.name` 实际是 **Electron 扩展的 browser `File` 对象 `.name`**（非 FileMetadata）：`PasteService.ts:72-73`, `useRichEditor.ts:493`, `VideoPopup.tsx:98-109`, `NotesService.ts:321`（Dirent）等。这些和本次迁移**无关**。
 
 #### 2.7.2 `origin_name`（用户可见原名）现状
 
@@ -1818,7 +1817,6 @@ FileMigrator 完成时发出一条 `info`-级结构化日志记录（通过 `log
 
 - `src/main/services/BackupManager.ts` 通过 `fs-extra.copy` 复制 `userData` 目录到打包暂存目录
 - 备份产物包含：物理文件树（`Data/Files/*`）+ Dexie 导出（含 `files.json`）+ LocalStorage / Redux state 导出
-- S3 / WebDAV 远端上传 zip 归档
 
 **v2 切换后的结构变化**：
 

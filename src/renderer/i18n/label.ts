@@ -164,15 +164,11 @@ export const getRestoreProgressLabelKey = (key: string): string => {
 
 const titleKeyMap = {
   // TODO: update i18n key
-  apps: 'title.apps',
   code: 'title.code',
-  files: 'title.files',
   home: 'title.home',
   knowledge: 'title.knowledge',
   launchpad: 'title.launchpad',
   'mcp-servers': 'title.mcp-servers',
-  notes: 'title.notes',
-  paintings: 'title.paintings',
   settings: 'title.settings',
   translate: 'title.translate',
   agents: 'agent.sidebar_title'
@@ -195,13 +191,9 @@ export const getThemeModeLabelKey = (key: string): string => {
 const sidebarIconKeyMap = {
   assistants: 'title.chat',
   agents: 'title.work',
-  paintings: 'title.paintings',
   translate: 'translate.title',
-  mini_app: 'miniApp.title',
   knowledge: 'knowledge.title',
-  files: 'files.title',
-  code_tools: 'code.title',
-  notes: 'notes.title'
+  code_tools: 'code.title'
 } as const
 
 export const getSidebarIconLabelKey = (key: string): string => {
@@ -215,13 +207,9 @@ const sidebarFavoriteKeyMap = {
   assistants: 'assistants.title',
   agents: 'title.work',
   store: 'assistants.presets.title',
-  paintings: 'title.paintings',
   translate: 'translate.title',
-  mini_app: 'miniApp.title',
   knowledge: 'knowledge.title',
-  files: 'files.title',
-  code_tools: 'code.title',
-  notes: 'notes.title'
+  code_tools: 'code.title'
 } as const
 export const getSidebarFavoriteLabelKey = (key: string): string => {
   return getLabelKey(sidebarFavoriteKeyMap, key)
@@ -237,44 +225,6 @@ export const getSelectionDescriptionLabelKey = (key: string): string => {
   return getLabelKey(selectionDescriptionKeyMap, key)
 }
 
-const paintingsImageSizeOptionsKeyMap = {
-  auto: 'paintings.image_size_options.auto'
-} as const
-
-export const getPaintingsImageSizeOptionsLabelKey = (key: string): string => {
-  return paintingsImageSizeOptionsKeyMap[key] ? getLabelKey(paintingsImageSizeOptionsKeyMap, key) : key
-}
-
-const paintingsQualityOptionsKeyMap = {
-  auto: 'paintings.quality_options.auto',
-  high: 'paintings.quality_options.high',
-  low: 'paintings.quality_options.low',
-  medium: 'paintings.quality_options.medium'
-} as const
-
-export const getPaintingsQualityOptionsLabelKey = (key: string): string => {
-  return getLabelKey(paintingsQualityOptionsKeyMap, key)
-}
-
-const paintingsModerationOptionsKeyMap = {
-  auto: 'paintings.moderation_options.auto',
-  low: 'paintings.moderation_options.low'
-} as const
-
-export const getPaintingsModerationOptionsLabelKey = (key: string): string => {
-  return getLabelKey(paintingsModerationOptionsKeyMap, key)
-}
-
-const paintingsBackgroundOptionsKeyMap = {
-  auto: 'paintings.background_options.auto',
-  opaque: 'paintings.background_options.opaque',
-  transparent: 'paintings.background_options.transparent'
-} as const
-
-export const getPaintingsBackgroundOptionsLabelKey = (key: string): string => {
-  return getLabelKey(paintingsBackgroundOptionsKeyMap, key)
-}
-
 const mcpTypeKeyMap = {
   inMemory: 'settings.mcp.types.inMemory',
   sse: 'settings.mcp.types.sse',
@@ -284,15 +234,6 @@ const mcpTypeKeyMap = {
 
 export const getMcpTypeLabelKey = (key: string): string => {
   return getLabelKey(mcpTypeKeyMap, key)
-}
-
-const miniAppsStatusKeyMap = {
-  visible: 'settings.miniApps.visible',
-  disabled: 'settings.miniApps.disabled'
-} as const
-
-export const getMiniAppsStatusLabelKey = (key: string): string => {
-  return getLabelKey(miniAppsStatusKeyMap, key)
 }
 
 const httpMessageKeyMap = {
@@ -312,23 +253,11 @@ export const getHttpMessageLabelKey = (key: string): string => {
   return getLabelKey(httpMessageKeyMap, key)
 }
 
-const fileFieldKeyMap = {
-  created_at: 'files.created_at',
-  size: 'files.size',
-  name: 'files.name'
-} as const
-
-export const getFileFieldLabelKey = (key: string): string => {
-  return getLabelKey(fileFieldKeyMap, key)
-}
-
 const builtInMcpDescriptionKeyMap: Record<BuiltinMcpServerName, string> = {
   [BuiltinMcpServerNames.flomo]: 'settings.mcp.builtinServersDescriptions.flomo',
   [BuiltinMcpServerNames.qveris]: 'settings.mcp.builtinServersDescriptions.qveris',
-  [BuiltinMcpServerNames.mcpAutoInstall]: 'settings.mcp.builtinServersDescriptions.mcp_auto_install',
   [BuiltinMcpServerNames.memory]: 'settings.mcp.builtinServersDescriptions.memory',
   [BuiltinMcpServerNames.sequentialThinking]: 'settings.mcp.builtinServersDescriptions.sequentialthinking',
-  [BuiltinMcpServerNames.braveSearch]: 'settings.mcp.builtinServersDescriptions.brave_search',
   [BuiltinMcpServerNames.fetch]: 'settings.mcp.builtinServersDescriptions.fetch',
   [BuiltinMcpServerNames.filesystem]: 'settings.mcp.builtinServersDescriptions.filesystem',
   [BuiltinMcpServerNames.difyKnowledge]: 'settings.mcp.builtinServersDescriptions.dify_knowledge',

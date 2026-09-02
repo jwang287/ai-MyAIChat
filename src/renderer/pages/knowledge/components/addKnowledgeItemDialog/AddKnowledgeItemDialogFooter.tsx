@@ -1,35 +1,23 @@
 import { Button, DialogClose } from '@cherrystudio/ui'
-import type { KnowledgeItemType } from '@shared/data/types/knowledge'
 import { useTranslation } from 'react-i18next'
 
 import { KnowledgeDialogFooter } from '../KnowledgeDialogLayout'
 
 interface AddKnowledgeItemDialogFooterProps {
-  activeSource: KnowledgeItemType
   canSubmit: boolean
   errorMessage: string
   isSubmitting: boolean
-  selectedNoteCount: number
   onSubmit: () => void | Promise<void>
 }
 
 const AddKnowledgeItemDialogFooter = ({
-  activeSource,
   canSubmit,
   errorMessage,
   isSubmitting,
-  selectedNoteCount,
   onSubmit
 }: AddKnowledgeItemDialogFooterProps) => {
   const { t } = useTranslation()
 
-  // Only `note` shows a running selection count; `url` has a single inline input.
-  const selectionCount = activeSource === 'note' ? selectedNoteCount : 0
-
-  const selectionText =
-    activeSource === 'note'
-      ? t('knowledge.data_source.add_dialog.footer.selected_notes', { count: selectedNoteCount })
-      : ''
   return (
     <div className="flex w-full min-w-0 shrink-0 flex-col gap-3 overflow-hidden">
       {errorMessage ? (
@@ -41,9 +29,7 @@ const AddKnowledgeItemDialogFooter = ({
         </div>
       ) : null}
 
-      <KnowledgeDialogFooter className="items-center sm:justify-between">
-        <span className="text-foreground-tertiary text-xs leading-4">{selectionCount > 0 ? selectionText : ''}</span>
-
+      <KnowledgeDialogFooter className="items-center sm:justify-end">
         <div className="flex gap-2">
           <DialogClose asChild>
             <Button type="button" variant="outline">

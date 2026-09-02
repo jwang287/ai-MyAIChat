@@ -597,17 +597,14 @@ Serves backup restore (#16849, same contract as JobManager's — see
 the restore snapshot is staged, any main-side write to the old live DB fails the
 fingerprint re-check and wastes the whole restore attempt. Three AI-side writers carry
 the contract — `AiStreamManager`, `AgentSessionRuntimeService`, and channel intake
-(`ChannelManager` → `ChannelMessageHandler`) — each exposing
 `pause(reason?): Disposable` + `drainInFlight({ timeoutMs }) → { stragglerIds }`
 (empty = clean) + an advisory read-only `listActiveWork()`.
 
 Orchestration order (grandfather-free, per #16850) — the channel step MUST fully complete
 before the AI writers are paused:
 
-1. `ChannelManager.pause()` — gate new adapter messages/commands and immediately flush the
    buffered debounce batches (never cancel: adapters ack at the transport layer on receipt,
    so the in-memory buffer is the only copy).
-2. `await ChannelManager.drainInFlight()` — flush only *schedules* each batch's admission (its
    `processIncoming` runs on the per-chat queue microtask), so `pause()` returning does NOT
    mean the batches admitted. This await is the flush-to-admission barrier: it resolves once
    every flushed batch passed agent-turn *admission* (not turn completion — the flushed turns
@@ -921,7 +918,7 @@ skip-when-no-finalMessage, swallow errors) is implemented once.
   `Promise<ReadableStream<UIMessageChunk>>`, consumed by
   `AiStreamManager.runExecutionLoop`.
 - **Non-streaming IPC gateway.** `generateText` / `checkModel` /
-  `embedMany` / `generateImage` / `listModels`, registered as IPC
+  `embedMany` / `listModels`, registered as IPC
   handlers in `onInit`.
 
 `AiStreamManager` calls `await application.get('AiService').streamText(...)`.

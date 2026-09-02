@@ -330,7 +330,7 @@ export class JobService {
 
   /**
    * Register the `job_file_ref` rows for the file entries an enqueued job reads
-   * (today: the async image-generation job's input images / mask). The ids also
+   * (for example, a historical image job's input images / mask). The ids also
    * live in the job's `input` JSON, but the cleanup anti-join cannot see JSON —
    * these rows are what keep `delete_when_unreferenced` inputs alive for the
    * job's lifetime, and deleting the job row cascades them away, releasing the
@@ -340,7 +340,7 @@ export class JobService {
    * transaction: the job row and its refs must land or roll back together, or a
    * recoverable job could run with unprotected inputs.
    *
-   * A plain insert, deliberately: unlike painting refs — re-registered wholesale
+   * A plain insert, deliberately: unlike historical painting refs — re-registered wholesale
    * on every update, hence their `onConflictDoNothing` — a job's refs are written
    * once at enqueue against a freshly-created job id. A `(fileEntryId, sourceId,
    * role)` collision would mean the caller built duplicate rows for one job, which

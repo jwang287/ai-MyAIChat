@@ -7,7 +7,7 @@ import {
   type KnowledgeItemType
 } from '@shared/data/types/knowledge'
 import type { LucideIcon } from 'lucide-react'
-import { FileText, Folder, Link2, StickyNote } from 'lucide-react'
+import { FileText, Folder, Link2 } from 'lucide-react'
 
 export type DataSourceStatus = 'completed' | 'processing' | 'failed'
 export type DataSourceStatusIcon = 'check' | 'loader' | 'alert'
@@ -131,17 +131,6 @@ export const dataSourceTypeDisplayConfig: DataSourceTypeDisplayConfigMap = {
     },
     getTitle: (item) => getKnowledgeItemDisplayTitle(item),
     getSuffix: (item) => getFileSuffix(item),
-    getMetaParts: (item, { language }) => getRelativeMetaParts(item.updatedAt, language),
-    getStatus: resolveDataSourceStatusViewModel
-  },
-  note: {
-    filterLabelKey: 'knowledge.data_source.filters.note',
-    icon: {
-      icon: StickyNote,
-      iconClassName: 'text-amber-500'
-    },
-    getTitle: (item) => getKnowledgeItemDisplayTitle(item),
-    getSuffix: () => '',
     getMetaParts: (item, { language }) => getRelativeMetaParts(item.updatedAt, language),
     getStatus: resolveDataSourceStatusViewModel
   },

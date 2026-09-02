@@ -8,14 +8,13 @@ import {
   DialogTitle
 } from '@cherrystudio/ui'
 import type { KnowledgeAddItemConflict, KnowledgeItemType } from '@shared/data/types/knowledge'
-import { FileText, Folder, Link2, type LucideIcon, StickyNote } from 'lucide-react'
+import { FileText, Folder, Link2, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 type ConflictResolution = 'rename' | 'replace'
 
 const CONFLICT_TYPE_ICON: Record<KnowledgeItemType, LucideIcon> = {
   file: FileText,
-  note: StickyNote,
   directory: Folder,
   url: Link2
 }

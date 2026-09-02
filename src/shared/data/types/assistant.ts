@@ -69,12 +69,6 @@ export const AssistantSettingsSchema = z.object({
   maxToolCalls: z.number().int().positive(),
   enableMaxToolCalls: z.boolean(),
 
-  // -- Context sources --
-  /** One switch for the web tool group (search + URL fetch), whichever side executes it. */
-  enableWebSearch: z.boolean(),
-  /** Offer the `generate_image` tool to the model (needs a painting model in Settings › Default Model). */
-  enableGenerateImage: z.boolean(),
-
   /** User-defined model parameters (e.g. {"top_k": 40, "repetition_penalty": 1.1}).
    *  Discriminated union on `type` ensures `value` is type-safe:
    *  - `string` → string value, rendered as text input
@@ -111,8 +105,6 @@ export const DEFAULT_ASSISTANT_SETTINGS: AssistantSettings = {
   mcpMode: DEFAULT_MCP_MODE,
   maxToolCalls: 100,
   enableMaxToolCalls: true,
-  enableWebSearch: false,
-  enableGenerateImage: false,
   customParameters: []
 }
 

@@ -4,7 +4,6 @@ import { type ApiGatewayEventSchemas, apiGatewayRequestSchemas } from './apiGate
 import { type AppEventSchemas, appRequestSchemas } from './app'
 import { type BackupEventSchemas, backupRequestSchemas } from './backup'
 import { type BinaryEventSchemas, binaryRequestSchemas } from './binary'
-import { type ChannelEventSchemas, channelRequestSchemas } from './channel'
 import { cherryinRequestSchemas } from './cherryin'
 import { citationRequestSchemas } from './citation'
 import { codeCliRequestSchemas } from './codeCli'
@@ -18,7 +17,6 @@ import { type HermesDashboardEventSchemas, hermesDashboardRequestSchemas } from 
 import { knowledgeRequestSchemas } from './knowledge'
 import { type LocalModelEventSchemas, localModelRequestSchemas } from './localModel'
 import { type McpEventSchemas, mcpRequestSchemas } from './mcp'
-import { type MiniAppEventSchemas, miniAppRequestSchemas } from './miniApp'
 import { type NavigationEventSchemas, navigationRequestSchemas } from './navigation'
 import { type NotificationEventSchemas, notificationRequestSchemas } from './notification'
 import { type OAuthEventSchemas, oauthRequestSchemas } from './oauth'
@@ -34,8 +32,6 @@ import { skillRequestSchemas } from './skill'
 import { type SystemEventSchemas, systemRequestSchemas } from './system'
 import { type TabEventSchemas, tabRequestSchemas } from './tab'
 import { type TranslateEventSchemas, translateRequestSchemas } from './translate'
-import { webSearchRequestSchemas } from './webSearch'
-import { webviewRequestSchemas } from './webview'
 import { type WindowEventSchemas, windowRequestSchemas } from './window'
 
 /**
@@ -51,7 +47,6 @@ export const ipcRequestSchemas = {
   ...appRequestSchemas,
   ...backupRequestSchemas,
   ...binaryRequestSchemas,
-  ...channelRequestSchemas,
   ...cherryinRequestSchemas,
   ...citationRequestSchemas,
   ...codeCliRequestSchemas,
@@ -65,7 +60,6 @@ export const ipcRequestSchemas = {
   ...knowledgeRequestSchemas,
   ...localModelRequestSchemas,
   ...mcpRequestSchemas,
-  ...miniAppRequestSchemas,
   ...navigationRequestSchemas,
   ...notificationRequestSchemas,
   ...oauthRequestSchemas,
@@ -81,8 +75,6 @@ export const ipcRequestSchemas = {
   ...systemRequestSchemas,
   ...tabRequestSchemas,
   ...translateRequestSchemas,
-  ...webSearchRequestSchemas,
-  ...webviewRequestSchemas,
   ...windowRequestSchemas
 } satisfies Record<string, RouteDef>
 
@@ -100,13 +92,11 @@ export type IpcEventSchemas = AiEventSchemas &
   AppEventSchemas &
   BackupEventSchemas &
   BinaryEventSchemas &
-  ChannelEventSchemas &
   DeepSeekHarnessEventSchemas &
   FileEventSchemas &
   HermesDashboardEventSchemas &
   LocalModelEventSchemas &
   McpEventSchemas &
-  MiniAppEventSchemas &
   NavigationEventSchemas &
   NotificationEventSchemas &
   OAuthEventSchemas &

@@ -49,10 +49,18 @@ function hibernateTab(tab: Tab, hibernatedIds: ReadonlySet<string>): Tab {
 
 // Route no longer served — its orphaned pinned tabs are dropped on restore.
 const LEGACY_LIBRARY_ROUTE_PATH = '/app/library'
+const LEGACY_FILE_WORKSPACE_ROUTE_PATH = '/app/files'
 // OpenClaw was folded into the Code page (its sidebar entry + `/app/openclaw` route were removed),
 // so an already-persisted OpenClaw pin is redirected here rather than restoring to a dead route.
 const LEGACY_OPENCLAW_ROUTE_PATH = '/app/openclaw'
 const CODE_ROUTE_PATH = '/app/code'
+const LEGACY_MINI_APP_ROUTE_PREFIX = '/app/mini-app'
+
+function isLegacyMiniAppTab(tab: Tab): boolean {
+  return (
+    tab.metadata?.transientMiniApp === true || routePathOfTab(tab)?.startsWith(LEGACY_MINI_APP_ROUTE_PREFIX) === true
+  )
+}
 
 function routePathOfTab(tab: Tab): string | null {
   if (tab.type !== 'route') return null
@@ -63,27 +71,28 @@ function routePathOfTab(tab: Tab): string | null {
   }
 }
 
-function isTransientMiniAppTab(tab: Tab): boolean {
-  return tab.metadata?.transientMiniApp === true
+function isRemovedFileWorkspaceTab(tab: Tab): boolean {
+  return routePathOfTab(tab) === LEGACY_FILE_WORKSPACE_ROUTE_PATH
 }
 
 /**
  * Reconcile persisted pinned tabs against routes that have since been removed or relocated: drop
- * `/app/library` pins outright, and redirect `/app/openclaw` pins to `/app/code` (deduping so the
- * redirect never produces a second Code pin). `changed` is true when anything was dropped or
- * rewritten, signalling the caller to write the reconciled list back to the persistent cache.
+ * `/app/library` and `/app/files` pins outright, and redirect `/app/openclaw` pins to `/app/code`
+ * (deduping so the redirect never produces a second Code pin). `changed` is true when anything
+ * was dropped or rewritten, signalling the caller to write the reconciled list back to the
+ * persistent cache.
  */
 export function migratePinnedTabs(pinnedTabs: Tab[]): { tabs: Tab[]; changed: boolean } {
   let hasCodePin = pinnedTabs.some((tab) => routePathOfTab(tab) === CODE_ROUTE_PATH)
   const tabs: Tab[] = []
   let changed = false
   for (const tab of pinnedTabs) {
-    if (isTransientMiniAppTab(tab)) {
+    if (isLegacyMiniAppTab(tab)) {
       changed = true
       continue
     }
     const path = routePathOfTab(tab)
-    if (path === LEGACY_LIBRARY_ROUTE_PATH) {
+    if (path === LEGACY_LIBRARY_ROUTE_PATH || isRemovedFileWorkspaceTab(tab)) {
       changed = true
       continue
     }
@@ -108,15 +117,12 @@ function withLocalizedRouteTitle(tab: Tab): Tab {
     return tab.title ? tab : { ...tab, title: getDefaultRouteTitle(tab.url) }
   }
   // Only auto-localize titles for top-level and settings routes. Parameterized
-  // routes (e.g. /app/mini-app/<id>) preserve the title supplied at openTab
-  // time so callers can pass per-entity names like a mini-app's display name.
+  // routes preserve the title supplied at openTab time.
   //
   // The `home` tab follows the SAME rule — it must not be special-cased into an
   // unconditional route-default title. When the home tab is reused for a
-  // per-entity route (e.g. opening a mini-app from the sidebar), forcing the
-  // route default here clobbers the caller-supplied title every render and
-  // fights MiniAppPage's title-sync effect, spinning into an infinite
-  // `updateTab` loop ("Maximum update depth exceeded"). On top-level / settings
+  // per-entity route, forcing the route default here clobbers the caller-supplied
+  // title every render. On top-level / settings
   // routes the branch below still relocalizes the home tab, so language changes
   // are unaffected.
   if (!isTopLevelRoute(tab.url) && !isSettingsRouteTab(tab)) return tab
@@ -149,7 +155,9 @@ function computeInitialSession(params: {
   persistedActiveTabId: string
 }): InitialSession {
   const { includePinnedTabs, initialDefaultTab, pinnedTabs, persistedNormalTabs, persistedActiveTabId } = params
-  const restorableNormalTabs = persistedNormalTabs.filter((tab) => !isTransientMiniAppTab(tab))
+  const restorableNormalTabs = persistedNormalTabs.filter(
+    (tab) => !isLegacyMiniAppTab(tab) && !isRemovedFileWorkspaceTab(tab)
+  )
 
   const freshSession: InitialSession = {
     normalTabs: initialDefaultTab ? [initialDefaultTab] : [],
@@ -280,7 +288,7 @@ export function TabsProvider({
   // coalesces redundant writes.
   useEffect(() => {
     if (!includePinnedTabs) return
-    setPersistedNormalTabs(normalTabs.filter((tab) => !isTransientMiniAppTab(tab)))
+    setPersistedNormalTabs(normalTabs.filter((tab) => !isLegacyMiniAppTab(tab)))
   }, [includePinnedTabs, normalTabs, setPersistedNormalTabs])
 
   useEffect(() => {
@@ -540,7 +548,7 @@ export function TabsProvider({
   const pinTab = useCallback(
     (id: string) => {
       const tab = tabs.find((t) => t.id === id)
-      if (!tab || tab.isPinned || isTransientMiniAppTab(tab)) return
+      if (!tab || tab.isPinned || isLegacyMiniAppTab(tab)) return
 
       // Remove from normalTabs
       setNormalTabs((prev) => prev.filter((t) => t.id !== id))

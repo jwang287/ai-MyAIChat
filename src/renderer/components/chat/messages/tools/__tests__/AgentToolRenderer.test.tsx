@@ -128,7 +128,6 @@ describe('AgentToolRenderer', () => {
     'message.tools.labels.write': 'Write',
     'message.tools.labels.grep': 'Grep',
     'message.tools.labels.glob': 'Glob',
-    'message.tools.labels.webSearch': 'Web Search',
     'message.tools.labels.webFetch': 'Web Fetch',
     'message.tools.labels.skill': 'Skill',
     'message.tools.labels.task': 'Task',

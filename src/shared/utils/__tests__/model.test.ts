@@ -6,7 +6,6 @@ import {
   isEmbeddingModel,
   isFunctionCallingModel,
   isGatewayRoutableModel,
-  isGenerateImageModel,
   isNonChatModel,
   isReasoningModel,
   isRerankModel,
@@ -68,11 +67,10 @@ describe('shared model capability helpers', () => {
     expect(isVisionModel(model)).toBe(false)
   })
 
-  it('keeps embedding, rerank, and image generation as explicit capability checks', () => {
+  it('keeps embedding and rerank as explicit capability checks', () => {
     expect(isEmbeddingModel(createModel([MODEL_CAPABILITY.EMBEDDING]))).toBe(true)
     expect(isRerankModel(createModel([MODEL_CAPABILITY.RERANK]))).toBe(true)
     expect(isNonChatModel(createModel([MODEL_CAPABILITY.RERANK]))).toBe(true)
-    expect(isGenerateImageModel(createModel([MODEL_CAPABILITY.IMAGE_GENERATION]))).toBe(true)
   })
 
   describe('audio/video modality vs. dedicated-model classification', () => {
@@ -134,7 +132,6 @@ describe('shared model capability helpers', () => {
     it('excludes every non-chat class, including audio/video generation and transcription', () => {
       expect(isGatewayRoutableModel(createModel([MODEL_CAPABILITY.EMBEDDING]))).toBe(false)
       expect(isGatewayRoutableModel(createModel([MODEL_CAPABILITY.RERANK]))).toBe(false)
-      expect(isGatewayRoutableModel(createModel([MODEL_CAPABILITY.IMAGE_GENERATION]))).toBe(false)
       expect(isGatewayRoutableModel(createModel([MODEL_CAPABILITY.VIDEO_GENERATION]))).toBe(false)
       expect(isGatewayRoutableModel(createModel([MODEL_CAPABILITY.AUDIO_GENERATION]))).toBe(false)
       expect(isGatewayRoutableModel(createModel([MODEL_CAPABILITY.AUDIO_TRANSCRIPT]))).toBe(false)

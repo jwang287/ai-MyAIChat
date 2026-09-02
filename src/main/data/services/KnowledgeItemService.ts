@@ -116,7 +116,11 @@ export class KnowledgeItemService {
     knowledgeBaseService.getById(baseId)
     const { limit, type, groupId } = query
 
-    const filterConditions: SQL[] = [eq(knowledgeItemTable.baseId, baseId), ne(knowledgeItemTable.status, 'deleting')]
+    const filterConditions: SQL[] = [
+      eq(knowledgeItemTable.baseId, baseId),
+      ne(knowledgeItemTable.status, 'deleting'),
+      sql`${knowledgeItemTable.type} != 'note'`
+    ]
 
     if (type !== undefined) {
       filterConditions.push(eq(knowledgeItemTable.type, type))
@@ -179,7 +183,11 @@ export class KnowledgeItemService {
   getItemsByBaseId(baseId: string, options: KnowledgeItemsByBaseOptions = {}): KnowledgeItem[] {
     knowledgeBaseService.getById(baseId)
 
-    const conditions = [eq(knowledgeItemTable.baseId, baseId), ne(knowledgeItemTable.status, 'deleting')]
+    const conditions = [
+      eq(knowledgeItemTable.baseId, baseId),
+      ne(knowledgeItemTable.status, 'deleting'),
+      sql`${knowledgeItemTable.type} != 'note'`
+    ]
 
     if (options.groupId !== undefined) {
       conditions.push(
@@ -387,7 +395,12 @@ export class KnowledgeItemService {
   }
 
   getById(id: string): KnowledgeItem {
-    const [row] = this.db.select().from(knowledgeItemTable).where(eq(knowledgeItemTable.id, id)).limit(1).all()
+    const [row] = this.db
+      .select()
+      .from(knowledgeItemTable)
+      .where(and(eq(knowledgeItemTable.id, id), sql`${knowledgeItemTable.type} != 'note'`))
+      .limit(1)
+      .all()
 
     if (!row) {
       throw DataApiErrorFactory.notFound('KnowledgeItem', id)
@@ -448,6 +461,7 @@ export class KnowledgeItemService {
               uniqueRootIds.map((id) => sql`${id}`),
               sql`, `
             )})
+            AND type != 'note'
 
           UNION ALL
 
@@ -455,6 +469,7 @@ export class KnowledgeItemService {
           FROM knowledge_item child
           INNER JOIN subtree parent ON child.group_id = parent.id
           WHERE child.base_id = ${baseId}
+            AND child.type != 'note'
         )
         UPDATE knowledge_item
         SET status = ${status},
@@ -490,10 +505,22 @@ export class KnowledgeItemService {
       const targetRows = tx
         .select({ groupId: knowledgeItemTable.groupId })
         .from(knowledgeItemTable)
-        .where(and(eq(knowledgeItemTable.baseId, baseId), inArray(knowledgeItemTable.id, uniqueItemIds)))
+        .where(
+          and(
+            eq(knowledgeItemTable.baseId, baseId),
+            inArray(knowledgeItemTable.id, uniqueItemIds),
+            sql`${knowledgeItemTable.type} != 'note'`
+          )
+        )
         .all()
       tx.delete(knowledgeItemTable)
-        .where(and(eq(knowledgeItemTable.baseId, baseId), inArray(knowledgeItemTable.id, uniqueItemIds)))
+        .where(
+          and(
+            eq(knowledgeItemTable.baseId, baseId),
+            inArray(knowledgeItemTable.id, uniqueItemIds),
+            sql`${knowledgeItemTable.type} != 'note'`
+          )
+        )
         .run()
       return {
         rowsAffected: targetRows.length,
@@ -512,7 +539,7 @@ export class KnowledgeItemService {
       return []
     }
 
-    const leafFilter = options.leafOnly ? sql`AND item.type IN ('file', 'url', 'note')` : sql``
+    const leafFilter = options.leafOnly ? sql`AND item.type IN ('file', 'url')` : sql`AND item.type != 'note'`
     const rootFilter =
       options.includeRoots === true
         ? sql``
@@ -578,7 +605,12 @@ export class KnowledgeItemService {
 
     const dbService = application.get('DbService')
     const { item, startContainerIds, blocked } = dbService.withWriteTx((tx) => {
-      const [existingRow] = tx.select().from(knowledgeItemTable).where(eq(knowledgeItemTable.id, id)).limit(1).all()
+      const [existingRow] = tx
+        .select()
+        .from(knowledgeItemTable)
+        .where(and(eq(knowledgeItemTable.id, id), sql`${knowledgeItemTable.type} != 'note'`))
+        .limit(1)
+        .all()
 
       if (!existingRow) {
         throw DataApiErrorFactory.notFound('KnowledgeItem', id)
@@ -646,7 +678,12 @@ export class KnowledgeItemService {
   ): KnowledgeItem {
     const dbService = application.get('DbService')
     const row = dbService.withWriteTx((tx) => {
-      const [existingRow] = tx.select().from(knowledgeItemTable).where(eq(knowledgeItemTable.id, id)).limit(1).all()
+      const [existingRow] = tx
+        .select()
+        .from(knowledgeItemTable)
+        .where(and(eq(knowledgeItemTable.id, id), sql`${knowledgeItemTable.type} != 'note'`))
+        .limit(1)
+        .all()
 
       if (!existingRow) {
         throw DataApiErrorFactory.notFound('KnowledgeItem', id)
@@ -687,11 +724,9 @@ export class KnowledgeItemService {
   }
 
   /**
-   * Pin a captured url/note snapshot's base-relative path onto the item's `data`.
-   * url and note store the snapshot identically — the `type` guards the call site
-   * against writing the path onto the wrong item kind.
+   * Pin a captured URL snapshot's base-relative path onto the item's `data`.
    */
-  updateSnapshotRelativePath(id: string, type: 'url' | 'note', relativePath: string): KnowledgeItem {
+  updateSnapshotRelativePath(id: string, type: 'url', relativePath: string): KnowledgeItem {
     return this.patchItemData(id, [type], { relativePath }, `${type} snapshot relative path`)
   }
 

@@ -164,13 +164,13 @@ export function createMcpRoutes(sessions: McpSessionStore) {
         async ({ params }) => {
           const server = resolveServer(params.server_id)
           // Never rejects — a dead server degrades to an empty tool list rather than a 5xx.
-          await application.get('McpCatalogService').warmToolsCache(server.id)
+          await application.get('McpToolCacheService').warmToolsCache(server.id)
           return {
             id: server.id,
             name: server.name,
             type: server.type,
             description: server.description,
-            tools: application.get('McpCatalogService').listTools(server.id)
+            tools: application.get('McpToolCacheService').listTools(server.id)
           }
         },
         {
@@ -333,7 +333,7 @@ async function handleProxyPost(
 ): Promise<Response> {
   const server = resolveServer(serverIdOrName)
   if (needsWarmTools(body)) {
-    await application.get('McpCatalogService').warmToolsCache(server.id)
+    await application.get('McpToolCacheService').warmToolsCache(server.id)
   }
 
   const session = lookupSession(sessions, request, server.id)

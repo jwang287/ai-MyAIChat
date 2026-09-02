@@ -19,7 +19,6 @@ export interface AiRequestMetadata {
   topicId?: string
   callType?: string
   enableReasoning?: boolean
-  enableWebSearch?: boolean
   enableGenerateImage?: boolean
   isSupportedToolUse?: boolean
   // 自定义元数据，使用 JSONValue 确保类型安全

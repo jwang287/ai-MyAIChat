@@ -47,7 +47,7 @@ describe('Template Key Type Utilities', () => {
 
     it('should detect fixed keys as false', () => {
       const fixedResult1: IsTemplateKey<'app.path.resources'> = false
-      const fixedResult2: IsTemplateKey<'chat.web_search.searching'> = false
+      const fixedResult2: IsTemplateKey<'chat.multi_select_mode'> = false
       expect(fixedResult1).toBe(false)
       expect(fixedResult2).toBe(false)
     })
@@ -95,9 +95,9 @@ describe('Template Key Type Utilities', () => {
   describe('UseCacheKey', () => {
     it('should include fixed keys', () => {
       const key1: UseCacheKey = 'app.path.resources'
-      const key2: UseCacheKey = 'chat.web_search.searching'
+      const key2: UseCacheKey = 'chat.multi_select_mode'
       expect(key1).toBe('app.path.resources')
-      expect(key2).toBe('chat.web_search.searching')
+      expect(key2).toBe('chat.multi_select_mode')
     })
 
     it('should match template patterns', () => {
@@ -114,7 +114,7 @@ describe('Template Key Type Utilities', () => {
     it('should infer value type for fixed keys', () => {
       // These type assertions verify the type system works
       const avatarType: InferUseCacheValue<'app.path.resources'> = 'test'
-      const generatingType: InferUseCacheValue<'chat.web_search.searching'> = true
+      const generatingType: InferUseCacheValue<'chat.multi_select_mode'> = true
       expectTypeOf(avatarType).toBeString()
       expectTypeOf(generatingType).toBeBoolean()
     })
@@ -161,34 +161,35 @@ describe('Template Key Type Utilities', () => {
       expect(isTemplate('scroll.position.${id}')).toBe(true)
       expect(isTemplate('entity.cache.${type}_${id}')).toBe(true)
       expect(isTemplate('app.path.resources')).toBe(false)
-      expect(isTemplate('chat.web_search.searching')).toBe(false)
+      expect(isTemplate('chat.multi_select_mode')).toBe(false)
     })
   })
 
   describe('SharedCacheKey', () => {
     it('should include fixed keys', () => {
-      const key: SharedCacheKey = 'chat.web_search.active_searches'
-      expect(key).toBe('chat.web_search.active_searches')
+      const key: SharedCacheKey = 'agent.session.task_events.session-1'
+      expect(key).toBe('agent.session.task_events.session-1')
     })
 
     it('should match template patterns', () => {
-      const key1: SharedCacheKey = 'web_search.provider.last_used_key.google'
+      const key1: SharedCacheKey = 'ocr.provider.last_used_key.google'
       const key2: SharedCacheKey = 'ocr.provider.last_used_key.tesseract'
-      expect(key1).toBe('web_search.provider.last_used_key.google')
+      expect(key1).toBe('ocr.provider.last_used_key.google')
       expect(key2).toBe('ocr.provider.last_used_key.tesseract')
     })
   })
 
   describe('InferSharedCacheValue', () => {
     it('should infer value type for fixed keys', () => {
-      // 'chat.web_search.active_searches' -> CacheActiveSearches
-      expectTypeOf<InferSharedCacheValue<'chat.web_search.active_searches'>>().toMatchTypeOf<Record<string, unknown>>()
+      expectTypeOf<InferSharedCacheValue<'agent.session.task_events.session-1'>>().toMatchTypeOf<
+        Record<string, unknown>
+      >()
     })
 
     it('should infer value type for template key instances', () => {
-      const webSearchLastKey: InferSharedCacheValue<'web_search.provider.last_used_key.google'> = 'key-1'
+      const lastKey: InferSharedCacheValue<'ocr.provider.last_used_key.google'> = 'key-1'
       const ocrLastKey: InferSharedCacheValue<'ocr.provider.last_used_key.tesseract'> = 'key-2'
-      expectTypeOf(webSearchLastKey).toBeString()
+      expectTypeOf(lastKey).toBeString()
       expectTypeOf(ocrLastKey).toBeString()
     })
 
@@ -381,7 +382,6 @@ type PersistPrev<K extends Parameters<typeof usePersistCache>[0]> = Parameters<U
 
 // Representative value types
 type SelectedIds = InferUseCacheValue<'chat.selected_message_ids'> // string[]
-type KeepAlive = InferUseCacheValue<'mini_app.opened_keep_alive'> // CacheMiniAppType[]
 type GatewayRunning = InferSharedCacheValue<'feature.api_gateway.running'> // boolean
 type JobProgress = InferSharedCacheValue<'jobs.progress.job-1'> // { progress: number, ... }
 
@@ -409,7 +409,7 @@ describe('readonly updater (static guarantees)', () => {
     it('shallow only — array elements are NOT deep-frozen', () => {
       // Element type stays the mutable value's element (we intentionally avoid a
       // recursive DeepReadonly, which caused filter/map assignability friction).
-      expectTypeOf<MemoryPrev<'mini_app.opened_keep_alive'>[number]>().toEqualTypeOf<KeepAlive[number]>()
+      expectTypeOf<MemoryPrev<'chat.selected_message_ids'>[number]>().toEqualTypeOf<SelectedIds[number]>()
       expect(true).toBe(true)
     })
   })

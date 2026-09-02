@@ -406,9 +406,9 @@ describe('useHomeMessageListProviderValue topic image actions', () => {
 
     render(<MessageListAdapterHarness topic={createTopic('topic-a')} onValue={(nextValue) => (value = nextValue)} />)
 
-    act(() => void value?.actions.navigateToRoute?.({ path: '/app/paintings', query: { source: 'assistant' } }))
+    act(() => void value?.actions.navigateToRoute?.({ path: '/app/knowledge', query: { source: 'assistant' } }))
 
-    expect(openRouteMock).toHaveBeenCalledWith('/app/paintings', { source: 'assistant' })
+    expect(openRouteMock).toHaveBeenCalledWith('/app/knowledge', { source: 'assistant' })
   })
 
   it('injects Home-message diagnosis persistence into the shared error UI', async () => {

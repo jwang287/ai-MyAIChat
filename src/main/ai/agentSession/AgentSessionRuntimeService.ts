@@ -1163,7 +1163,7 @@ export class AgentSessionRuntimeService extends BaseService {
   }
 
   // ── Write quiesce (backup restore) ───────────────────────────────
-  // Contract shared with JobManager / AiStreamManager / ChannelManager (issues
+  // Contract shared with JobManager / AiStreamManager (issues
   // #16849/#16850). Every queued, steer-continuation, receive-only and deferred launch
   // enters through the same state-machine gate before it can consume state or write a
   // placeholder. A pause therefore leaves work represented in memory and DB-consistent;

@@ -124,9 +124,9 @@ describe('FileRefService', () => {
   async function seedJob(id = uuidv4()): Promise<string> {
     await dbh.db.insert(jobTable).values({
       id,
-      type: 'image-generation.generate',
+      type: 'file-processing.test',
       status: 'running',
-      queue: 'image-generation.test',
+      queue: 'file-processing.test',
       scheduledAt: Date.now(),
       input: {}
     })

@@ -116,7 +116,7 @@ describe('summarizeHealthResults', () => {
         status: HealthStatus.NOT_CHECKED,
         checking: false,
         keyResults: [],
-        skipReason: { kind: 'generation_cost', output: 'image' }
+        skipReason: { kind: 'generation_cost', output: 'video' }
       }
     ]
 
@@ -215,10 +215,6 @@ describe('resolveModelCheckCredentials', () => {
 
 describe('getModelHealthCheckSkipReason', () => {
   it('skips generation and speech models with an explicit reason', () => {
-    expect(getModelHealthCheckSkipReason(createModel('image', [MODEL_CAPABILITY.IMAGE_GENERATION]))).toEqual({
-      kind: 'generation_cost',
-      output: 'image'
-    })
     expect(getModelHealthCheckSkipReason(createModel('video', [MODEL_CAPABILITY.VIDEO_GENERATION]))).toEqual({
       kind: 'generation_cost',
       output: 'video'

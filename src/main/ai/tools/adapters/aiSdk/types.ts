@@ -1,7 +1,5 @@
 import type { EntityToolOutputCodec } from '@cherrystudio/ai-core'
 import type { Assistant } from '@shared/data/types/assistant'
-import type { ImageGenerationSupport, UniqueModelId } from '@shared/data/types/model'
-import type { WebToolRoutes } from '@shared/utils/provider'
 import type { Tool } from 'ai'
 
 /**
@@ -19,11 +17,6 @@ export interface ToolOutputCodec extends EntityToolOutputCodec {
  */
 export interface ToolApplyScope {
   readonly assistant?: Assistant
-  /** Painting model resolved once for this request; dynamic builtins derive their schema from it. */
-  readonly paintingModel?: {
-    readonly uniqueModelId: UniqueModelId
-    readonly support: ImageGenerationSupport | null
-  }
   /** Server allowlist + per-tool disable already applied. */
   readonly mcpToolIds: ReadonlySet<string>
   /**
@@ -43,8 +36,6 @@ export interface ToolApplyScope {
    * Effective knowledge base scope for this request; see `resolveKnowledgeBaseScope`. Defaults to empty.
    */
   readonly knowledgeBaseIds?: readonly string[]
-  /** The selected implementation for each mutually exclusive web capability. */
-  readonly webToolRoutes?: WebToolRoutes
 }
 
 /**
@@ -57,7 +48,7 @@ export type ToolDefer = 'never' | 'always' | 'auto'
 export interface ToolEntry {
   /**
    * Unique wire-name the LLM emits.
-   *   builtin: 'web_search', 'web_fetch', 'kb_search'
+   *   builtin: 'kb_search'
    *   mcp:     'mcp__{serverSlug}__{toolSlug}_{identityDigest}'
    *   meta:    'tool_search', 'tool_inspect', 'tool_invoke', 'tool_exec'
    *
@@ -68,7 +59,7 @@ export interface ToolEntry {
   /**
    * Whether the context-build truncate/persist layer may rewrite this
    * tool's results. `false` exempts the tool (truncate `perTool` preserve):
-   *   - citation tools (kb__search, web__search) — truncation breaks the
+   *   - citation tools (kb__search) — truncation breaks the
    *     inline `[id]` anchors the model cites in its reply
    *   - read-style tools — persisting their output would route the model
    *     right back through the same tool to read the persisted file (loop)
@@ -92,7 +83,7 @@ export interface ToolEntry {
 
   /**
    * Ownership key. NOT part of the wire-name, and never shown to the model.
-   *   builtin: 'web', 'kb'
+   *   builtin: 'kb'
    *   mcp:     'mcp:{serverId}'  (stable ownership key, not a display name)
    *   meta:    'meta'  (excluded from search results)
    */

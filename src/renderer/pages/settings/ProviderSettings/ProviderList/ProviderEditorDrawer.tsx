@@ -66,9 +66,7 @@ const COMMON_CUSTOM_PROVIDER_ENDPOINTS = [
 
 const ADDITIONAL_CUSTOM_PROVIDER_ENDPOINTS = [
   ENDPOINT_TYPE.OPENAI_RESPONSES,
-  ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT,
-  ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION,
-  ENDPOINT_TYPE.OPENAI_IMAGE_EDIT
+  ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT
 ] as const
 
 interface ProviderEditorDrawerProps {
@@ -318,7 +316,7 @@ export default function ProviderEditorDrawer({
     const nextEndpointUrls = { ...endpointUrls, [endpointType]: value }
     setEndpointUrls(nextEndpointUrls)
     if (CUSTOM_PROVIDER_TEXT_ENDPOINTS.some((type) => type === endpointType)) {
-      const textEndpoint = endpointType as CustomProviderTextEndpoint
+      const textEndpoint = endpointType
       const configuredTextEndpoints = CUSTOM_PROVIDER_TEXT_ENDPOINTS.filter((type) => nextEndpointUrls[type]?.trim())
       if (configuredTextEndpoints.length === 1 && configuredTextEndpoints[0] === textEndpoint) {
         setPreferredChatEndpoint(textEndpoint)
@@ -688,9 +686,7 @@ const CUSTOM_PROVIDER_ENDPOINT_LABEL_KEYS: Record<CustomProviderEndpoint, string
   [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]: 'settings.provider.more_endpoints.openai_chat',
   [ENDPOINT_TYPE.OPENAI_RESPONSES]: 'settings.provider.more_endpoints.openai_responses',
   [ENDPOINT_TYPE.ANTHROPIC_MESSAGES]: 'settings.provider.more_endpoints.anthropic',
-  [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: 'settings.provider.more_endpoints.gemini',
-  [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: 'settings.provider.image_endpoints.image_generation_base_url.label',
-  [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT]: 'settings.provider.image_endpoints.image_edit_base_url.label'
+  [ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT]: 'settings.provider.more_endpoints.gemini'
 }
 
 interface CustomProviderEndpointFieldsProps {
@@ -732,13 +728,7 @@ function CustomProviderEndpointFields({
     const invalidEndpoint = invalidUrl?.field === 'endpointUrl' && invalidUrl.endpointType === endpointType
     const missingTextEndpoint = textEndpointRequired && endpointType === ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS
     const requestPreview = buildCustomProviderEndpointPreview(endpointValue, endpointType)
-    const emptyValueHelp = CUSTOM_PROVIDER_TEXT_ENDPOINTS.some((type) => type === endpointType)
-      ? t('settings.provider.create_custom.endpoint_fields.url_help')
-      : t(
-          endpointType === ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION
-            ? 'settings.provider.image_endpoints.image_generation_base_url.help'
-            : 'settings.provider.image_endpoints.image_edit_base_url.help'
-        )
+    const emptyValueHelp = t('settings.provider.create_custom.endpoint_fields.url_help')
 
     return (
       <BaseUrlField
@@ -779,7 +769,7 @@ function CustomProviderEndpointFields({
           variant="outline"
           size="sm"
           className="before:-top-5 relative h-5 min-h-0 rounded-full px-2 text-xs transition-transform before:absolute before:inset-x-0 before:bottom-0 before:content-[''] active:scale-[0.96]"
-          onClick={() => onPreferredChatEndpointChange(endpointType as CustomProviderTextEndpoint)}>
+          onClick={() => onPreferredChatEndpointChange(endpointType)}>
           {t('settings.provider.create_custom.endpoint_fields.set_default_chat')}
         </Button>
       ) : null

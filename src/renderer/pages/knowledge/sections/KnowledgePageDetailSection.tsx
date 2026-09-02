@@ -10,7 +10,6 @@ import DetailHeader from '../components/DetailHeader'
 import { useKnowledgePage } from '../KnowledgePageProvider'
 import DataSourcePanel from '../panels/dataSource/DataSourcePanel'
 import KnowledgeItemChunkDetailPanel from '../panels/dataSource/KnowledgeItemChunkDetailPanel'
-import KnowledgeItemNoteContentPanel from '../panels/dataSource/KnowledgeItemNoteContentPanel'
 
 const RagConfigPanel = lazy(() => import('../panels/ragConfig/RagConfigPanel'))
 const RecallTestPanel = lazy(() => import('../panels/recallTest/RecallTestPanel'))
@@ -21,13 +20,11 @@ const KnowledgePageDetailSection = () => {
     selectedBase,
     selectedBaseId,
     selectedItemId,
-    selectedItemView,
     filePreview,
     baseNavigationVersion,
     isRagConfigDrawerOpen,
     isRecallTestDrawerOpen,
     openItemChunks,
-    openItemContent,
     closeItemChunks,
     openFilePreview,
     closeFilePreview,
@@ -84,11 +81,7 @@ const KnowledgePageDetailSection = () => {
 
       <div className="min-h-0 flex-1 overflow-hidden">
         {selectedItemId ? (
-          selectedItemView === 'content' ? (
-            <KnowledgeItemNoteContentPanel itemId={selectedItemId} onBack={closeItemChunks} />
-          ) : (
-            <KnowledgeItemChunkDetailPanel baseId={selectedBaseId} itemId={selectedItemId} onBack={closeItemChunks} />
-          )
+          <KnowledgeItemChunkDetailPanel baseId={selectedBaseId} itemId={selectedItemId} onBack={closeItemChunks} />
         ) : filePreview ? (
           <section
             aria-label={filePreview.fileName}
@@ -124,7 +117,6 @@ const KnowledgePageDetailSection = () => {
             onAdd={openAddSourceDialog}
             onPreviewFile={openFilePreview}
             onItemClick={openItemChunks}
-            onViewNoteContent={openItemContent}
             onDrillIntoDirectory={drillIntoDirectory}
             currentDirectory={currentDirectory}
             onNavigateUp={navigateUp}

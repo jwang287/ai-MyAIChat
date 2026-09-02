@@ -1,13 +1,13 @@
 # 文件管理说明（现有实现）
 
-本文档描述 Cherry Studio 现有版本的文件管理机制，覆盖主进程文件存储、渲染进程文件引用、IPC 接口与 UI 行为。
+本文档描述 Cherry Studio 现有版本的文件管理机制，覆盖主进程文件存储、渲染进程文件引用、IPC 接口与保留的业务使用点。
 
 ## 总览
 
 - 文件真实内容由主进程统一落地到应用资源目录。
 - 渲染进程以 `FileMetadata` 作为业务载体，元信息与引用计数存于 Dexie (`db.files`)。
 - 文件去重基于“大小 + 内容 MD5”，发生在主进程上传阶段。
-- UI 侧文件列表与附件展示使用 `db.files` 数据，`count` 用于引用计数显示与删除策略。
+- 文件附件与业务使用点使用 `db.files` 数据，`count` 用于引用计数与删除策略。
 
 ## 目录与存储位置
 
@@ -80,9 +80,7 @@ Dexie 表定义：`src/renderer/databases/index.ts`，`files` 表包含上述字
 
 ## UI 与业务使用点
 
-- 文件列表页：`src/renderer/pages/files/FilesPage.tsx`、`FileList.tsx`
-  - 读取 `db.files`，按类型/时间/大小/名称排序。
-  - 展示 `count`（引用次数）。
+- 独立文件工作区已移除；文件不再有通用的列表、浏览、重命名或回收站 UI。
 - 消息附件：输入框上传、消息块展示。
 - 绘图与知识库：使用 `FileManager.addFiles` 或 `uploadFiles` 写入 `db.files`。
 
@@ -108,4 +106,3 @@ Dexie 表定义：`src/renderer/databases/index.ts`，`files` 表包含上述字
 - `src/preload/preload.ts`
 - `src/renderer/services/FileManager.ts`
 - `src/renderer/databases/index.ts`
-- `src/renderer/pages/files/FilesPage.tsx`

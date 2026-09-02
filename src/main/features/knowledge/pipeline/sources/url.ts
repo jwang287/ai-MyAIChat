@@ -1,13 +1,15 @@
-import { application } from '@application'
 import { loggerService } from '@logger'
+import { defaultAppHeaders } from '@main/utils/http'
+import { net } from 'electron'
 import PQueue from 'p-queue'
 import { sanitizeUrl } from 'strict-url-sanitise'
 
-const logger = loggerService.withContext('KnowledgeWebSearch')
+const logger = loggerService.withContext('KnowledgeUrlSource')
 const DEFAULT_FETCH_TIMEOUT_MS = 30000
 const KNOWLEDGE_WEB_FETCH_CONCURRENCY = 3
 const KNOWLEDGE_WEB_FETCH_INTERVAL_CAP = 10
 const KNOWLEDGE_WEB_FETCH_INTERVAL_MS = 60_000
+const JINA_READER_URL = 'https://r.jina.ai'
 
 const knowledgeWebFetchQueue = new PQueue({
   concurrency: KNOWLEDGE_WEB_FETCH_CONCURRENCY,
@@ -18,6 +20,42 @@ const knowledgeWebFetchQueue = new PQueue({
 export interface KnowledgeWebPage {
   title: string
   markdown: string
+}
+
+type JinaReaderResponse = {
+  data?: {
+    title?: string
+    content?: string
+    text?: string
+  }
+  title?: string
+  content?: string
+  text?: string
+}
+
+async function fetchKnowledgeUrl(url: string, signal: AbortSignal): Promise<KnowledgeWebPage> {
+  const response = await net.fetch(`${JINA_READER_URL}/${url}`, {
+    headers: {
+      ...defaultAppHeaders(),
+      Accept: 'application/json',
+      'X-Retain-Images': 'none'
+    },
+    signal
+  })
+  if (!response.ok) {
+    throw new Error(`Knowledge URL fetch failed: HTTP ${response.status}`)
+  }
+
+  const payload = (await response.json()) as JinaReaderResponse
+  const content = payload.data?.content ?? payload.data?.text ?? payload.content ?? payload.text
+  if (!content) {
+    throw new Error(`Knowledge URL fetch returned no content for ${url}`)
+  }
+
+  return {
+    title: (payload.data?.title ?? payload.title ?? url).trim(),
+    markdown: content.trim()
+  }
 }
 
 export function sanitizeKnowledgeUrl(rawUrl: string): string {
@@ -44,9 +82,7 @@ export async function fetchKnowledgeWebPage(url: string, signal?: AbortSignal): 
         const timeoutSignal = AbortSignal.timeout(DEFAULT_FETCH_TIMEOUT_MS)
         const fetchSignal = signal ? AbortSignal.any([signal, timeoutSignal]) : timeoutSignal
 
-        return await application
-          .get('WebSearchService')
-          .fetchUrlsUnprocessed({ providerId: 'jina', urls: [safeUrl] }, { signal: fetchSignal })
+        return await fetchKnowledgeUrl(safeUrl, fetchSignal)
       },
       signal ? { signal } : undefined
     )
@@ -54,15 +90,7 @@ export async function fetchKnowledgeWebPage(url: string, signal?: AbortSignal): 
       throw new Error(`Knowledge web fetch queue returned no response for ${safeUrl}`)
     }
 
-    const result = response.results[0]
-    if (!result) {
-      throw new Error(`Knowledge web fetch returned no result for ${safeUrl}`)
-    }
-
-    return {
-      title: result.title.trim(),
-      markdown: result.content.trim()
-    }
+    return response
   } catch (error) {
     const normalizedError = error instanceof Error ? error : new Error(String(error))
     logger.error(`Failed to load knowledge web page: ${url}`, normalizedError)

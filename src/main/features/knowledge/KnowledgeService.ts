@@ -42,7 +42,7 @@ import type { KnowledgeBaseDiscoveryOptions, KnowledgeBaseDiscoveryPage } from '
  */
 @Injectable('KnowledgeService')
 @ServicePhase(Phase.WhenReady)
-@DependsOn(['KnowledgeVectorStoreService', 'JobManager', 'FileProcessingService', 'WebSearchService'])
+@DependsOn(['KnowledgeVectorStoreService', 'JobManager', 'FileProcessingService'])
 export class KnowledgeService extends BaseService {
   private readonly knowledgeLockManager = new KeyedMutex()
   private readonly ingestionService = new KnowledgeIngestionService(this.knowledgeLockManager)

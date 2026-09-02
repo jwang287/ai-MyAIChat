@@ -160,33 +160,6 @@ describe('buildPathRegistry', () => {
     expect(shouldAutoEnsure('feature.deepseek_harness.workspace')).toBe(true)
   })
 
-  it('exposes the mini app package root under userData/Data', () => {
-    expect(buildPathRegistry()['feature.mini_app.packages']).toBe(
-      path.join('/mock/userData', 'Data', 'MiniApps', 'packages')
-    )
-  })
-
-  it('keeps mini app data OUTSIDE the package tree', () => {
-    // `packages/<id>` is wholesale-renamed on update and hashed by `hashTree`; a save
-    // file inside it would die with the next update and churn `contentHash` per write.
-    expect(buildPathRegistry()['feature.mini_app.data']).toBe(path.join('/mock/userData', 'Data', 'MiniApps', 'data'))
-  })
-
-  it('exposes the publish journal directory as its own key', () => {
-    // Its own key, not a filename under `packages`: the journal is a DIRECTORY of per-app
-    // files, and `getPath`'s filename argument names a file, not a subtree.
-    expect(buildPathRegistry()['feature.mini_app.publish_journal']).toBe(
-      path.join('/mock/userData', 'Data', 'MiniApps', '.publish-journal')
-    )
-  })
-
-  it('ships builtin packages inside the bundle and never auto-creates them', () => {
-    expect(buildPathRegistry()['feature.mini_app.builtin']).toBe(path.join('/mock/app/resources', 'builtin-mini-apps'))
-    expect(buildPathRegistry()['feature.mini_app.logs']).toBe(path.join('/mock/logs', 'mini-apps'))
-    // Same reason `feature.agents.builtin` is in NO_ENSURE: a signed, read-only tree.
-    expect(shouldAutoEnsure('feature.mini_app.builtin')).toBe(false)
-  })
-
   it('keeps Antigravity session data in a Cherry-owned isolated directory', () => {
     const registry = buildPathRegistry()
 
@@ -227,10 +200,6 @@ describe('pathRegistry.shouldAutoEnsure', () => {
       expect(shouldAutoEnsure('app.session.cache')).toBe(true)
     })
 
-    it('returns true for feature.notes.data', () => {
-      expect(shouldAutoEnsure('feature.notes.data')).toBe(true)
-    })
-
     it('returns true for feature.files.data', () => {
       expect(shouldAutoEnsure('feature.files.data')).toBe(true)
     })
@@ -239,10 +208,6 @@ describe('pathRegistry.shouldAutoEnsure', () => {
       // The remote-updated override dir under Runtime is Cherry-owned and
       // writable — unlike the read-only bundled feature.provider_registry.data.
       expect(shouldAutoEnsure('feature.provider_registry.override')).toBe(true)
-    })
-
-    it('returns true for feature.mcp', () => {
-      expect(shouldAutoEnsure('feature.mcp')).toBe(true)
     })
 
     it('returns true for feature.file_processing.temp', () => {
@@ -314,13 +279,6 @@ describe('pathRegistry.shouldAutoEnsure', () => {
   describe('external.* prefix — never auto-ensure (third-party tool dirs)', () => {
     it('returns false for external.openclaw.config', () => {
       expect(shouldAutoEnsure('external.openclaw.config')).toBe(false)
-    })
-
-    it('returns false for the new external.obsidian.config_file key', () => {
-      // Obsidian's config file lives in a directory that Cherry must
-      // never create — Obsidian itself owns it. This is the canonical
-      // case for the external.* prefix opt-out.
-      expect(shouldAutoEnsure('external.obsidian.config_file')).toBe(false)
     })
   })
 

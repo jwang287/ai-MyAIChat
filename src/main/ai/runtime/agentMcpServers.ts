@@ -1,5 +1,3 @@
-import { application } from '@application'
-import { agentChannelService as channelService } from '@data/services/AgentChannelService'
 import { agentService } from '@data/services/AgentService'
 import { loggerService } from '@logger'
 import { resolveAgentCapabilities, resolveHostTools } from '@main/ai/agents/builtin/builtinAgentCapabilities'
@@ -13,7 +11,6 @@ import SkillsServer from '@main/ai/mcp/servers/skills'
 import { CHERRY_MCP_SERVER } from '@main/ai/toolApproval/builtinToolPolicy'
 import { resolveKnowledgeBaseScope } from '@main/ai/utils/knowledgeScope'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import type { AgentChannelEntity } from '@shared/data/api/schemas/agentChannels'
 import type { AgentEntity } from '@shared/data/api/schemas/agents'
 import type { AgentSessionEntity } from '@shared/data/api/schemas/agentSessions'
 import { AGENT_WORKSPACE_TYPE, type AgentSessionWorkspaceSource } from '@shared/data/api/schemas/agentWorkspaces'
@@ -22,23 +19,36 @@ import type { McpServer as McpServerEntity } from '@shared/data/types/mcpServer'
 const logger = loggerService.withContext('AgentMcpServers')
 
 export type McpServerSnapshotMap = ReadonlyMap<string, McpServerEntity | undefined>
-export type NotifyChannel = Pick<AgentChannelEntity, 'id' | 'type'>
+/** @deprecated Compatibility-only runtime shape; no notification transport remains. */
+export type NotifyChannel = { id: string; type: string }
+/** @deprecated Compatibility-only runtime shape; always null. */
 export type LinkedChannelSnapshot = NotifyChannel | null
-
+/** @deprecated Compatibility-only runtime shape; always has no recipients. */
 export interface AgentNotificationContext {
-  /**
-   * Never read directly — it is hashed into the connection rebuild signature so that binding or
-   * unbinding a Session's channel rebuilds the connection (channel-linked sessions mount a
-   * different MCP server set). Dropping it silently strands a session on the wrong tool surface.
-   */
   sourceChannel: NotifyChannel | null
   channels: readonly NotifyChannel[]
   allowAnyOwnedChannel: boolean
 }
-
 export interface AgentMcpServer {
   name: string
   instance: McpServer
+}
+
+export function resolveAgentNotificationContext(
+  sessionId?: string,
+  agentId?: string,
+  linkedChannelSnapshot?: LinkedChannelSnapshot
+): AgentNotificationContext {
+  void sessionId
+  void agentId
+  void linkedChannelSnapshot
+  return { sourceChannel: null, channels: [], allowAnyOwnedChannel: false }
+}
+
+export function resolveLinkedNotifyChannel(sessionId?: string, agentId?: string): LinkedChannelSnapshot {
+  void sessionId
+  void agentId
+  return null
 }
 
 /** Build the complete MCP server set exposed by an agent session, independent of runtime transport. */
@@ -50,12 +60,12 @@ export function buildAgentMcpServers(
   linkedChannelSnapshot?: LinkedChannelSnapshot,
   agentDataPath = session.workspace.path,
   selectedKnowledgeBaseIds: readonly string[] = [],
-  notificationContext = resolveAgentNotificationContext(session.id, agent.id, linkedChannelSnapshot)
+  notificationContext?: AgentNotificationContext
 ): Record<string, AgentMcpServer> {
+  void linkedChannelSnapshot
+  void notificationContext
   const servers: Record<string, AgentMcpServer> = {}
-  const channelLinked =
-    linkedChannelSnapshot === undefined ? notificationContext.sourceChannel !== null : linkedChannelSnapshot !== null
-  const hostTools = resolveHostTools(agent, { channelLinked })
+  const hostTools = resolveHostTools(agent, { channelLinked: false })
 
   for (const mcpId of agent.mcps ?? []) {
     try {
@@ -78,8 +88,6 @@ export function buildAgentMcpServers(
       sessionId: session.id,
       workspaceSource,
       workspacePath: session.workspace.path,
-      trustedNotifyChannels: notificationContext.channels,
-      allowAnyOwnedNotifyChannel: notificationContext.allowAnyOwnedChannel,
       canAccessAllKnowledgeBases: () => resolveAgentCapabilities(agentService.getAgent(agent.id)).allKnowledgeBases,
       getKnowledgeBaseIds: () => {
         const liveAgent = agentService.getAgent(agent.id)
@@ -130,41 +138,5 @@ function toWorkspaceSource(session: AgentSessionEntity): AgentSessionWorkspaceSo
       const exhaustive: never = session.workspace.type
       throw new Error(`Unsupported workspace type: ${String(exhaustive)}`)
     }
-  }
-}
-
-export function resolveAgentNotificationContext(
-  sessionId: string,
-  agentId: string,
-  linkedChannelSnapshot?: LinkedChannelSnapshot
-): AgentNotificationContext {
-  const sourceChannel =
-    linkedChannelSnapshot === undefined ? resolveSourceChannelSafely(sessionId, agentId) : linkedChannelSnapshot
-  const turnChannels = application.get('AgentSessionRuntimeService').getTurnTrustedNotifyChannels(sessionId)
-  const channels = [...(turnChannels ?? (sourceChannel ? [sourceChannel] : []))].sort(
-    (left, right) => left.id.localeCompare(right.id) || left.type.localeCompare(right.type)
-  )
-
-  return {
-    sourceChannel,
-    channels,
-    allowAnyOwnedChannel: turnChannels === undefined && sourceChannel !== null
-  }
-}
-
-/**
- * The Session's linked channel, or null unless it belongs to `agentId`. The ownership check is the
- * boundary that keeps one Agent's task output out of another's channel — never project without it.
- */
-export function resolveLinkedNotifyChannel(sessionId: string, agentId: string): LinkedChannelSnapshot {
-  const channel = channelService.findBySessionId(sessionId)
-  return channel?.agentId === agentId ? { id: channel.id, type: channel.type } : null
-}
-
-function resolveSourceChannelSafely(sessionId: string, agentId: string): LinkedChannelSnapshot {
-  try {
-    return resolveLinkedNotifyChannel(sessionId, agentId)
-  } catch {
-    return null
   }
 }

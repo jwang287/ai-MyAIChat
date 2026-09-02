@@ -20,11 +20,7 @@ export const ALLOWED_ROUTE_PREFIXES = [
   '/app',
   '/agents',
   '/knowledge',
-  '/paintings',
   '/translate',
-  '/files',
-  '/notes',
-  '/apps',
   '/code',
   '/launchpad'
 ]

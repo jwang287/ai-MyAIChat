@@ -17,10 +17,7 @@ import { createKbReadToolEntry } from './KnowledgeReadTool'
 import { createKbSearchToolEntry } from './KnowledgeSearchTool'
 import { createMcpResourceListToolEntry } from './McpResourceListTool'
 import { createMcpResourceReadToolEntry } from './McpResourceReadTool'
-import { createGenerateImageToolEntry } from './PaintingTool'
 import { createReadFileToolEntry } from './ReadFileTool'
-import { createWebFetchToolEntry } from './WebFetchTool'
-import { createWebSearchToolEntry } from './WebSearchTool'
 
 export function registerBuiltinTools(reg: ToolRegistry = registry): void {
   // Gated per request (see createFsReadToolEntry), and always confined to the
@@ -33,7 +30,4 @@ export function registerBuiltinTools(reg: ToolRegistry = registry): void {
   reg.register(createMcpResourceListToolEntry())
   reg.register(createMcpResourceReadToolEntry())
   reg.register(createReadFileToolEntry())
-  reg.register(createGenerateImageToolEntry())
-  reg.register(createWebFetchToolEntry())
-  reg.register(createWebSearchToolEntry())
 }
