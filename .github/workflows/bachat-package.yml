@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - BAChat
+      - "release/v*"
+    tags:
+      - "v*"
 
 permissions:
   contents: read
@@ -25,14 +27,17 @@ jobs:
             os: ubuntu-latest
             command: pnpm build:linux:x64
             artifact_path: dist/*-x64.AppImage
+            artifact_suffix: -x64.AppImage
           - name: Windows-x64-Installer
             os: windows-2022
             command: pnpm build:win:x64
             artifact_path: dist/*-x64-setup.exe
+            artifact_suffix: -x64-setup.exe
           - name: macOS-arm64-DMG
             os: macos-latest
             command: pnpm build:mac:arm64
             artifact_path: dist/*-arm64.dmg
+            artifact_suffix: -arm64.dmg
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
       ELECTRON_BUILDER_7Z_FILTER: BCJ
@@ -71,10 +76,39 @@ jobs:
       - name: Build package
         run: ${{ matrix.command }}
 
+      - name: Create package checksums and size manifest
+        shell: bash
+        env:
+          ARTIFACT_SUFFIX: ${{ matrix.artifact_suffix }}
+        run: |
+          node <<'NODE'
+          const { createHash } = require('node:crypto')
+          const { readdirSync, readFileSync, statSync, writeFileSync } = require('node:fs')
+          const { join } = require('node:path')
+
+          const files = readdirSync('dist')
+            .filter((name) => name.endsWith(process.env.ARTIFACT_SUFFIX))
+            .sort()
+          if (files.length === 0) {
+            throw new Error(`No package artifact ends with ${process.env.ARTIFACT_SUFFIX}`)
+          }
+
+          const checksums = files.map((name) => {
+            const file = join('dist', name)
+            return `${createHash('sha256').update(readFileSync(file)).digest('hex')}  ${name}`
+          })
+          const sizes = files.map((name) => `${statSync(join('dist', name)).size}  ${name}`)
+          writeFileSync('dist/SHA256SUMS.txt', `${checksums.join('\n')}\n`)
+          writeFileSync('dist/package-sizes.txt', `${sizes.join('\n')}\n`)
+          NODE
+
       - name: Upload package
         uses: actions/upload-artifact@v7
         with:
           name: bachat-${{ matrix.name }}-${{ github.sha }}
-          path: ${{ matrix.artifact_path }}
+          path: |
+            ${{ matrix.artifact_path }}
+            dist/SHA256SUMS.txt
+            dist/package-sizes.txt
           if-no-files-found: error
           retention-days: 14
