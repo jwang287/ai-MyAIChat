@@ -1,129 +1,359 @@
 ---
-description: BAChat v0.1 product feature inventory and scope decisions for the lean core edition / BAChat v0.1 精简核心版产品功能清单与范围决策
+description: BAChat v0.1 精简核心版的功能范围、能力说明与取舍依据
 ---
 
-# BAChat Feature List v0.1 / BAChat 功能清单 v0.1
+# BAChat 功能清单 v0.1
 
-This document defines the target product scope for the BAChat lean edition.
-The goal is a desktop AI workspace centered on **work, chat, translation, and
-knowledge bases**, with local-first data storage and optional cloud or local
-models.
+本文是 BAChat 精简版的产品范围基线，用于决定功能是否保留、按需保留或移除。
+目标产品是一个以**对话、工作与智能体、翻译、知识库**为中心的桌面 AI
+工作台，采用本地优先的数据存储方式，并同时支持本地模型和用户主动配置的云端模型。
 
-本文定义 BAChat 精简版的目标产品范围。目标是以**工作、对话、翻译和知识库**为核心，
-采用本地优先的数据存储，并支持可选的云端或本地模型。
+GitHub Projects 中的 [BAChat 功能取舍表](https://github.com/users/jwang287/projects/1)
+是在线决策入口。此文档提供每项能力的完整背景、边界和实施影响；项目表中的
+“你的决定”应作为后续删减工作的依据。
 
-## Scope Labels / 范围标签
+## 决策规则
 
-| Label / 标签 | Meaning / 含义 |
-| --- | --- |
-| Keep / 保留 | Part of the v0.1 product and supported long term. / 属于 v0.1 产品范围，长期支持。 |
-| Supporting / 支撑 | Required by a kept capability but not a standalone product area. / 是保留能力所需的支撑，不是独立产品模块。 |
-| Optional / 可选 | Retain only when its dependency and maintenance cost is justified. / 仅在依赖与维护成本合理时保留。 |
-| Remove / 移除 | Exclude from the lean edition and remove code, UI, services, and dependencies in stages. / 从精简版排除，并分阶段删除代码、UI、服务和依赖。 |
+| 决策 | 含义 | 实施要求 |
+| --- | --- | --- |
+| 保留 | 属于 v0.1 的长期支持范围。 | 保留入口、路由、配置、数据结构、服务、测试、文档和必要依赖。 |
+| 可选 | 有价值但不是核心能力。 | 单独评估维护成本、安装包体积、安全边界和与核心功能的耦合程度。 |
+| 移除 | 不属于精简版目标范围。 | 分阶段删除界面、命令、路由、服务、偏好设置、迁移、测试、文档和依赖，不能只隐藏入口。 |
 
-## v0.1 Core / v0.1 核心功能
+## 产品范围总览
 
-Mark one option in **Your choice / 你的选择** for every feature. /
-请为每项功能在**你的选择 / Your choice**中勾选一个选项。
+| 分类 | 功能数量 | 默认建议 | 说明 |
+| --- | ---: | --- | --- |
+| 核心功能 | 4 | 保留 | 用户直接使用的主要产品能力。 |
+| 支撑能力 | 7 | 保留或可选 | 为核心功能提供桌面运行、本地数据、模型和文件处理能力。 |
+| 建议移除 | 14 | 移除或可选 | 增加联网、平台、安全、维护或安装包成本，但不是核心工作流所必需。 |
+| 模型能力 | 4 | 保留或移除 | 保留通用和本地模型接入，收敛厂商专用集成。 |
 
-| Area / 模块 | Capabilities / 能力 | Network requirement / 联网要求 | Decision / 决策 | Your choice / 你的选择 |
-| --- | --- | --- | --- | --- |
-| Chat / 对话 | Assistants, conversations and topics, streaming replies, attachments, Markdown rendering, import/export, global search. / 助手、会话和话题、流式回复、附件、Markdown 渲染、导入导出、全局搜索。 | A cloud model needs internet; Ollama and LM Studio can run locally. / 云端模型需要联网；Ollama 和 LM Studio 可本地运行。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| Work / 工作 | Agents, workspaces, sessions, tasks, tool approval, file context. / 智能体、工作区、会话、任务、工具审批、文件上下文。 | Depends on the selected model and tools. / 取决于所选模型和工具。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| Translation / 翻译 | Text translation, language detection, translation history. / 文本翻译、语言检测、翻译历史。 | Uses the selected cloud or local model. / 使用选定的云端或本地模型。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| Knowledge base / 知识库 | Local file and directory ingestion, document extraction, chunking, vector indexing, retrieval-augmented chat, knowledge tools. / 本地文件和目录导入、文档提取、分块、向量索引、检索增强对话、知识库工具。 | Local indexing can be offline; remote embeddings, reranking, OCR, and URL import need network access. / 本地索引可离线；远程嵌入、重排序、OCR 和 URL 导入需要联网。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
+## 核心功能
 
-## Supporting Capabilities / 支撑能力
+### 对话
 
-| Area / 模块 | Capabilities / 能力 | Decision / 决策 | Your choice / 你的选择 |
-| --- | --- | --- | --- |
-| Model configuration / 模型配置 | OpenAI-compatible endpoints, Ollama, LM Studio, API keys, models, proxy configuration. / OpenAI-compatible 端点、Ollama、LM Studio、API Key、模型、代理配置。 | Keep; reduce cloud provider families over time. / 保留；逐步收敛云端供应商类型。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Local data / 本地数据 | SQLite database, preferences, cache, file storage, migrations, local backup and restore. / SQLite 数据库、偏好设置、缓存、文件存储、迁移、本地备份与恢复。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| Desktop shell / 桌面壳层 | Windows, tabs, notifications, shortcuts, system tray, themes, language settings. / 窗口、标签页、通知、快捷键、系统托盘、主题、语言设置。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| File processing / 文件处理 | Local PDF, Word, Excel, PowerPoint, text, image extraction and preview. / 本地 PDF、Word、Excel、PowerPoint、文本和图片提取及预览。 | Keep only the paths needed for chat attachments and knowledge ingestion. / 仅保留对话附件和知识库导入所需的处理路径。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Local inference / 本地推理 | Local embedding models and their download/runtime support. / 本地嵌入模型及其下载与运行时支持。 | Keep for offline knowledge bases. / 为离线知识库保留。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Prompts / 提示词 | Prompt library, quick phrases, prompt variables. / 提示词库、快捷短语、提示词变量。 | Optional; low cost and useful for chat/work. / 可选；成本低，对对话和工作有帮助。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| MCP runtime / MCP 运行时 | Manual local stdio MCP configuration and tool approval. / 手工配置本地 stdio MCP 与工具审批。 | Optional; keep only if the work flow needs external tools. / 可选；仅在工作流需要外部工具时保留。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
+**默认建议：保留；联网要求：可选联网。**
 
-## Features to Remove / 建议移除的功能
+对话是应用的基础交互入口，包含助手选择与管理、会话与话题分组、消息流式输出、
+上下文与历史记录、附件发送、Markdown 和代码块渲染、消息复制、会话搜索，以及
+会话的导入与导出。它应支持普通问答、基于附件的提问和调用知识库后的检索增强对话。
 
-| Area / 模块 | Included capabilities / 包含能力 | Why it is outside v0.1 / 不属于 v0.1 的原因 | Your choice / 你的选择 |
-| --- | --- | --- | --- |
-| Web search / 联网搜索 | Search-provider settings, web lookup tools, webpage fetching, citations and citation previews. / 搜索服务商设置、网页检索工具、网页抓取、引用与引用预览。 | Network-only feature not required by the four core areas. / 仅依赖网络，四项核心功能并不需要。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| MCP marketplace / MCP 市场 | Marketplace, remote catalog, npx search, remote install, OAuth setup. / 市场、远程目录、npx 搜索、远程安装、OAuth 配置。 | Adds network, package-install, and maintenance surface. / 增加联网、安装包和维护面。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Mini apps / 迷你应用 | Mini app catalog, installation, Webview runtime, permissions, network APIs, activity logs. / 迷你应用目录、安装、Webview 运行时、权限、网络 API、活动日志。 | Separate application platform with a large security and maintenance surface. / 属于独立应用平台，安全和维护成本高。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Image generation / 图片生成 | Drawing page, image generation forms, history, templates, image download. / 绘图页、图片生成表单、历史、模板、图片下载。 | Separate model API feature. / 独立的模型 API 功能。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| CodeMate / 代码助手 | Code execution page, Claude Code, DeepSeek Harness, OpenClaw, Hermes Dashboard, CLI configuration. / 代码执行页、Claude Code、DeepSeek Harness、OpenClaw、Hermes Dashboard、CLI 配置。 | Separate developer-tool product area. / 属于独立开发者工具产品领域。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| External channels / 外部渠道 | Telegram, Discord, Slack, Feishu, QQ, WeChat adapters. / Telegram、Discord、Slack、飞书、QQ、微信适配器。 | Network-only integrations unrelated to the core desktop workflow. / 仅联网的集成，与核心桌面工作流无关。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Cloud sync and third-party imports / 云同步与第三方导入 | WebDAV, S3, Nutstore, Notion, Joplin, Yuque, Siyuan. / WebDAV、S3、坚果云、Notion、Joplin、语雀、思源。 | Retain local backup, Markdown export, and JSON import/export instead. / 改为保留本地备份、Markdown 导出和 JSON 导入导出。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Update and telemetry services / 更新与遥测 | Automatic update, provider registry update, analytics, diagnostic upload, remote telemetry. / 自动更新、供应商注册表更新、分析、诊断上传、远程遥测。 | Keep local diagnostics/export only. / 仅保留本地诊断与导出。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| API gateway / API 网关 | Local OpenAI/Anthropic-compatible HTTP gateway and its external access. / 本地 OpenAI/Anthropic-compatible HTTP 网关及外部访问。 | Not needed unless BAChat is explicitly used as a server. / 除非明确将 BAChat 用作服务端，否则不需要。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| LAN transfer / 局域网传输 | mDNS discovery, local-network pairing, transfer protocol. / mDNS 发现、局域网配对、传输协议。 | Separate sync feature. / 独立的同步功能。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Notes / 笔记 | Rich-text notes, note tree, note settings. / 富文本笔记、笔记树、笔记设置。 | Knowledge bases continue to accept files without an independent note product. / 知识库无需独立笔记产品仍可接收文件。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| File workspace / 文件工作区 | Standalone files page and file preview tabs. / 独立文件页和文件预览标签页。 | Keep only attachment and knowledge-base file handling. / 仅保留附件和知识库的文件处理。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Usage and release pages / 用量和发布页面 | Usage dashboard and release notes page. / 用量仪表盘和发布说明页。 | Nonessential for the lean product. / 对精简产品不是必要功能。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
-| Advanced capture / 高级采集 | Screenshot tools, selection assistant, quick assistant. / 截图工具、划词助手、快速助手。 | Optional productivity feature; not required for v0.1. / 可选效率工具，不是 v0.1 必需项。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
+使用云端模型时需要网络；配置 Ollama、LM Studio 或本地兼容服务后，应能在不联网时
+完成基础对话。精简时不能移除历史持久化、附件处理、模型选择和错误提示，否则会破坏
+对话的基本可用性。
 
-## Knowledge Base Boundary / 知识库边界
+### 工作与智能体
 
-The knowledge base remains a core feature with these limits:
+**默认建议：保留；联网要求：可选联网。**
 
-知识库作为核心功能，遵循以下边界：
+工作与智能体用于完成多步骤任务，包含智能体定义、工作区、任务会话、文件上下文、
+计划与执行过程、工具调用、工具结果展示和人工审批。它应能够使用对话模型、知识库
+工具和明确允许的本地工具，在执行高风险操作前要求用户确认。
 
-1. Accept local files and directories first. / 优先接收本地文件和目录。
-2. Use local embedding when an offline installation is required. / 需要离线安装时使用本地嵌入模型。
-3. Keep local document readers needed by supported file types. / 保留支持文件类型所需的本地文档读取器。
-4. Remove URL ingestion and remote document processors by default. / 默认移除 URL 导入和远程文档处理器。
-5. Treat OCR and PDF translation as optional extensions, not core requirements. / 将 OCR 和 PDF 翻译作为可选扩展，而非核心要求。
+是否联网取决于模型和工具：本地模型与本地工具可离线运行，远程模型、网页工具或
+外部服务则需要网络。精简版应把“手动配置、可见调用、可撤销审批”作为边界，不默认
+安装或执行来源未知的工具。
 
-## Model Boundary / 模型边界
+### 翻译
 
-The target provider set is:
+**默认建议：保留；联网要求：可选联网。**
 
-目标供应商集合如下：
+翻译提供文本输入、源语言识别、目标语言选择、翻译结果展示与复制、历史记录和再次
+编辑翻译。它应适合短文本、段落和用户从其他页面发起的选中文本翻译，并能清楚显示
+所用模型和失败原因。
 
-| Provider path / 供应商路径 | Purpose / 用途 | Decision / 决策 | Your choice / 你的选择 |
-| --- | --- | --- | --- |
-| OpenAI-compatible / OpenAI-compatible | Generic cloud endpoint and self-hosted gateways. / 通用云端端点和自托管网关。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| Ollama | Local chat and embedding models. / 本地对话和嵌入模型。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| LM Studio | Local chat models. / 本地对话模型。 | Keep / 保留 | - [ ] Keep / 保留<br>- [ ] Remove / 移除 |
-| All provider-specific SDKs / 所有供应商专用 SDK | Vendor-specific cloud integrations. / 厂商专用云端集成。 | Remove unless a product requirement names the vendor. / 除非产品需求明确指定该厂商，否则移除。 | - [ ] Keep / 保留<br>- [ ] Optional / 可选<br>- [ ] Remove / 移除 |
+翻译复用统一模型配置，不需要为每个翻译服务维护独立账号体系。云端模型需要联网；
+本地模型可用于离线翻译。PDF 翻译、OCR 翻译和整篇文档排版转换不属于核心翻译能力，
+应作为后续可选扩展单独评估。
 
-## Removal Phases / 移除阶段
+### 知识库
 
-1. **Phase 1 — UI and entry points / UI 与入口**: Hide or remove routes,
-   sidebar entries, settings pages, commands, and onboarding references. The
-   initial core navigation reduction is already complete. / 隐藏或移除路由、
-   侧边栏入口、设置页、命令和引导引用。初步核心导航收敛已完成。
-2. **Phase 2 — isolated features / 独立功能**: Remove mini apps, image
-   generation, web search, external channels, cloud sync/imports, telemetry,
-   updater, LAN transfer, and nonessential pages. / 移除迷你应用、图片生成、
-   联网搜索、外部渠道、云同步/导入、遥测、更新器、局域网传输和非必要页面。
-3. **Phase 3 — developer and marketplace features / 开发者与市场功能**:
-   Remove CodeMate, marketplace/catalog flows, remote MCP installation, and
-   API gateway unless explicitly retained. / 移除 CodeMate、市场/目录流程、
-   远程 MCP 安装和 API 网关，除非明确保留。
-4. **Phase 4 — dependency reduction / 依赖收敛**: Remove unused provider
-   SDKs, agent runtimes, document processors, frontend chunks, native modules,
-   migrations, preference keys, and tests after each feature removal. /
-   在每项功能移除后，删除未使用的供应商 SDK、Agent 运行时、文档处理器、前端
-   分包、原生模块、迁移、偏好设置键和测试。
+**默认建议：保留；联网要求：可离线使用。**
 
-## Acceptance Criteria / 验收标准
+知识库支持本地文件和目录导入、文件变更管理、文档内容提取、文本分块、向量嵌入、
+索引保存、检索、引用来源展示，以及在对话和智能体中作为知识工具使用。它是连接
+用户私有资料与对话、工作流的核心能力。
 
-A v0.1 build must:
+离线方案应覆盖本地文件、SQLite 数据、向量索引和本地嵌入模型。网址导入、远程嵌入、
+远程重排序、云端 OCR 和远程文档处理会引入网络、隐私和服务稳定性依赖，默认不应成为
+知识库的必需路径。
 
-v0.1 构建必须满足：
+## 支撑能力
 
-- launch into the core product without exposing removed features; / 启动后进入
-  核心产品，不暴露已移除功能；
-- create, continue, search, import, and export chat conversations; / 可创建、
-  继续、搜索、导入和导出对话；
-- run the retained work/agent flow; / 可运行保留的工作/Agent 流程；
-- translate text and retain translation history; / 可翻译文本并保留翻译历史；
-- create and query a local-file knowledge base; / 可创建和查询本地文件知识库；
-- support a configured OpenAI-compatible, Ollama, or LM Studio model; / 支持
-  已配置的 OpenAI-compatible、Ollama 或 LM Studio 模型；
-- work without internet after required local models and dependencies are
-  installed, except for explicitly selected cloud model calls. / 在所需本地
-  模型和依赖已安装后，除明确选择的云端模型调用外，可在无网络环境工作。
+### 模型配置
+
+**默认建议：保留；联网要求：可选联网。**
+
+模型配置统一管理 OpenAI 兼容接口、Ollama、LM Studio、模型名称、上下文参数、API
+密钥、代理、连接测试和默认模型。模型能力应由对话、翻译、知识库和智能体共享，避免
+每个页面维护不同的连接设置。
+
+应优先保留通用兼容接口和本地模型连接，逐步减少只服务于单个云厂商的专用配置、模型
+目录和鉴权逻辑。密钥必须继续使用现有安全存储方式，不能因精简而改为明文保存。
+
+### 本地数据
+
+**默认建议：保留；联网要求：可离线使用。**
+
+本地数据包含 SQLite 业务数据、用户偏好、缓存、应用文件存储、数据库迁移、本地备份
+和恢复。它保存会话、知识库元数据、翻译历史、智能体工作记录和用户配置，是离线优先
+产品的基础。
+
+删减任何功能时，必须同时检查其表结构、迁移、偏好键、缓存键、导入导出和备份数据，
+以保证已有用户可安全升级，且不会留下不可访问的孤立数据。
+
+### 桌面基础能力
+
+**默认建议：保留；联网要求：可离线使用。**
+
+桌面基础能力包括窗口与标签页管理、系统托盘、通知、快捷键、主题、语言设置、启动和
+退出生命周期。这些能力负责让核心功能以桌面应用方式稳定运行，而不是单独的产品模块。
+
+应保留与对话、工作、翻译和知识库直接相关的窗口、通知和快捷键；新增系统权限、后台
+常驻进程或跨应用自动化前，应先确认其确实属于核心工作流。
+
+### 文件处理
+
+**默认建议：保留；联网要求：可离线使用。**
+
+文件处理包含本地 PDF、Word、Excel、PowerPoint、文本和图片的选择、读取、文本提取、
+元数据识别和必要预览。它服务于对话附件和知识库导入，而不是独立的文件管理产品。
+
+应以实际支持的格式和可靠提取能力为准。没有被对话附件或知识库使用的专用解析器、
+预览组件和二进制依赖，应在对应功能移除后一起清理。
+
+### 本地推理
+
+**默认建议：保留；联网要求：可离线使用。**
+
+本地推理主要指本地嵌入模型的下载、存储、版本管理、运行和故障提示，使知识库可以在
+无网络环境下完成向量化与检索。必要时也可为本地对话模型提供连接说明。
+
+应明确模型首次下载所需网络、磁盘空间和平台限制，并在离线时提供可理解的状态提示。
+模型运行时和二进制文件是安装包体积的重要来源，保留时应按平台和实际使用场景评估。
+
+### 提示词
+
+**默认建议：可选；联网要求：可离线使用。**
+
+提示词功能包括提示词库、分类、快捷短语、变量替换、预览和复用。它可提高重复对话和
+智能体任务的效率，但不应成为启动、对话或翻译的前置依赖。
+
+若保留，应使用本地数据保存提示词，并限制为清晰、轻量的编辑和插入能力；不需要引入
+在线提示词市场、社区同步或远程模板下载。
+
+### MCP 运行时
+
+**默认建议：可选；联网要求：可离线使用。**
+
+MCP 运行时允许用户手动配置本地 stdio MCP 服务，发现可用工具、传递调用参数、展示
+工具结果并在执行前请求审批。它可扩展智能体的本地开发和自动化能力。
+
+保留时应只覆盖用户明确配置的本地服务，并保留工具审批、日志和失败提示。远程目录、
+市场搜索、自动安装和 OAuth 配置属于 MCP 市场，不应与本地运行时捆绑保留。
+
+## 建议移除的功能
+
+### 联网搜索
+
+**默认建议：移除；联网要求：需要联网。**
+
+包括搜索服务商配置、网页检索、网页抓取、网页内容解析、引用生成和引用预览。它依赖
+外部搜索服务、网页可访问性和持续的接口维护，不是本地对话、翻译或知识库的必需能力。
+
+移除时应同时删除搜索设置、工具注册、引用界面、网络请求、服务密钥说明和相关依赖。
+
+### MCP 市场
+
+**默认建议：移除；联网要求：需要联网。**
+
+包括远程 MCP 目录、市场浏览、npx 搜索、远程安装、在线更新和 OAuth 授权。它会使
+桌面应用承担软件分发、依赖安装、来源可信度和权限治理责任。
+
+精简版可保留手动配置本地 MCP 的能力，但不应默认提供远程发现和安装入口。
+
+### 迷你应用
+
+**默认建议：移除；联网要求：可选联网。**
+
+迷你应用包含应用目录、安装与更新、Webview 运行时、权限模型、网络接口和活动日志。
+它实质上是一个独立应用平台，需要处理第三方内容、隔离、权限、生命周期和安全问题。
+
+移除时必须同时删除目录、运行时、旧收藏兼容策略、权限接口、路由和数据记录，不能只
+从启动台隐藏入口。
+
+### 图片生成
+
+**默认建议：移除；联网要求：可选联网。**
+
+图片生成功能包括绘图页面、文生图与图生图参数、生成历史、模板、图片保存和下载。它
+使用独立的模型能力、参数体系和媒体处理流程，与文本工作流和本地知识库并不共用核心
+价值。
+
+移除后可保留对话中的普通图片附件支持，但应清理绘图页、生成任务、历史记录和相关模型
+参数依赖。
+
+### 代码助手
+
+**默认建议：移除；联网要求：可选联网。**
+
+代码助手包括代码执行页、Claude Code、DeepSeek Harness、OpenClaw、Hermes Dashboard
+和命令行配置。它属于独立的开发者工具方向，需要额外维护本地运行时、命令安全、终端
+交互和跨平台兼容性。
+
+工作与智能体可保留通用任务能力；代码执行和开发工具运行时应只在明确定位为开发者产品
+时重新纳入。
+
+### 外部渠道
+
+**默认建议：移除；联网要求：需要联网。**
+
+外部渠道覆盖 Telegram、Discord、Slack、飞书、QQ、微信等消息平台适配器。每个平台
+都有账号、鉴权、协议、回调、频率限制和隐私合规要求，且会显著扩大网络和维护范围。
+
+移除时需清理渠道设置、账号凭证、后台连接、消息路由、通知适配和平台依赖。
+
+### 云同步与第三方导入
+
+**默认建议：移除；联网要求：需要联网。**
+
+包括 WebDAV、S3、坚果云、Notion、Joplin、语雀和思源等同步或导入路径。这些功能需要
+维护远程协议、授权、冲突处理和数据兼容性。
+
+精简版建议保留本地备份、恢复、Markdown 导出和 JSON 导入导出，提供用户可控且无需
+长期第三方服务维护的数据迁移方式。
+
+### 更新与遥测
+
+**默认建议：移除；联网要求：需要联网。**
+
+包含自动更新、供应商注册表更新、使用分析、诊断上传和远程遥测。它们涉及后台网络
+访问、隐私告知、版本兼容和服务可用性。
+
+如需问题排查，应优先保留用户主动导出的本地诊断信息。自动更新或遥测只有在明确的发布
+与隐私策略下才应重新评估。
+
+### API 网关
+
+**默认建议：移除；联网要求：可离线使用。**
+
+API 网关将 BAChat 暴露为本地 OpenAI 或 Anthropic 兼容 HTTP 服务，并可能提供局域网或
+外部访问。它改变了应用从桌面客户端到服务端的安全模型，需要鉴权、端口、网络暴露和
+滥用防护。
+
+除非产品明确面向本地服务或局域网 API 场景，否则不应保留。
+
+### 局域网传输
+
+**默认建议：移除；联网要求：可选联网。**
+
+局域网传输包含 mDNS 设备发现、设备配对、身份确认和数据传输协议。虽然不依赖互联网，
+但仍需处理网络权限、恶意设备、传输安全和协议兼容。
+
+本地备份和手动导入导出可覆盖大多数数据迁移需求，成本更低且边界更清晰。
+
+### 笔记
+
+**默认建议：移除；联网要求：可离线使用。**
+
+笔记包含富文本编辑、笔记树、笔记数据和笔记设置。它需要独立的数据模型、编辑器和
+组织方式，与知识库的“导入外部资料并检索”定位不同。
+
+移除独立笔记产品不会影响知识库读取用户已有文件；如有需求，可通过导入 Markdown 等
+文件承接。
+
+### 文件工作区
+
+**默认建议：移除；联网要求：可离线使用。**
+
+文件工作区包括独立文件页、文件浏览、预览标签页和文件管理交互。精简版只需提供选择
+附件和导入知识库文件的必要能力，不需要维护通用文件管理器。
+
+移除时要确保对话附件和知识库文件入口仍可正常打开、读取和定位。
+
+### 用量与发布说明
+
+**默认建议：移除；联网要求：可离线使用。**
+
+该项包含模型用量仪表盘、统计页面和应用内发布说明。它们对核心功能运行没有直接影响，
+却需要额外的数据聚合、界面维护和发布内容管理。
+
+必要的模型调用错误、费用提示或版本信息可在相关设置与错误界面中提供，不必维护独立
+页面。
+
+### 高级采集
+
+**默认建议：可选；联网要求：可离线使用。**
+
+高级采集包含截图工具、划词助手、快速助手和系统级快捷交互。它可改善效率，但通常需要
+系统权限、后台常驻、跨平台适配和复杂的焦点窗口处理。
+
+若保留，应先限定最小使用场景和平台范围；若移除，应清理快捷键、常驻进程、权限请求
+和对应设置。
+
+## 模型能力
+
+### OpenAI 兼容接口
+
+**默认建议：保留；联网要求：可选联网。**
+
+OpenAI 兼容接口用于接入通用云端端点、自托管网关或局域网服务。它能减少每家模型供应商
+的专用适配代码，并为用户提供统一的模型、密钥和代理配置。
+
+云端端点需要网络；自托管端点可在本机或局域网运行。应保留连接测试、模型选择和清晰的
+错误反馈。
+
+### Ollama
+
+**默认建议：保留；联网要求：可离线使用。**
+
+Ollama 用于连接本地对话和嵌入模型，是离线对话和本地知识库的重要路径。应覆盖服务
+连接、模型列表、模型选择、不可用提示和本地嵌入使用。
+
+模型下载本身可能需要网络，但模型准备完成后，正常推理和知识库检索不应依赖外网。
+
+### LM Studio
+
+**默认建议：保留；联网要求：可离线使用。**
+
+LM Studio 用于连接本地文本模型服务，为离线对话提供另一条通用路径。应保留服务地址、
+模型选择、连接检测和失败提示，不需要引入与核心对话无关的厂商专用扩展。
+
+### 供应商专用 SDK
+
+**默认建议：移除；联网要求：可选联网。**
+
+供应商专用 SDK 包括厂商专有的鉴权、模型目录、参数和云端功能。它们会增加依赖数量、
+版本升级成本、网络请求路径和安装包体积。
+
+除非产品需求明确指定某个供应商，否则应优先通过 OpenAI 兼容接口提供模型接入，并在
+移除时同时清理对应设置、文档、测试和构建依赖。
+
+## 知识库边界
+
+1. 优先支持本地文件和目录，不把网址、云盘或在线笔记作为核心导入来源。
+2. 离线安装场景使用本地嵌入模型，并明确模型下载与运行时的磁盘要求。
+3. 保留对已承诺文件格式的本地读取器；新增格式前评估依赖和平台成本。
+4. 远程嵌入、重排序、OCR、网址导入和 PDF 翻译作为独立可选能力，不与基础知识库捆绑。
+5. 检索结果必须能定位到本地来源，避免将用户私有文档内容默认发送到远程服务。
+
+## 删减实施顺序
+
+1. **入口收敛**：移除侧边栏、启动台、路由、命令、设置和引导中的已决定移除功能。
+2. **独立功能清理**：删除迷你应用、图片生成、联网搜索、外部渠道、云同步、遥测、更新、
+   局域网传输和非必要页面的实现。
+3. **开发与市场能力清理**：根据决定删除代码助手、MCP 市场、远程 MCP 安装和 API 网关。
+4. **依赖收敛**：删除不再使用的供应商 SDK、运行时、文档处理器、前端分包、原生模块、
+   数据迁移、偏好键、测试和文档，并重新检查安装包体积。
+
+## v0.1 验收标准
+
+- 启动后只暴露已确认保留的核心功能和必要设置。
+- 可以创建、继续、搜索、导入和导出对话，并正常处理附件。
+- 可以运行保留的工作与智能体流程，且工具调用具有明确审批边界。
+- 可以翻译文本并保存、查看翻译历史。
+- 可以创建、更新和查询本地文件知识库，并在对话和工作流中使用检索结果。
+- 可以配置并使用 OpenAI 兼容接口、Ollama 或 LM Studio。
+- 所需本地模型和依赖准备完成后，除用户主动选择的云端模型调用外，核心功能可在无网络环境
+  下工作。
