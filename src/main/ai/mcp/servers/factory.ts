@@ -1,4 +1,3 @@
-import { application } from '@application'
 import { loggerService } from '@logger'
 import type { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import type { McpServer } from '@shared/data/types/mcpServer'
@@ -17,10 +16,6 @@ const inMemoryServers: Partial<Record<BuiltinMcpServerName, InMemoryServerLoader
   [BuiltinMcpServerNames.sequentialThinking]: async () => {
     const { default: ThinkingServer } = await import('./sequentialthinking')
     return new ThinkingServer().server
-  },
-  [BuiltinMcpServerNames.braveSearch]: async (_args, envs) => {
-    const { default: BraveSearchServer } = await import('./braveSearch')
-    return new BraveSearchServer(envs.BRAVE_API_KEY).server
   },
   [BuiltinMcpServerNames.fetch]: async () => {
     const { default: FetchServer } = await import('./fetch')
@@ -80,19 +75,4 @@ export function getBuiltinHttpHeaders(server: McpServer): Record<string, string>
     throw new Error('QVeris MCP requires the QVERIS_API_KEY environment variable')
   }
   return { Authorization: `Bearer ${apiKey}` }
-}
-
-/**
- * Extra env for servers that resolve packages from a custom registry: `@cherry/mcp-auto-install`
- * reads its catalog from a file whose location only exists at runtime.
- */
-export function getBuiltinRegistryEnv(server: McpServer): Record<string, string> {
-  if (
-    server.installSource !== 'builtin' ||
-    server.name !== BuiltinMcpServerNames.mcpAutoInstall ||
-    !server.registryUrl
-  ) {
-    return {}
-  }
-  return { MCP_REGISTRY_PATH: application.getPath('feature.mcp.registry_file') }
 }

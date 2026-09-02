@@ -13,7 +13,7 @@ import * as z from 'zod'
 import { redactCacheKey } from './mcpRedact'
 import { buildMcpToolWireId } from './mcpToolId'
 
-const logger = loggerService.withContext('McpCatalogService')
+const logger = loggerService.withContext('McpToolCacheService')
 const mcpToolsCacheKey = (serverId: string): SharedCacheKey => `mcp.tools.${serverId}` as SharedCacheKey
 const PREWARM_CONCURRENCY = 3
 const EMPTY_TOOLS_RETRY_MS = 5 * 60 * 1000
@@ -73,10 +73,10 @@ function withCache<T extends unknown[], R>(
   }
 }
 
-@Injectable('McpCatalogService')
+@Injectable('McpToolCacheService')
 @ServicePhase(Phase.WhenReady)
 @DependsOn(['McpRuntimeService'])
-export class McpCatalogService extends BaseService {
+export class McpToolCacheService extends BaseService {
   private prewarmCancelled = false
   /** Single-flights `warmToolsCache` refreshes per serverId so concurrent sessions warming
    *  the same server at once don't each open a connection to it. */

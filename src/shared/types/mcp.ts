@@ -13,7 +13,7 @@ export type McpServerLogEntry = {
 
 /**
  * MCP tool descriptor as seen by the renderer through shared cache. Main
- * process `McpCatalogService` is the sole producer.
+ * process `McpToolCacheService` is the sole producer.
  */
 export interface McpTool {
   /** AI SDK wire ID; readable slugs use display names, while the identity digest uses `serverId` + original `name`. */

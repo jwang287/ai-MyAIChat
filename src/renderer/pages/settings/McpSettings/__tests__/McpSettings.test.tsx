@@ -78,7 +78,6 @@ vi.mock('@renderer/components/SettingsPrimitives', () => ({
   SettingDivider: () => <hr />,
   SettingTitle: ({ children }: { children: ReactNode }) => <div>{children}</div>
 }))
-vi.mock('@renderer/pages/settings/McpSettings/McpDescription', () => ({ default: () => null }))
 vi.mock('../McpPrompt', () => ({ default: () => null }))
 vi.mock('../McpResource', () => ({ default: () => null }))
 vi.mock('../McpTool', () => ({ default: () => null }))

@@ -58,7 +58,7 @@ vi.mock('@logger', () => ({
   }
 }))
 
-const { McpCatalogService } = await import('../McpCatalogService')
+const { McpToolCacheService } = await import('../McpToolCacheService')
 
 function server(overrides: Record<string, unknown> = {}) {
   return {
@@ -79,7 +79,7 @@ function sdkTool(name: string) {
   }
 }
 
-describe('McpCatalogService', () => {
+describe('McpToolCacheService', () => {
   beforeEach(() => {
     BaseService.resetInstances()
     getById.mockReset()
@@ -102,7 +102,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server({ disabledTools: ['blocked'] }))
     listTools.mockResolvedValue({ tools: [sdkTool('search'), sdkTool('blocked')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await service.refreshTools('server-1')
 
     expect(runtimeService.withClient).toHaveBeenCalled()
@@ -122,7 +122,7 @@ describe('McpCatalogService', () => {
     )
     listTools.mockResolvedValue({ tools: [sdkTool('executeSql')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await service.refreshTools('server-a')
     await service.refreshTools('server-b')
 
@@ -137,7 +137,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server({ id: 'ocr-server', name: 'ocr' }))
     listTools.mockResolvedValue({ tools: [sdkTool('识别身份证'), sdkTool('识别发票')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await service.refreshTools('ocr-server')
 
     const tools = service.listTools('ocr-server', { includeDisabled: true })
@@ -150,7 +150,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     getServerCapabilities.mockReturnValue({ prompts: {}, resources: {} })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await expect(service.refreshTools('server-1')).resolves.toBeUndefined()
 
     expect(listTools).not.toHaveBeenCalled()
@@ -160,7 +160,7 @@ describe('McpCatalogService', () => {
   it('refreshTools clears the shared tools cache for inactive servers', async () => {
     getById.mockReturnValue(server({ isActive: false }))
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await service.refreshTools('server-1')
 
     expect(runtimeService.withClient).not.toHaveBeenCalled()
@@ -173,7 +173,7 @@ describe('McpCatalogService', () => {
     const error = new Error('connection failed')
     listTools.mockRejectedValue(error)
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
 
     await expect(service.refreshTools('server-1')).rejects.toThrow('connection failed')
     expect(cacheService.setShared).toHaveBeenCalledWith('mcp.tools.server-1', [])
@@ -184,7 +184,7 @@ describe('McpCatalogService', () => {
     listServers.mockReturnValue({ items: [server()], total: 1, page: 1 })
     listTools.mockResolvedValue({ tools: [sdkTool('search')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await (service as unknown as { prewarmActiveServerTools(): Promise<void> }).prewarmActiveServerTools()
 
     expect(listServers).toHaveBeenCalledWith({ isActive: true })
@@ -199,7 +199,7 @@ describe('McpCatalogService', () => {
     cacheStore.set('mcp.tools.server-1', [{ name: 'search' }, { name: 'blocked' }])
     getById.mockReturnValue(server({ disabledTools: ['blocked'] }))
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const tools = service.listTools('server-1')
 
     expect(tools.map((tool) => tool.name)).toEqual(['search'])
@@ -209,7 +209,7 @@ describe('McpCatalogService', () => {
   it('listTools returns disabled tools from cache when includeDisabled is true', async () => {
     cacheStore.set('mcp.tools.server-1', [{ name: 'search' }, { name: 'blocked' }])
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const tools = service.listTools('server-1', { includeDisabled: true })
 
     expect(tools.map((tool) => tool.name)).toEqual(['search', 'blocked'])
@@ -218,7 +218,7 @@ describe('McpCatalogService', () => {
   })
 
   it('listTools fires a one-shot refresh when the server was never warmed (cache undefined)', async () => {
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const refreshSpy = vi.spyOn(service, 'refreshTools').mockResolvedValue(undefined)
 
     expect(service.listTools('server-1')).toEqual([])
@@ -229,7 +229,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValue({ tools: [sdkTool('search')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     // A session warm and a cache-only read racing on the same cold server.
     const warm = service.warmToolsCache('server-1')
     expect(service.listTools('server-1')).toEqual([])
@@ -240,7 +240,7 @@ describe('McpCatalogService', () => {
 
   it('listTools does not refresh a warmed-but-empty (dead) server cache', async () => {
     cacheStore.set('mcp.tools.server-1', [])
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const refreshSpy = vi.spyOn(service, 'refreshTools').mockResolvedValue(undefined)
 
     expect(service.listTools('server-1')).toEqual([])
@@ -252,7 +252,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValue({ tools: [sdkTool('search')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await service.warmToolsCache('server-1')
 
     expect(runtimeService.withClient).toHaveBeenCalledTimes(1)
@@ -264,7 +264,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValue({ tools: [sdkTool('search')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await service.warmToolsCache('server-1')
 
     expect(runtimeService.withClient).toHaveBeenCalledTimes(1)
@@ -274,7 +274,7 @@ describe('McpCatalogService', () => {
   it('does not re-probe a confirmed empty server on every warm', async () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValue({ tools: [] })
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
 
     await service.warmToolsCache('server-1')
     await service.warmToolsCache('server-1')
@@ -289,7 +289,7 @@ describe('McpCatalogService', () => {
   it('clears the retry deadline when the shared tools cache is explicitly cleared', async () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValueOnce({ tools: [] }).mockResolvedValueOnce({ tools: [sdkTool('search')] })
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
 
     await service.warmToolsCache('server-1')
     service.clearSharedToolsCache('server-1')
@@ -304,7 +304,7 @@ describe('McpCatalogService', () => {
       vi.setSystemTime(new Date('2026-01-01T00:00:00Z'))
       getById.mockReturnValue(server())
       listTools.mockResolvedValue({ tools: [] })
-      const service = new McpCatalogService()
+      const service = new McpToolCacheService()
 
       await service.warmToolsCache('server-1')
       await vi.advanceTimersByTimeAsync(5 * 60 * 1000)
@@ -319,7 +319,7 @@ describe('McpCatalogService', () => {
   it('warmToolsCache resolves immediately without refreshing when the cache is populated', async () => {
     cacheStore.set('mcp.tools.server-1', [{ name: 'search' }])
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const refreshSpy = vi.spyOn(service, 'refreshTools')
     await service.warmToolsCache('server-1')
 
@@ -331,7 +331,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockRejectedValue(new Error('connection failed'))
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await expect(service.warmToolsCache('server-1')).resolves.toBeUndefined()
     expect(cacheStore.get('mcp.tools.server-1')).toEqual([])
   })
@@ -342,7 +342,7 @@ describe('McpCatalogService', () => {
       vi.setSystemTime(new Date('2026-01-01T00:00:00Z'))
       getById.mockReturnValue(server())
       listTools.mockRejectedValue(new Error('connection failed'))
-      const service = new McpCatalogService()
+      const service = new McpToolCacheService()
 
       await service.warmToolsCache('server-1')
       await service.warmToolsCache('server-1')
@@ -360,7 +360,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValue({ tools: [sdkTool('search')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await Promise.all([service.warmToolsCache('server-1'), service.warmToolsCache('server-1')])
 
     expect(runtimeService.withClient).toHaveBeenCalledTimes(1)
@@ -370,7 +370,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValue({ tools: [sdkTool('search')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const listener = vi.fn()
     service.onToolsCacheUpdated(listener)
     await service.refreshTools('server-1')
@@ -382,7 +382,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockResolvedValue({ tools: [sdkTool('search')] })
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const listener = vi.fn()
     service.onToolsCacheUpdated(listener)
     await service.refreshTools('server-1')
@@ -397,7 +397,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockRejectedValue(new Error('connection failed'))
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const listener = vi.fn()
     service.onToolsCacheUpdated(listener)
     await expect(service.refreshTools('server-1')).rejects.toThrow('connection failed')
@@ -410,7 +410,7 @@ describe('McpCatalogService', () => {
     getById.mockReturnValue(server())
     listTools.mockRejectedValue(new Error('connection failed'))
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     const listener = vi.fn()
     service.onToolsCacheUpdated(listener)
     await expect(service.refreshTools('server-1')).rejects.toThrow('connection failed')
@@ -422,7 +422,7 @@ describe('McpCatalogService', () => {
     const resources = [{ uri: 'file://a', name: 'a', serverId: 'server-1', serverName: 'docs' }]
     runtimeListResources.mockResolvedValue(resources)
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await expect(service.listResources('server-1')).resolves.toBe(resources)
     expect(runtimeListResources).toHaveBeenCalledWith('server-1')
   })
@@ -431,7 +431,7 @@ describe('McpCatalogService', () => {
     const prompts = [{ id: 'p1', name: 'greet', serverId: 'server-1', serverName: 'docs' }]
     runtimeListPrompts.mockResolvedValue(prompts)
 
-    const service = new McpCatalogService()
+    const service = new McpToolCacheService()
     await expect(service.listPrompts('server-1')).resolves.toBe(prompts)
     expect(runtimeListPrompts).toHaveBeenCalledWith('server-1')
   })

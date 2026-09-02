@@ -1,11 +1,5 @@
-import { application } from '@application'
 import type { LoggerService } from '@logger'
-import {
-  createInMemoryMcpServer,
-  getBuiltinHttpHeaders,
-  getBuiltinRegistryEnv,
-  hasInMemoryImplementation
-} from '@main/ai/mcp/servers/factory'
+import { createInMemoryMcpServer, getBuiltinHttpHeaders, hasInMemoryImplementation } from '@main/ai/mcp/servers/factory'
 import { defaultAppHeaders } from '@main/utils/http'
 import { removeEnvProxy } from '@main/utils/processRunner'
 import { getShellEnv } from '@main/utils/shellEnv'
@@ -149,8 +143,8 @@ async function createStdio(
   { sdk, server, args, logger, onServerLog }: CreateTransportInput,
   configuredCommand: string
 ): Promise<McpTransport> {
-  let command = configuredCommand
-  let launchArgs = args
+  const command = configuredCommand
+  const launchArgs = args
 
   // Build a local env for the transport instead of mutating `server.env`. getServerKey(server)
   // serializes server.env, so mutating it here would shift the key after connect — connect-time
@@ -162,19 +156,6 @@ async function createStdio(
   // Note: getShellEnv() is memoized, so subsequent calls are fast
   const loginShellEnv = await getShellEnv()
 
-  // For package servers, use resolved configuration with platform overrides and variable substitution
-  if (server.dxtPath) {
-    const resolvedConfig = application.get('McpPackageService').getResolvedMcpConfig(server.dxtPath)
-    if (resolvedConfig) {
-      command = resolvedConfig.command
-      launchArgs = resolvedConfig.args
-      Object.assign(connectEnv, resolvedConfig.env)
-      logger.debug(`Using resolved package config`, { command, args: launchArgs })
-    } else {
-      logger.warn(`Failed to resolve package config, falling back to manifest values`)
-    }
-  }
-
   const launch = await resolveLaunchCommand({
     command,
     args: launchArgs,
@@ -182,7 +163,7 @@ async function createStdio(
     loginShellEnv,
     logger
   })
-  Object.assign(connectEnv, launch.env, getBuiltinRegistryEnv(server))
+  Object.assign(connectEnv, launch.env)
 
   logger.debug(`Starting server`, { command: launch.command, args: launch.args })
 
@@ -198,11 +179,6 @@ async function createStdio(
     // one canonical key to ensure our fresh shell PATH replaces the stale value.
     env: buildStdioEnvironment(loginShellEnv, connectEnv),
     stderr: 'pipe'
-  }
-
-  if (server.dxtPath) {
-    transportOptions.cwd = server.dxtPath
-    logger.debug(`Setting working directory for package server`, { cwd: server.dxtPath })
   }
 
   const transport = new sdk.StdioClientTransport(transportOptions)

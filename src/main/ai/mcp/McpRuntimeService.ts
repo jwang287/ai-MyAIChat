@@ -34,7 +34,6 @@ import {
   type McpClientSdk,
   type McpTransport
 } from './mcpClientSdk'
-import type { McpPackageService } from './McpPackageService'
 import { redactCacheKey } from './mcpRedact'
 import { createTransport, isMcpOAuthEnabled } from './mcpTransport'
 import { CallBackServer } from './oauth/callback'
@@ -174,7 +173,7 @@ function withCache<T extends unknown[], R>(
 
 @Injectable('McpRuntimeService')
 @ServicePhase(Phase.WhenReady)
-@DependsOn(['WindowManager', 'McpPackageService'])
+@DependsOn(['WindowManager'])
 export class McpRuntimeService extends BaseService {
   private clients: Map<string, Client> = new Map()
   private pendingClients: Map<string, Promise<Client>> = new Map()
@@ -194,10 +193,6 @@ export class McpRuntimeService extends BaseService {
   private stopping = false
   private readonly _onToolListChanged = new Emitter<McpToolListChangedEvent>()
   readonly onToolListChanged: Event<McpToolListChangedEvent> = this._onToolListChanged.event
-
-  private get mcpPackageService(): McpPackageService {
-    return application.get('McpPackageService')
-  }
 
   protected async onInit(): Promise<void> {
     this.stopping = false
@@ -822,7 +817,7 @@ export class McpRuntimeService extends BaseService {
     try {
       await this.closeClientsForServer(server.id)
     } finally {
-      application.get('McpCatalogService').clearSharedToolsCache(server.id)
+      application.get('McpToolCacheService').clearSharedToolsCache(server.id)
       this.setServerStatus(server.id, 'disabled')
     }
   }
@@ -872,7 +867,7 @@ export class McpRuntimeService extends BaseService {
       // Best-effort, isolated per step: after the row delete committed neither hiccup
       // may fail the removal, and a cache failure must not skip the status step.
       try {
-        application.get('McpCatalogService').clearSharedToolsCache(server.id)
+        application.get('McpToolCacheService').clearSharedToolsCache(server.id)
       } catch (error) {
         getServerLogger(server).error(`Post-removal tools cache cleanup failed`, error as Error)
       }
@@ -911,18 +906,6 @@ export class McpRuntimeService extends BaseService {
         }
       }
     }
-
-    // If this is a package server, cleanup its directory
-    if (server.dxtPath) {
-      try {
-        const cleaned = this.mcpPackageService.cleanupPackageServer(server.name)
-        if (cleaned) {
-          getServerLogger(server).debug(`Cleaned up package server directory`)
-        }
-      } catch (error) {
-        getServerLogger(server).error(`Failed to cleanup package server`, error as Error)
-      }
-    }
   }
 
   async restartServer(serverId: string) {
@@ -936,14 +919,14 @@ export class McpRuntimeService extends BaseService {
     })
     await this.closeClientsForServer(server.id)
     // Clear caches before restarting to ensure fresh data. Drop the shared
-    // `mcp.tools.<serverId>` cache too: `McpCatalogService.listTools` is cache-only, so a
+    // `mcp.tools.<serverId>` cache too: `McpToolCacheService.listTools` is cache-only, so a
     // restart that fails (e.g. a bad new config) must not leave the old config's tools
     // visible to agents/chat. `refreshTools` repopulates it on success. (issue #16242)
     this.clearServerCache(server)
-    application.get('McpCatalogService').clearSharedToolsCache(server.id)
+    application.get('McpToolCacheService').clearSharedToolsCache(server.id)
     try {
       await this.getOrCreateClient(server)
-      await application.get('McpCatalogService').refreshTools(server.id)
+      await application.get('McpToolCacheService').refreshTools(server.id)
     } catch (error) {
       this.setServerStatus(server.id, 'error', error)
       throw error
@@ -981,7 +964,7 @@ export class McpRuntimeService extends BaseService {
       // Close the client if connectivity check fails to ensure a clean state for the next attempt
       const serverKey = this.getServerKey(server)
       await this.closeClient(serverKey)
-      application.get('McpCatalogService').clearSharedToolsCache(server.id)
+      application.get('McpToolCacheService').clearSharedToolsCache(server.id)
       this.setServerStatus(server.id, 'error', error)
       return false
     }

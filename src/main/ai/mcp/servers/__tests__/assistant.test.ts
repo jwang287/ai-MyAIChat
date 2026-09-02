@@ -269,14 +269,14 @@ describe('navigate', () => {
         schemaVersion: 1,
         package: { version: '2.0.0-dev' },
         routes: {
-          all: ['/settings', '/settings/provider', '/settings/mcp/$', '/app/code', '/app/mini-app/$appId']
+          all: ['/settings', '/settings/provider', '/settings/mcp/$', '/app/code']
         }
       })
     )
     const client = await connectAssistantClient()
 
     const currentRoute = await client.callTool({ name: 'navigate', arguments: { path: '/app/code' } })
-    const dynamicRoute = await client.callTool({ name: 'navigate', arguments: { path: '/app/mini-app/example' } })
+    const dynamicRoute = await client.callTool({ name: 'navigate', arguments: { path: '/settings/mcp/example' } })
     const removedRoute = await client.callTool({ name: 'navigate', arguments: { path: '/app/openclaw' } })
     const unknownSettingsRoute = await client.callTool({
       name: 'navigate',
@@ -537,19 +537,19 @@ describe('isAllowedAssistantNavigationPath', () => {
   const allowedRoutes = [
     '/settings',
     '/settings/provider',
-    '/settings/mcp/$',
+    '/settings/mcp',
+    '/settings/mcp/builtin',
+    '/settings/mcp/servers',
     '/settings/mcp/settings/$serverId',
     '/app/agents',
-    '/app/mini-app/$appId',
     '/app/chat'
   ]
 
   it('allows exact routes and manifest-declared dynamic routes', () => {
     expect(isAllowedAssistantNavigationPath('/app/agents', allowedRoutes)).toBe(true)
-    expect(isAllowedAssistantNavigationPath('/app/mini-app/example', allowedRoutes)).toBe(true)
     expect(isAllowedAssistantNavigationPath('/app/chat', allowedRoutes)).toBe(true)
     expect(isAllowedAssistantNavigationPath('/settings/provider', allowedRoutes)).toBe(true)
-    expect(isAllowedAssistantNavigationPath('/settings/mcp/example/details', allowedRoutes)).toBe(true)
+    expect(isAllowedAssistantNavigationPath('/settings/mcp/servers', allowedRoutes)).toBe(true)
     expect(isAllowedAssistantNavigationPath('/settings/mcp/settings/server-1', allowedRoutes)).toBe(true)
   })
 
@@ -558,7 +558,8 @@ describe('isAllowedAssistantNavigationPath', () => {
     expect(isAllowedAssistantNavigationPath('/store', allowedRoutes)).toBe(false)
     expect(isAllowedAssistantNavigationPath('/app', allowedRoutes)).toBe(false)
     expect(isAllowedAssistantNavigationPath('/app/agents/assistant-1', allowedRoutes)).toBe(false)
-    expect(isAllowedAssistantNavigationPath('/app/mini-app/example/details', allowedRoutes)).toBe(false)
+    expect(isAllowedAssistantNavigationPath('/settings/mcp/example', allowedRoutes)).toBe(false)
+    expect(isAllowedAssistantNavigationPath('/settings/mcp/servers/extra', allowedRoutes)).toBe(false)
     expect(isAllowedAssistantNavigationPath('/app/library', allowedRoutes)).toBe(false)
     expect(isAllowedAssistantNavigationPath('/app/openclaw', allowedRoutes)).toBe(false)
     expect(isAllowedAssistantNavigationPath('/settings/not-in-this-package', allowedRoutes)).toBe(false)

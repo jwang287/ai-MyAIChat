@@ -1,51 +1,11 @@
 import type { McpServer } from '@shared/data/types/mcpServer'
 import { BuiltinMcpServerNames } from '@shared/utils/mcp'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-vi.mock('@application', async () => {
-  const { mockApplicationFactory } = await import('@test-mocks/main/application')
-  return mockApplicationFactory({} as Record<string, unknown>)
-})
-
-const { createInMemoryMcpServer, getBuiltinHttpHeaders, getBuiltinRegistryEnv } = await import('../factory')
+const { createInMemoryMcpServer, getBuiltinHttpHeaders } = await import('../factory')
 
 const server = (overrides: Partial<McpServer>): McpServer =>
   ({ id: 'id', name: 'custom', type: 'stdio', isActive: true, ...overrides }) as McpServer
-
-describe('getBuiltinRegistryEnv', () => {
-  it('points mcp-auto-install at the registered catalog path when a registry is configured', () => {
-    const autoInstall = {
-      name: BuiltinMcpServerNames.mcpAutoInstall,
-      command: 'npx',
-      installSource: 'builtin' as const
-    }
-
-    expect(getBuiltinRegistryEnv(server({ ...autoInstall, registryUrl: 'https://npm.example' }))).toEqual({
-      MCP_REGISTRY_PATH: '/mock/feature.mcp.registry_file'
-    })
-    expect(getBuiltinRegistryEnv(server(autoInstall))).toEqual({})
-  })
-
-  it('leaves every other server alone', () => {
-    const other = server({ name: 'my-server', command: 'node', registryUrl: 'https://npm.example' })
-    const collision = server({
-      name: BuiltinMcpServerNames.mcpAutoInstall,
-      installSource: 'manual',
-      command: 'npx',
-      registryUrl: 'https://npm.example'
-    })
-    const prefix = server({
-      name: `${BuiltinMcpServerNames.mcpAutoInstall}-custom`,
-      installSource: 'builtin',
-      command: 'npx',
-      registryUrl: 'https://npm.example'
-    })
-
-    expect(getBuiltinRegistryEnv(other)).toEqual({})
-    expect(getBuiltinRegistryEnv(collision)).toEqual({})
-    expect(getBuiltinRegistryEnv(prefix)).toEqual({})
-  })
-})
 
 describe('getBuiltinHttpHeaders', () => {
   const qveris = (apiKey?: string) =>
@@ -77,8 +37,6 @@ describe('getBuiltinHttpHeaders', () => {
 
 describe('createInMemoryMcpServer', () => {
   it('rejects a name with no in-process implementation', async () => {
-    await expect(createInMemoryMcpServer(BuiltinMcpServerNames.mcpAutoInstall)).rejects.toThrow(
-      /Unknown in-memory MCP server/
-    )
+    await expect(createInMemoryMcpServer('missing-server')).rejects.toThrow(/Unknown in-memory MCP server/)
   })
 })

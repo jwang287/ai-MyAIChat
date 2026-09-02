@@ -37,7 +37,7 @@ const { createMcpBridgeServer } = await import('../createMcpBridgeServer')
 type RequestHandler = (request: unknown, extra: unknown) => Promise<unknown>
 
 /** Latest listener passed to the mocked `onToolsCacheUpdated` — the test's stand-in for
- *  `McpCatalogService._onToolsCacheUpdated.fire`. */
+ *  `McpToolCacheService._onToolsCacheUpdated.fire`. */
 let cacheUpdatedListener: ((event: { serverId: string }) => void) | undefined
 
 function searchTool() {
@@ -80,7 +80,7 @@ describe('createMcpBridgeServer', () => {
       messages: [{ role: 'user', content: { type: 'text', text: 'Prompt body' } }]
     })
     mocks.applicationGet.mockImplementation((name: string) => {
-      if (name === 'McpCatalogService')
+      if (name === 'McpToolCacheService')
         return {
           listTools: mocks.listTools,
           onToolsCacheUpdated: mocks.onToolsCacheUpdated,

@@ -98,9 +98,9 @@ describe('SkillsServer', () => {
               count: 1,
               skills: [
                 {
-                  id: 'owner/repo/web-search',
-                  skillId: 'web-search',
-                  name: 'Web Search',
+                  id: 'owner/repo/repository-search',
+                  skillId: 'repository-search',
+                  name: 'Repository Search',
                   source: 'owner/repo',
                   installs: 12
                 }
@@ -134,7 +134,10 @@ describe('SkillsServer', () => {
       expect(fetchMock).toHaveBeenCalledTimes(3)
       expect(payload).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ source_registry: 'skills.sh', install_source: 'skills.sh:owner/repo/web-search' }),
+          expect.objectContaining({
+            source_registry: 'skills.sh',
+            install_source: 'skills.sh:owner/repo/repository-search'
+          }),
           expect.objectContaining({ source_registry: 'clawhub.ai', install_source: 'clawhub:owner/code-review' })
         ])
       )

@@ -5,7 +5,6 @@ import path from 'node:path'
 import { application } from '@application'
 import type { formatFromExtension, toMarkdownBytes } from '@firecrawl/anydoc'
 import { loggerService } from '@logger'
-import { resolveLocalFile, resolveWorkspaceFile } from '@main/ai/channels'
 import { listAgentSessionAttachments } from '@main/ai/messages/agentSessionAttachments'
 import type { FileAttachment } from '@main/utils/downloadAsBase64'
 import { isAbortError } from '@main/utils/error'
@@ -19,6 +18,8 @@ import {
 } from '@shared/ai/builtinTools'
 import { AbsoluteFilePathSchema } from '@shared/types/file'
 import * as z from 'zod'
+
+import { resolveLocalFile, resolveWorkspaceFile } from './localFileResolver'
 
 export interface CherryDocumentContext {
   agentDataPath: string

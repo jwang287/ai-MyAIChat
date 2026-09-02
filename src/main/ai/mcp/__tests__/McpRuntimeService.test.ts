@@ -7,14 +7,14 @@ import { MockMainCacheServiceUtils } from '@test-mocks/main/CacheService'
 import { mockMainLoggerService } from '@test-mocks/MainLoggerService'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mcpCatalogMock = vi.hoisted(() => ({
+const mcpToolCacheMock = vi.hoisted(() => ({
   clearSharedToolsCache: vi.fn(),
   refreshTools: vi.fn().mockResolvedValue(undefined)
 }))
 
 vi.mock('@application', async () => {
   const { mockApplicationFactory } = await import('@test-mocks/main/application')
-  return mockApplicationFactory({ McpCatalogService: mcpCatalogMock } as Record<string, unknown>)
+  return mockApplicationFactory({ McpToolCacheService: mcpToolCacheMock } as Record<string, unknown>)
 })
 
 const getByIdMock = vi.fn<(id: string) => McpServer>()
@@ -974,8 +974,8 @@ describe('McpRuntimeService.restartServer (issue #16242)', () => {
     BaseService.resetInstances()
     MockMainCacheServiceUtils.resetMocks()
     getByIdMock.mockReset()
-    mcpCatalogMock.clearSharedToolsCache.mockReset()
-    mcpCatalogMock.refreshTools.mockReset().mockResolvedValue(undefined)
+    mcpToolCacheMock.clearSharedToolsCache.mockReset()
+    mcpToolCacheMock.refreshTools.mockReset().mockResolvedValue(undefined)
     getByIdMock.mockReturnValue({ id: 'server-1', name: 'docs', isActive: true } as McpServer)
   })
 
@@ -987,8 +987,8 @@ describe('McpRuntimeService.restartServer (issue #16242)', () => {
 
     await expect(service.restartServer('server-1')).rejects.toThrow('bad config')
 
-    expect(mcpCatalogMock.clearSharedToolsCache).toHaveBeenCalledWith('server-1')
-    expect(mcpCatalogMock.refreshTools).not.toHaveBeenCalled()
+    expect(mcpToolCacheMock.clearSharedToolsCache).toHaveBeenCalledWith('server-1')
+    expect(mcpToolCacheMock.refreshTools).not.toHaveBeenCalled()
   })
 
   it('clears then repopulates the shared tools cache on a successful restart', async () => {
@@ -997,8 +997,8 @@ describe('McpRuntimeService.restartServer (issue #16242)', () => {
 
     await service.restartServer('server-1')
 
-    expect(mcpCatalogMock.clearSharedToolsCache).toHaveBeenCalledWith('server-1')
-    expect(mcpCatalogMock.refreshTools).toHaveBeenCalledWith('server-1')
+    expect(mcpToolCacheMock.clearSharedToolsCache).toHaveBeenCalledWith('server-1')
+    expect(mcpToolCacheMock.refreshTools).toHaveBeenCalledWith('server-1')
   })
 })
 
@@ -1113,7 +1113,7 @@ describe('McpRuntimeService.removeServer vs concurrent connect', () => {
     deleteServerMock.mockReset()
     listServersMock.mockReset()
     listServersMock.mockReturnValue({ items: [server], total: 1, page: 1 })
-    mcpCatalogMock.clearSharedToolsCache.mockReset()
+    mcpToolCacheMock.clearSharedToolsCache.mockReset()
     mcpSdkMock.state.failStreamable = false
   })
 
@@ -1241,7 +1241,7 @@ describe('McpRuntimeService.removeServer vs concurrent connect', () => {
   it('drops the status cache entry on removal even when post-delete cache cleanup fails', async () => {
     const service = new McpRuntimeService()
     service.setServerStatus('server-1', 'connected')
-    mcpCatalogMock.clearSharedToolsCache.mockImplementation(() => {
+    mcpToolCacheMock.clearSharedToolsCache.mockImplementation(() => {
       throw new Error('cache backend down')
     })
 

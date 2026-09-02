@@ -10,11 +10,9 @@ import {
   settingsSubmenuSectionTitleClassName
 } from '@renderer/pages/settings/settingsStyles'
 import { Outlet, useLocation, useNavigate } from '@tanstack/react-router'
-import { FolderCog, Server, ShoppingBag } from 'lucide-react'
+import { Server } from 'lucide-react'
 import type { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-
-import { getMcpProviderLogo, getProviderDisplayName, providers } from './providers/config'
 
 const McpSettings: FC = () => {
   const { t } = useTranslation()
@@ -27,16 +25,7 @@ const McpSettings: FC = () => {
 
     // 精确匹配路径
     if (path === '/settings/mcp/builtin') return 'builtin'
-    if (path === '/settings/mcp/marketplaces') return 'marketplaces'
-
-    // 检查是否是服务商页面 - 精确匹配
-    for (const provider of providers) {
-      if (path === `/settings/mcp/${provider.key}`) {
-        return provider.key
-      }
-    }
-
-    // 其他所有情况（包括 servers、settings/:serverId、npx-search、mcp-install）都属于 servers
+    // 其他所有情况（包括 servers、settings/:serverId）都属于 servers
     return 'servers'
   }
 
@@ -67,30 +56,6 @@ const McpSettings: FC = () => {
                 className={settingsSubmenuItemClassName}
                 labelClassName={settingsSubmenuItemLabelClassName}
               />
-              <MenuItem
-                label={t('settings.mcp.marketplaces', 'Marketplaces')}
-                active={activeView === 'marketplaces'}
-                onClick={() => navigate({ to: '/settings/mcp/marketplaces' })}
-                icon={<ShoppingBag size={18} />}
-                className={settingsSubmenuItemClassName}
-                labelClassName={settingsSubmenuItemLabelClassName}
-              />
-              <MenuDivider className={settingsSubmenuDividerClassName} />
-              <div className={settingsSubmenuSectionTitleClassName}>{t('settings.mcp.providers', 'Providers')}</div>
-              {providers.map((provider) => (
-                <MenuItem
-                  key={provider.key}
-                  label={getProviderDisplayName(provider, t)}
-                  active={activeView === provider.key}
-                  onClick={() => navigate({ to: `/settings/mcp/${provider.key}` })}
-                  icon={(() => {
-                    const logo = getMcpProviderLogo(provider.key)
-                    return logo ? <logo.Avatar size={16} shape="circle" /> : <FolderCog size={16} />
-                  })()}
-                  className={settingsSubmenuItemClassName}
-                  labelClassName={settingsSubmenuItemLabelClassName}
-                />
-              ))}
             </MenuList>
           </Scrollbar>
         </div>

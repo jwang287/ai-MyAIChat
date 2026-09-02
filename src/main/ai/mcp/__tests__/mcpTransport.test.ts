@@ -8,7 +8,6 @@ const getBuiltinHttpHeaders = vi.hoisted(() => vi.fn<() => Record<string, string
 const hasInMemoryImplementation = vi.hoisted(() => vi.fn<(name: string) => boolean>(() => true))
 vi.mock('@main/ai/mcp/servers/factory', () => ({
   createInMemoryMcpServer,
-  getBuiltinRegistryEnv: () => ({}),
   getBuiltinHttpHeaders,
   hasInMemoryImplementation
 }))

@@ -11,7 +11,6 @@ import { useMcpRuntimeStatus } from '@renderer/hooks/useMcpRuntimeStatus'
 import { useMcpServer, useMcpServerMutations } from '@renderer/hooks/useMcpServer'
 import { useTheme } from '@renderer/hooks/useTheme'
 import { ipcApi } from '@renderer/ipc'
-import McpDescription from '@renderer/pages/settings/McpSettings/McpDescription'
 import { popup } from '@renderer/services/popup'
 import { toast } from '@renderer/services/toast'
 import type { McpTool } from '@renderer/types/tool'
@@ -38,7 +37,6 @@ import {
   McpIdentityFields,
   McpRuntimeFields,
   McpTransportFields,
-  resolveMcpConfigInstallSource,
   toMcpFormDefaultValues,
   toMcpServerFields,
   useMcpRegistryState
@@ -50,7 +48,7 @@ import { toUpdateMcpServerDto } from './utils'
 
 const logger = loggerService.withContext('McpSettings')
 
-type TabKey = 'settings' | 'description' | 'logs' | 'tools' | 'prompts' | 'resources'
+type TabKey = 'settings' | 'logs' | 'tools' | 'prompts' | 'resources'
 type McpTabItem = {
   key: TabKey
   label: React.ReactNode
@@ -225,7 +223,7 @@ const McpSettingsContent: React.FC<McpSettingsContentProps> = ({ server, updateM
       const mcpServer: McpServer = {
         ...server,
         ...toMcpServerFields(values),
-        installSource: resolveMcpConfigInstallSource(server),
+        installSource: server.installSource,
         isActive: values.isActive ?? server.isActive,
         timeout: values.timeout || server.timeout,
         // Use nullish coalescing to allow empty strings (for deletion)
@@ -471,14 +469,6 @@ const McpSettingsContent: React.FC<McpSettingsContentProps> = ({ server, updateM
       )
     }
   ]
-
-  if (server.searchKey) {
-    tabs.push({
-      key: 'description',
-      label: t('settings.mcp.tabs.description'),
-      children: <McpDescription searchKey={server.searchKey} />
-    })
-  }
 
   if (server.isActive) {
     tabs.push({

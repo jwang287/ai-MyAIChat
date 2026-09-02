@@ -85,7 +85,7 @@ function toSdkResourceContents(content: McpResource): ReadResourceResult['conten
  * - ListTools reads the shared cache only and never blocks on a server connect, so a
  *   dead/slow server can't stall session start (issue #16242). A cold cache returns `[]`
  *   and `listTools` itself kicks a non-blocking refresh.
- * - Every content change to that cache fires `McpCatalogService.onToolsCacheUpdated`;
+ * - Every content change to that cache fires `McpToolCacheService.onToolsCacheUpdated`;
  *   the bridge relays it as a `tools/list_changed` notification, and the SDK re-lists
  *   (verified against SDK 0.3.185: the CLI re-lists on the notification, debounced
  *   300ms, keeping the previous tool set if the re-list fails). One notification
@@ -131,7 +131,7 @@ export function createMcpBridgeServer(
     // Nothing to relay through on a transport that declared no `listChanged`; subscribing
     // anyway would only build notifications the client never asked for and cannot receive.
     if (!listChanged) return
-    toolsCacheSubscription ??= application.get('McpCatalogService').onToolsCacheUpdated(({ serverId }) => {
+    toolsCacheSubscription ??= application.get('McpToolCacheService').onToolsCacheUpdated(({ serverId }) => {
       if (serverId !== serverConfig.id) return
       rawServer.sendToolListChanged().catch((error) => {
         // "Not connected" is the expected race between an emitter dispatch and transport
@@ -156,7 +156,7 @@ export function createMcpBridgeServer(
   rawServer.setRequestHandler(ListToolsRequestSchema, async () => {
     try {
       logger.debug('MCP bridge: listing tools', { mcpId })
-      const tools = application.get('McpCatalogService').listTools(serverConfig.id, { includeDisabled: false })
+      const tools = application.get('McpToolCacheService').listTools(serverConfig.id, { includeDisabled: false })
       return {
         tools: tools.map(toSdkTool)
       }
@@ -204,7 +204,7 @@ export function createMcpBridgeServer(
   rawServer.setRequestHandler(ListResourcesRequestSchema, async () => {
     try {
       logger.debug('MCP bridge: listing resources', { mcpId })
-      const resources = await application.get('McpCatalogService').listResources(serverConfig.id)
+      const resources = await application.get('McpToolCacheService').listResources(serverConfig.id)
       return {
         resources: resources.map(toSdkResource)
       }
@@ -235,7 +235,7 @@ export function createMcpBridgeServer(
   rawServer.setRequestHandler(ListPromptsRequestSchema, async () => {
     try {
       logger.debug('MCP bridge: listing prompts', { mcpId })
-      const prompts = await application.get('McpCatalogService').listPrompts(serverConfig.id)
+      const prompts = await application.get('McpToolCacheService').listPrompts(serverConfig.id)
       return {
         prompts: prompts.map(toSdkPrompt)
       }

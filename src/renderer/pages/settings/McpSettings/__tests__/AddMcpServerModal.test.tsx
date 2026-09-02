@@ -37,10 +37,6 @@ vi.mock('@renderer/hooks/useCodeStyle', () => ({
   useCodeStyle: () => ({ activeCmTheme: 'light' })
 }))
 
-vi.mock('@renderer/hooks/useTimer', () => ({
-  useTimer: () => ({ setTimeoutTimer: vi.fn() })
-}))
-
 vi.mock('@renderer/ipc', () => ({
   ipcApi: {
     request: mocks.checkConnectivity
@@ -72,15 +68,7 @@ describe('AddMcpServerModal', () => {
     const onClose = vi.fn()
     const user = userEvent.setup()
 
-    render(
-      <AddMcpServerModal
-        visible
-        onClose={onClose}
-        onSuccess={onSuccess}
-        existingServers={[]}
-        initialImportMethod="json"
-      />
-    )
+    render(<AddMcpServerModal visible onClose={onClose} onSuccess={onSuccess} existingServers={[]} />)
 
     fireEvent.change(screen.getByRole('textbox', { name: 'server config' }), {
       target: {
