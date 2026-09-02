@@ -1,6 +1,5 @@
 import type { AgentPermissionMode } from '@shared/data/api/schemas/agents'
 import type { AgentSessionWorkspaceSource } from '@shared/data/api/schemas/agentWorkspaces'
-import type { ChannelType } from '@shared/data/types/channel'
 import { sql } from 'drizzle-orm'
 import { check, index, integer, primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
@@ -19,7 +18,7 @@ export const agentChannelTable = sqliteTable(
   'agent_channel',
   {
     id: uuidPrimaryKey(),
-    type: text().$type<ChannelType>().notNull(),
+    type: text().notNull(),
     name: text().notNull(),
     agentId: text().references(() => agentTable.id, { onDelete: 'set null' }),
     sessionId: text().references(() => agentSessionTable.id, { onDelete: 'set null' }),

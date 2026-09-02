@@ -1,8 +1,8 @@
 /**
  * Central registry of legacy Electron IPC channel names. Command IPC has largely moved to
  * IpcApi (`ipcApi.request`); what remains here is the data/IpcApi transport infrastructure
- * plus channels not yet migrated — v1-only backup / nutstore / copilot, the file module,
- * LAN transfer, and a handful of micro-domains.
+ * plus channels not yet migrated — v1-only backup / copilot, the file module,
+ * and a handful of micro-domains.
  */
 export enum IpcChannel {
   App_Select = 'app:select',
@@ -30,11 +30,6 @@ export enum IpcChannel {
   Copilot_GetToken = 'copilot:get-token',
   Copilot_Logout = 'copilot:logout',
   Copilot_GetUser = 'copilot:get-user',
-
-  // nutstore
-  Nutstore_GetSsoUrl = 'nutstore:get-sso-url',
-  Nutstore_DecryptToken = 'nutstore:decrypt-token',
-  Nutstore_GetDirectoryContents = 'nutstore:get-directory-contents',
 
   //aes
   Aes_Decrypt = 'aes:decrypt',
@@ -70,7 +65,6 @@ export enum IpcChannel {
   File_ListDirectory = 'file:listDirectory',
   File_ListDirectoryEntries = 'file:listDirectoryEntries',
   File_CheckFileName = 'file:checkFileName',
-  File_ValidateNotesDirectory = 'file:validateNotesDirectory',
   File_BatchUploadMarkdown = 'file:batchUploadMarkdown',
   File_ShowInFolder = 'file:showInFolder',
   // FileManager v2 surface (Phase 2)
@@ -83,22 +77,10 @@ export enum IpcChannel {
   // backup
   Backup_Backup = 'backup:backup',
   Backup_Restore = 'backup:restore',
-  Backup_BackupToWebdav = 'backup:backupToWebdav',
-  Backup_RestoreFromWebdav = 'backup:restoreFromWebdav',
-  Backup_ListWebdavFiles = 'backup:listWebdavFiles',
-  Backup_CheckConnection = 'backup:checkConnection',
-  Backup_CreateDirectory = 'backup:createDirectory',
-  Backup_DeleteWebdavFile = 'backup:deleteWebdavFile',
   Backup_BackupToLocalDir = 'backup:backupToLocalDir',
   Backup_RestoreFromLocalBackup = 'backup:restoreFromLocalBackup',
   Backup_ListLocalBackupFiles = 'backup:listLocalBackupFiles',
   Backup_DeleteLocalBackupFile = 'backup:deleteLocalBackupFile',
-  Backup_BackupToS3 = 'backup:backupToS3',
-  Backup_RestoreFromS3 = 'backup:restoreFromS3',
-  Backup_ListS3Files = 'backup:listS3Files',
-  Backup_DeleteS3File = 'backup:deleteS3File',
-  Backup_CreateLanTransferBackup = 'backup:createLanTransferBackup',
-  Backup_DeleteLanTransferBackup = 'backup:deleteLanTransferBackup',
 
   // zip
   Zip_Decompress = 'zip:decompress',
@@ -139,17 +121,7 @@ export enum IpcChannel {
 
   // Global Skills
   Skill_ReadFile = 'skill:read-file',
-  Skill_ListFiles = 'skill:list-files',
-
-  // LAN Transfer
-  LanTransfer_StartScan = 'lan-transfer:start-scan',
-  LanTransfer_StopScan = 'lan-transfer:stop-scan',
-  LanTransfer_ServicesUpdated = 'lan-transfer:services-updated',
-  LanTransfer_Connect = 'lan-transfer:connect',
-  LanTransfer_Disconnect = 'lan-transfer:disconnect',
-  LanTransfer_ClientEvent = 'lan-transfer:client-event',
-  LanTransfer_SendFile = 'lan-transfer:send-file',
-  LanTransfer_CancelTransfer = 'lan-transfer:cancel-transfer'
+  Skill_ListFiles = 'skill:list-files'
 
   // ──────────────────────────────────────────────────────────────
   // TODO(v2): the following IPC channels are still referenced via
