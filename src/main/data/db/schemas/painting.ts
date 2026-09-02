@@ -3,15 +3,12 @@ import { sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { createUpdateTimestamps, orderKeyColumns, orderKeyIndex, uuidPrimaryKey } from './_columnHelpers'
 
 /**
- * Painting row — a frozen receipt of a completed image generation.
+ * Historical painting row retained for migration and reference integrity.
  *
  * Output and input files are NOT stored on the row. Each painting has zero or
- * more `painting_file_ref` rows with `sourceId=painting.id`,
- * `role='output'|'input'`. PaintingService writes those refs on create/update;
- * row deletion cascades refs at the database layer. The frozen receipt shape
- * avoids carrying mutable form state (mode, size, seed, etc.) on the row — the
- * live painting draft lives in renderer React state and is discarded on app
- * exit.
+ * Existing rows retain their `painting_file_ref` associations so their files
+ * are not collected. The active application no longer creates or presents
+ * paintings.
  */
 export const paintingTable = sqliteTable(
   'painting',

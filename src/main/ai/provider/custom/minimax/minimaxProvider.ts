@@ -1,9 +1,7 @@
 import { OpenAICompatibleChatLanguageModel, OpenAICompatibleEmbeddingModel } from '@ai-sdk/openai-compatible'
-import type { EmbeddingModelV3, ImageModelV3, LanguageModelV3, ProviderV3 } from '@ai-sdk/provider'
+import type { EmbeddingModelV3, LanguageModelV3, ProviderV3 } from '@ai-sdk/provider'
 import type { FetchFunction } from '@ai-sdk/provider-utils'
 import { loadApiKey, withoutTrailingSlash } from '@ai-sdk/provider-utils'
-
-import { MinimaxImageModel } from './minimaxImageModel'
 
 export const MINIMAX_PROVIDER_NAME = 'minimax' as const
 
@@ -21,7 +19,6 @@ export interface MinimaxProvider extends ProviderV3 {
   chatModel(modelId: string): LanguageModelV3
   embeddingModel(modelId: string): EmbeddingModelV3
   textEmbeddingModel(modelId: string): EmbeddingModelV3
-  imageModel(modelId: string): ImageModelV3
 }
 
 export function createMinimaxProvider(settings: MinimaxProviderSettings = {}): MinimaxProvider {
@@ -59,13 +56,6 @@ export function createMinimaxProvider(settings: MinimaxProviderSettings = {}): M
   provider.chatModel = createChatModel
   provider.embeddingModel = createEmbeddingModel
   provider.textEmbeddingModel = createEmbeddingModel
-  provider.imageModel = (modelId: string) =>
-    new MinimaxImageModel(modelId, {
-      provider: `${MINIMAX_PROVIDER_NAME}.image`,
-      url,
-      headers,
-      fetch: customFetch
-    })
 
-  return provider as MinimaxProvider
+  return provider as unknown as MinimaxProvider
 }

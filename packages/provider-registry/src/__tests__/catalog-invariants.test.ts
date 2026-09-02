@@ -14,9 +14,6 @@ import { describe, expect, it } from 'vitest'
 
 import { canonOf, isModelsDevRoutingAlias, prefixHit } from '../../scripts/canonicalize'
 import { CREATORS } from '../creators'
-import { isServerToolModelEligible } from '../patterns/serverToolModelEligibility'
-import { PROVIDERS } from '../providers'
-import { SERVER_TOOL } from '../schemas/enums'
 import { ModelListSchema } from '../schemas/model'
 import { ProviderListSchema } from '../schemas/provider'
 import { ProviderModelListSchema } from '../schemas/provider-models'
@@ -41,16 +38,6 @@ const models = modelsRaw.models as Array<{
     input?: { currency: string; perMillionTokens: number }
     output?: { currency: string; perMillionTokens: number }
   }
-  imageGeneration?: {
-    modes?: {
-      generate?: {
-        supports?: {
-          aspectRatio?: { default?: string; options?: string[]; render?: string; type?: string }
-          imageResolution?: { default?: string; options?: string[]; render?: string; type?: string }
-        }
-      }
-    }
-  }
   reasoning?: {
     controls?: Array<{ kind: string; values?: string[] }>
   }
@@ -70,65 +57,9 @@ const NORMALIZED = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 // shapes a creator never publishes: custom SKUs, double-dash vendor wrappers, routers
 const JUNK = /(?:-vip|-ssvip|-cursor|-all|-nx|-gizmo|-mobile)$|--|^duo-chat-|\bauto\b/
 
-const GEMINI_IMAGE_ASPECT_RATIO_OPTIONS = [
-  {
-    modelId: 'gemini-3-1-flash-image',
-    options: [
-      'auto',
-      'ASPECT_1_1',
-      'ASPECT_1_4',
-      'ASPECT_1_8',
-      'ASPECT_2_3',
-      'ASPECT_3_2',
-      'ASPECT_3_4',
-      'ASPECT_4_1',
-      'ASPECT_4_3',
-      'ASPECT_4_5',
-      'ASPECT_5_4',
-      'ASPECT_8_1',
-      'ASPECT_9_16',
-      'ASPECT_16_9',
-      'ASPECT_21_9'
-    ]
-  }
-] as const
-
 describe('catalog invariants (data/*.json)', () => {
   const ids = models.map((m) => m.id)
   const baseIds = new Set(ids)
-
-  it.each([
-    ['mai-image-2-5', 'microsoft', 'Microsoft: MAI-Image-2.5'],
-    ['recraft-v4-1-vector', 'recraft', 'Recraft: Recraft V4.1 Vector'],
-    ['riverflow-v2-5-fast', 'sourceful', 'Sourceful: Riverflow V2.5 Fast'],
-    ['seedream-4-5', 'bytedance', 'Seedream 4.5']
-  ])('catalogs OpenRouter image model %s under its creator with its display name', (modelId, ownedBy, name) => {
-    expect(models.find((model) => model.id === modelId)).toMatchObject({
-      capabilities: expect.arrayContaining(['image-generation']),
-      name,
-      ownedBy
-    })
-  })
-
-  it.each(GEMINI_IMAGE_ASPECT_RATIO_OPTIONS)(
-    'keeps smart aspect ratio and explicit resolution controls for $modelId',
-    ({ modelId, options }) => {
-      const supports = models.find((model) => model.id === modelId)?.imageGeneration?.modes?.generate?.supports
-
-      expect(supports?.aspectRatio).toEqual({
-        default: 'auto',
-        options,
-        render: 'chips',
-        type: 'enum'
-      })
-      expect(supports?.imageResolution).toEqual({
-        default: 'auto',
-        options: ['auto', '1K', '2K', '4K'],
-        render: 'chips',
-        type: 'enum'
-      })
-    }
-  )
 
   // `listProviderPresetModels` sends `apiModelId ?? modelId` on the wire, so a row whose canonical key
   // is not the served id must carry `apiModelId` — otherwise the canonical spelling (`glm-5-2` for
@@ -199,22 +130,6 @@ describe('catalog invariants (data/*.json)', () => {
     expect(deepseekLatest?.pricing).toBeUndefined()
   })
 
-  it('keeps the declared OpenRouter GPT image route out of the OpenAI creator catalog', () => {
-    expect(PROVIDERS.find((provider) => provider.id === 'openrouter')?.standaloneModelIds).toEqual(['gpt-5-4-image-2'])
-    expect(ids).not.toContain('gpt-5-4-image-2')
-    expect(
-      providerModelOverrides.find(
-        (override) => override.providerId === 'openrouter' && override.apiModelId === 'openai/gpt-5.4-image-2'
-      )
-    ).toMatchObject({
-      modelId: 'gpt-5-4-image-2',
-      capabilities: { add: expect.arrayContaining(['image-generation']) },
-      endpointTypes: expect.arrayContaining(['openai-image-generation']),
-      name: 'OpenAI: GPT-5.4 Image 2',
-      ownedBy: 'openrouter'
-    })
-  })
-
   it('drops Vercel OpenAI fast routing aliases without dropping real fast models', () => {
     expect(isModelsDevRoutingAlias('vercel', 'openai/gpt-5-fast')).toBe(true)
     expect(isModelsDevRoutingAlias('vercel', 'bytedance/seedance-2.0-fast')).toBe(false)
@@ -263,40 +178,6 @@ describe('catalog invariants (data/*.json)', () => {
     expect(unpinned).toEqual([])
   })
 
-  it('does not encode provider-native web search as a generic model capability', () => {
-    expect(models.filter((model) => model.capabilities?.includes('web-search')).map((model) => model.id)).toEqual([])
-  })
-
-  // Image-generation models must not inherit web-search eligibility — it leaks a server tool onto image rows.
-  // The sole exception is gemini-3 image (Nano Banana Pro), which genuinely grounds on Google Search;
-  // every other image model (e.g. gemini-2.5-flash-image) must not carry it. The generator already strips
-  // PREFIX-inherited web-search from image rows; this catches a HAND-LISTED `web-search` slipping back in.
-  it('no image-generation model is web-search eligible except allowlisted gemini-3 image models', () => {
-    const WEB_SEARCH_IMAGE_ALLOWLIST = new Set(['gemini-3-pro-image', 'gemini-3-pro-image-preview'])
-    const offenders = models
-      .filter((model) => model.capabilities?.includes('image-generation'))
-      .filter((model) =>
-        providers.some((provider) => isServerToolModelEligible(model.id, provider.id, SERVER_TOOL.WEB_SEARCH))
-      )
-      .map((model) => model.id)
-      .filter((id) => !WEB_SEARCH_IMAGE_ALLOWLIST.has(id))
-    expect(offenders).toEqual([])
-  })
-
-  // Web search is a text-chat server tool: a model that doesn't converse in text on both sides (TTS is
-  // text→audio, transcription is audio→text, embedders output vector) must never be eligible.
-  it('no non-text-chat model is web-search eligible (tts / transcription / embedding)', () => {
-    const offenders = models
-      .filter((model) =>
-        providers.some((provider) => isServerToolModelEligible(model.id, provider.id, SERVER_TOOL.WEB_SEARCH))
-      )
-      .filter(
-        (m) => !(m.inputModalities ?? ['text']).includes('text') || !(m.outputModalities ?? ['text']).includes('text')
-      )
-      .map((m) => m.id)
-    expect(offenders).toEqual([])
-  })
-
   // The loader's canonical override index (`overrideByKey`) resolves a duplicated key to the self
   // variant (`apiModelId === modelId`) — see registry-loader.ts `buildOverrideIndex`. A duplicated key
   // with NO self variant makes the winning override file-order-dependent, so forbid it.
@@ -331,28 +212,6 @@ describe('catalog invariants (data/*.json)', () => {
       )
       .map((o) => `${o.providerId}/${o.apiModelId}`)
     expect(broken).toEqual([])
-  })
-
-  // sequentialImageGeneration is a string enum in the central catalog
-  // (imageParamCatalog.ts) and the Doubao API only accepts 'auto'/'disabled' — a
-  // `switch` support spec here renders a boolean UI control that gets coerced
-  // away before the request, silently no-opping the feature (aihubmix's
-  // doubao-seedream-4-0/4-5 had this; dmxapi's doubao model already declares it
-  // correctly as the reference shape).
-  it('sequentialImageGeneration is never declared as a switch (must be the string enum)', () => {
-    type Row = { id?: string; modelId?: string; providerId?: string; imageGeneration?: unknown }
-    const allRows: Row[] = [...(modelsRaw.models as Row[]), ...(providerModelsRaw.overrides as Row[])]
-    const offenders: string[] = []
-    for (const row of allRows) {
-      const modes = (row.imageGeneration as { modes?: Record<string, unknown> } | undefined)?.modes ?? {}
-      for (const [modeName, def] of Object.entries(modes)) {
-        const spec = (def as { supports?: Record<string, { type?: string }> }).supports?.sequentialImageGeneration
-        if (spec?.type === 'switch') {
-          offenders.push(`${row.providerId ?? 'base'}/${row.modelId ?? row.id}:${modeName}`)
-        }
-      }
-    }
-    expect(offenders).toEqual([])
   })
 
   it('maxOutputTokens never exceeds contextWindow', () => {

@@ -17,7 +17,7 @@ Reasoning controls have an additional model-capability/request-encoding boundary
   src/providers/<prov>.ts  ─┤──►  scripts/generate-catalog.ts  ──►   data/models.json          ─┐
     (defineProvider)       │       buildIndex                       data/providers.json        ├─► src/registry-loader.ts
   models.dev    (live)    ─┤       assignCreators   → ownedBy            data/provider-models.json ─┘     + src/schemas/*
-  OpenRouter text + image ─┘       buildModels / buildProviders /                                    (app reads these)
+  OpenRouter catalogs ──────┘       buildModels / buildProviders /                                    (app reads these)
                                    buildProviderModels
 ```
 
@@ -29,7 +29,7 @@ The pipeline never reads its own previous output — the JSON is a function of `
 | --- | --- | --- |
 | `data/models.json` | **Creator catalog** — every model that exists, with intrinsic metadata: `capabilities`, `inputModalities` / `outputModalities`, `contextWindow`, `maxOutputTokens`, `ownedBy`. | canonical model id |
 | `data/providers.json` | **Connection config** — per provider: `endpointConfigs` (baseUrl + adapterFamily per endpoint type), `defaultChatEndpoint`, `apiFeatures`, `metadata.website`. | provider id |
-| `data/provider-models.json` | **M:N overrides** — one row per *(provider, model)* that needs non-derivable data: `apiModelId`, pricing, image transport, endpoint-keyed `reasoningContracts`, `disabled`, or a standalone vendor-exclusive model. | (providerId, modelId) |
+| `data/provider-models.json` | **M:N overrides** — one row per *(provider, model)* that needs non-derivable data: `apiModelId`, pricing, endpoint-keyed `reasoningContracts`, `disabled`, or a standalone vendor-exclusive model. | (providerId, modelId) |
 
 First-party / standard cases emit **no** row — the runtime resolves `apiModelId → normalizeModelId → models.json` for all metadata, so a row only exists to carry what can't be derived.
 
@@ -40,12 +40,11 @@ First-party / standard cases emit **no** row — the runtime resolves `apiModelI
 A creator declares a creator and its models. Fields:
 
 - `id`, `name` — creator identity (`ownedBy` in the catalog).
-- `models[]` — **hand-listed** models with full metadata (`{ id, name, capabilities, inputModalities, outputModalities, contextWindow, maxOutputTokens, imageGeneration? }`).
+- `models[]` — **hand-listed** models with full metadata (`{ id, name, capabilities, inputModalities, outputModalities, contextWindow, maxOutputTokens }`).
 - `idPrefixes[]` — id namespaces this creator owns (e.g. `['command', 'c4ai', 'rerank-v', 'embed-v']`). Used to **claim** ids seen in upstream data. Must be vendor-specific — a generic prefix mis-attributes other vendors' models.
 - `modelsDevProviders[]` — models.dev provider key(s) whose listing is this creator's clean catalog (metadata source).
 - `families[]` — base-architecture families (weaker ownership signal than an id).
 - `kind` — `'embedding'` / `'rerank'` for creators whose ids don't say so (bge / voyage / jina); auto-tags the capability (+ `vector` output for embeddings).
-- `webSearch[]` — id-prefixes whose models carry the `web-search` capability (a curated capability upstream never reports).
 - `fetchModels()` — optional: pull the creator's live `/models` list (most authoritative; keyless in CI → falls back to models.dev).
 
 ### `src/providers/` — serving providers (`defineProvider` / `openaiCompatible`)
@@ -57,20 +56,20 @@ A provider declares how to connect + what it serves. Fields:
   `providers.json` (minus `description`, which is templated).
 - `modelsDevProvider` — models.dev key whose listing is this provider's served catalog (with per-model pricing). **Generation-only**, not emitted to `providers.json`.
 - `fetchModels()` — or pull the served list from the provider's own API.
-- `overrides[]` — manual `ProviderModelOverride`s for what the runtime can't derive: bedrock arns, `apiModelId` maps, pricing, image transport, endpoint-keyed reasoning contracts, `disabled`, and standalone models.
+- `overrides[]` — manual `ProviderModelOverride`s for what the runtime can't derive: bedrock arns, `apiModelId` maps, pricing, endpoint-keyed reasoning contracts, `disabled`, and standalone models.
 
 `openaiCompatible({ id, name, baseUrl, … })` is the helper for the ~half of providers that are a plain OpenAI-compatible endpoint.
 
 ## Generation pipeline (`scripts/generate-catalog.ts`)
 
 1. **`load`** — fetch the upstream catalogs live (or local files via `MODELSDEV_CACHE` / `OPENROUTER_CACHE` / `OPENROUTER_IMAGE_CACHE`), validate with zod.
-2. **`buildIndex`** — a canonical-id → metadata index, **unioned across sources**. models.dev is read only for the creator providers a creator forward-declares (clean listings); OpenRouter's general and dedicated image catalogs are always read (clean org/model ids). Host/gateway listings are ignored to avoid host-prefixed dup ids.
+2. **`buildIndex`** — a canonical-id → metadata index, **unioned across sources**. models.dev is read only for the creator providers a creator forward-declares (clean listings). Host/gateway listings are ignored to avoid host-prefixed dup ids.
 3. **`assignCreators`** — assign each canonical id an owning creator (`ownedBy`), most-explicit signal first:
    - **pass 1 — explicit identity**: the id names the creator (`fetchModels` list, hand-listed `models`, `idPrefixes`).
    - **pass 2 — family**: base architecture (`families`), weaker than an id.
    - **pass 3 — provider listing**: leftovers a creator's models.dev listing covers.
    - Unclaimed ids are **dropped** (no creator owns them → not a real catalog model).
-4. **`buildModels`** — materialize `models.json` rows from claims, apply hand-listed creator models (always win), tag `embedding`/`rerank`/`web-search`.
+4. **`buildModels`** — materialize `models.json` rows from claims, apply hand-listed creator models (always win), and tag `embedding`/`rerank`.
 5. **`buildProviders`** — `providers.json` from each provider's connection config (drops generation-only fields, templates `description`).
 6. **`buildProviderModels`** — `provider-models.json`: each provider's manual `overrides` + (if it declares `modelsDevProvider`) one priced row per served model. A `modelId` resolves to a base row, or is a standalone carrying `name`.
 
@@ -80,22 +79,6 @@ A provider declares how to connect + what it serves. Fields:
 
 - **`prefixHit(id, p)`** — a `-` or a digit ends the prefix word, so `qwen` claims `qwen-max` and `qwen3-30b`. This is why generic prefixes over-claim.
 - **`crossVendorHost`** — a host listing (e.g. amazon-bedrock) re-lists *other* creators' models as `[region.]vendor.model` arns. Most canonicalize fine; the exception is a vendor with **bare** bedrock ids (`deepseek.r1` → `r1`) that would fold over the real model — those are skipped so the real creator supplies them.
-
-## Image generation (Design B)
-
-> **Creator owns metadata; provider owns parameter support.**
-
-`imageGeneration` has two parts that live in different places:
-
-| part | what | where |
-| --- | --- | --- |
-| `supports` | the param vocabulary (aspectRatio, size, seed, renderingSpeed, …) | **creator** (model-level) — the provider-agnostic DEFAULT |
-| `vendorTransport` | endpoint routing (`/v3/async/…`, `/v1/models/…/predictions`) | **provider** override — differs per provider |
-
-The runtime **replaces** `imageGeneration` wholesale — it does **not** deep-merge (`getImageGenerationSupport`: `override.imageGeneration ?? model.imageGeneration`). Consequences:
-
-- A model-level block must **never** carry a provider-specific `vendorTransport`, or every non-overriding provider inherits the wrong endpoint.
-- A provider that needs a custom endpoint carries the **full** block (its own `supports` + `vendorTransport`), since it supersedes the model-level default entirely.
 
 ## The no-hand-edit guard
 

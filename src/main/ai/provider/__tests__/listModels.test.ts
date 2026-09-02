@@ -511,93 +511,6 @@ describe('listModels — ppioFetcher capability mapping', () => {
   })
 })
 
-describe('listModels — openRouterFetcher image models', () => {
-  function makeOpenRouterProvider() {
-    return makeProvider({
-      id: 'openrouter',
-      defaultChatEndpoint: ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS,
-      endpointConfigs: {
-        [ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]: {
-          adapterFamily: 'openrouter',
-          baseUrl: 'https://openrouter.ai/api/v1/',
-          modelsApiUrls: {
-            default: 'https://openrouter.example/models',
-            embedding: 'https://openrouter.example/embeddings/models',
-            image: 'https://openrouter.example/images/models'
-          }
-        },
-        [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: {
-          adapterFamily: 'openrouter',
-          baseUrl: 'https://openrouter.ai/api/v1/'
-        }
-      }
-    })
-  }
-
-  it('unions the dedicated image catalog and marks duplicate image models for image routing', async () => {
-    const provider = makeOpenRouterProvider()
-    aiSdkGetFromApiMock.mockImplementation(({ url }: { url: string }) => {
-      if (url.endsWith('/embeddings/models')) {
-        return Promise.resolve({ value: { data: [{ id: 'openai/text-embedding-3-small' }] } })
-      }
-      if (url.endsWith('/images/models')) {
-        return Promise.resolve({
-          value: {
-            data: [
-              { id: 'openai/gpt-image-2', name: 'OpenAI: GPT Image 2' },
-              { id: 'sourceful/riverflow-v2.5-fast', name: 'Sourceful: Riverflow V2.5 Fast' }
-            ]
-          }
-        })
-      }
-      return Promise.resolve({ value: { data: [{ id: 'anthropic/claude-sonnet-4' }, { id: 'openai/gpt-image-2' }] } })
-    })
-
-    const models = await listModels(provider)
-
-    expect(aiSdkGetFromApiMock.mock.calls.map(([call]) => call.url)).toEqual([
-      'https://openrouter.example/models',
-      'https://openrouter.example/embeddings/models',
-      'https://openrouter.example/images/models'
-    ])
-    expect(models.map((model) => model.apiModelId)).toEqual([
-      'anthropic/claude-sonnet-4',
-      'openai/gpt-image-2',
-      'openai/text-embedding-3-small',
-      'sourceful/riverflow-v2.5-fast'
-    ])
-    expect(models.find((model) => model.apiModelId === 'openai/gpt-image-2')).toMatchObject({
-      capabilities: [MODEL_CAPABILITY.IMAGE_GENERATION],
-      endpointTypes: [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]
-    })
-    expect(models.find((model) => model.apiModelId === 'sourceful/riverflow-v2.5-fast')).toMatchObject({
-      capabilities: [MODEL_CAPABILITY.IMAGE_GENERATION],
-      endpointTypes: [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION],
-      name: 'Sourceful: Riverflow V2.5 Fast'
-    })
-  })
-
-  it('keeps the primary and embedding catalogs when the image catalog fails in strict sync mode', async () => {
-    const apiKey = 'sk-should-not-reach-logs'
-    const provider = makeOpenRouterProvider()
-    aiSdkGetFromApiMock.mockImplementation(({ url }: { url: string }) => {
-      if (url.endsWith('/images/models')) {
-        return Promise.reject(new Error(`image catalog unavailable for ${apiKey}`))
-      }
-      if (url.endsWith('/embeddings/models')) {
-        return Promise.resolve({ value: { data: [{ id: 'openai/text-embedding-3-small' }] } })
-      }
-      return Promise.resolve({ value: { data: [{ id: 'anthropic/claude-sonnet-4' }] } })
-    })
-
-    await expect(listModels(provider, undefined, { throwOnError: true })).resolves.toEqual([
-      expect.objectContaining({ apiModelId: 'anthropic/claude-sonnet-4' }),
-      expect.objectContaining({ apiModelId: 'openai/text-embedding-3-small' })
-    ])
-    expect(JSON.stringify(mockMainLoggerService.warn.mock.calls)).not.toContain(apiKey)
-  })
-})
-
 describe('listModels — Radeon Cloud source header', () => {
   it('adds X-Source to Radeon model listing without adding it to other providers', async () => {
     const radeonProvider = makeProvider({
@@ -649,9 +562,7 @@ describe('listModels — newApiFetcher endpoint types', () => {
               'openai-response-compact',
               'anthropic',
               'gemini',
-              'jina-rerank',
-              'image-generation',
-              'image-edit'
+              'jina-rerank'
             ]
           }
         ]
@@ -669,9 +580,7 @@ describe('listModels — newApiFetcher endpoint types', () => {
         ENDPOINT_TYPE.OPENAI_RESPONSES,
         ENDPOINT_TYPE.ANTHROPIC_MESSAGES,
         ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT,
-        ENDPOINT_TYPE.JINA_RERANK,
-        ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION,
-        ENDPOINT_TYPE.OPENAI_IMAGE_EDIT
+        ENDPOINT_TYPE.JINA_RERANK
       ]
     })
   })
@@ -815,27 +724,6 @@ describe('listModels — newApiFetcher endpoint-implied capabilities', () => {
 
     expect(models[0].endpointTypes).toEqual([ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS, ENDPOINT_TYPE.JINA_RERANK])
     expect(models[0].capabilities).not.toContain(MODEL_CAPABILITY.RERANK)
-  })
-
-  it('derives the capability for other capability-exclusive primary endpoints (image)', async () => {
-    aiSdkGetFromApiMock.mockResolvedValue({
-      value: {
-        data: [
-          {
-            id: 'opaque-image-model',
-            supported_endpoint_types: ['image-generation', 'openai']
-          }
-        ]
-      }
-    })
-
-    const models = await listModels(makeNewApiProvider())
-
-    expect(models[0].capabilities).toContain(MODEL_CAPABILITY.IMAGE_GENERATION)
-    expect(models[0].endpointTypes).toEqual([
-      ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION,
-      ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS
-    ])
   })
 
   it('normalizes NewAPI embedding/video aliases and canonical media endpoints', async () => {

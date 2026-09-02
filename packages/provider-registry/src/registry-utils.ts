@@ -50,7 +50,7 @@ export function lookupRegistryProvider(providers: ProviderConfig[], providerId: 
 
 export interface PersistedEndpointConfig {
   baseUrl?: string
-  modelsApiUrls?: { default?: string; embedding?: string; image?: string; reranker?: string }
+  modelsApiUrls?: { default?: string; embedding?: string; reranker?: string }
   adapterFamily?: string
   dialect?: EndpointDialect
 }
@@ -144,8 +144,6 @@ const ENDPOINT_IMPLIED_CAPABILITY: Partial<Record<EndpointType, ModelCapability>
   [ENDPOINT_TYPE.OPENAI_AUDIO_TRANSCRIPTION]: MODEL_CAPABILITY.AUDIO_TRANSCRIPT,
   [ENDPOINT_TYPE.OPENAI_AUDIO_TRANSLATION]: MODEL_CAPABILITY.AUDIO_TRANSCRIPT,
   [ENDPOINT_TYPE.OPENAI_EMBEDDINGS]: MODEL_CAPABILITY.EMBEDDING,
-  [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]: MODEL_CAPABILITY.IMAGE_GENERATION,
-  [ENDPOINT_TYPE.OPENAI_IMAGE_EDIT]: MODEL_CAPABILITY.IMAGE_GENERATION,
   [ENDPOINT_TYPE.OPENAI_TEXT_TO_SPEECH]: MODEL_CAPABILITY.AUDIO_GENERATION,
   [ENDPOINT_TYPE.OPENAI_VIDEO_GENERATION]: MODEL_CAPABILITY.VIDEO_GENERATION
 }

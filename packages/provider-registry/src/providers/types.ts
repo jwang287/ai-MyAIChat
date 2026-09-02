@@ -8,7 +8,7 @@
  * as `"{name} - AI model provider"`). The GENERATION-only fields below (`modelsDevProvider` / `fetchModels`
  * / `overrides`) drive `provider-models.json` and are NOT emitted to `providers.json`.
  */
-import type { EndpointDialect, ProviderConfig, ProviderReasoningFormat, ServerToolConfig } from '../schemas/provider'
+import type { EndpointDialect, ProviderConfig, ProviderReasoningFormat } from '../schemas/provider'
 import type { ProviderModelOverride } from '../schemas/provider-models'
 
 /**
@@ -18,13 +18,7 @@ import type { ProviderModelOverride } from '../schemas/provider-models'
  */
 type ProviderConnection = Omit<
   ProviderConfig,
-  | 'description'
-  | 'endpointConfigs'
-  | 'defaultChatEndpoint'
-  | 'modelListSource'
-  | 'authOptional'
-  | 'serverTools'
-  | 'reportsActualCost'
+  'description' | 'endpointConfigs' | 'defaultChatEndpoint' | 'modelListSource' | 'authOptional' | 'reportsActualCost'
 > & {
   endpointConfigs: Partial<ProviderConfig['endpointConfigs']>
   defaultChatEndpoint?: ProviderConfig['defaultChatEndpoint']
@@ -32,29 +26,13 @@ type ProviderConnection = Omit<
   modelListSource?: ProviderConfig['modelListSource']
   /** Defaults to `false`; only credential-free local providers declare it. */
   authOptional?: ProviderConfig['authOptional']
-  /** Defaults to `[]`; only providers that natively serve built-in tools declare it. */
-  serverTools?: ProviderServerToolConfig[]
   /** Defaults false; only providers whose usage carries billed cost declare it. */
   reportsActualCost?: ProviderConfig['reportsActualCost']
 }
 
-/**
- * Provider-authored server-tool declaration. Model selectors are generation-only:
- * they compile to exact provider/model/tool rows and are omitted from providers.json.
- */
-export type ProviderServerToolConfig = ServerToolConfig & {
-  /** Canonical model-id prefixes served by this provider. */
-  modelIdPrefixes?: string[]
-  /** Exact canonical model ids served by this provider. */
-  modelIds?: string[]
-  /** Exact image-generation models explicitly allowed despite the default image exclusion. */
-  imageModelIds?: string[]
-}
-
 /** A provider as emitted to `providers.json`: the connection config plus its templated `description`. */
-export type ProviderEntry = Omit<ProviderConnection, 'serverTools'> & {
+export type ProviderEntry = ProviderConnection & {
   description: string
-  serverTools?: ProviderConfig['serverTools']
 }
 
 /** A provider's website links (official / docs / apiKey / models). */
@@ -99,7 +77,6 @@ export function openaiCompatible(
      */
     reasoningFormat?: ProviderReasoningFormat
     authOptional?: ProviderConfig['authOptional']
-    serverTools?: ProviderServerToolConfig[]
   } & GenFields
 ): Provider {
   const endpointConfigs: ProviderConnection['endpointConfigs'] = {
@@ -118,7 +95,6 @@ export function openaiCompatible(
     endpointConfigs,
     metadata: { website: p.website },
     ...(p.authOptional ? { authOptional: p.authOptional } : {}),
-    ...(p.serverTools ? { serverTools: p.serverTools } : {}),
     ...(p.presetProviderId ? { presetProviderId: p.presetProviderId } : {}),
     ...(p.modelsDevProvider ? { modelsDevProvider: p.modelsDevProvider } : {}),
     ...(p.fetchModels ? { fetchModels: p.fetchModels } : {}),

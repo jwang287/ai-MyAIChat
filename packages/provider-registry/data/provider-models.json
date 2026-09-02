@@ -1302,369 +1302,6 @@
       "providerId": "302ai"
     },
     {
-      "apiModelId": "doubao-seedream-4-0",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "sequentialImageGeneration": {
-                "default": "disabled",
-                "options": ["auto", "disabled"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "2K",
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/doubao/doubao-seedream-4-0/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "doubao-seedream-4-0",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "doubao-seedream-4-5",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "sequentialImageGeneration": {
-                "default": "disabled",
-                "options": ["auto", "disabled"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "2K",
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/doubao/doubao-seedream-4-5/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "doubao-seedream-4-5",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "ernie-irag-edit",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/qianfan/ernie-irag-edit/predictions"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "ernie-irag-edit",
-      "name": "ERNIE iRAG Edit",
-      "outputModalities": ["image"],
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "flux-2-flex",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "16:9",
-                "options": ["16:9", "1:1", "4:3"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "safetyTolerance": {
-                "default": 2,
-                "max": 5,
-                "min": 0,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/bfl/flux-2-flex/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "flux-2-flex",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "flux-2-pro",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "16:9",
-                "options": ["16:9", "1:1", "4:3"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "safetyTolerance": {
-                "default": 2,
-                "max": 5,
-                "min": 0,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/bfl/flux-2-pro/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "flux-2-pro",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "ideogram/V3",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "16:9", "9:16", "3:2", "2:3", "4:3", "3:4"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "renderingSpeed": {
-                "default": "DEFAULT",
-                "options": ["DEFAULT", "TURBO", "QUALITY"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/ideogram/V3/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "ideogram-v3",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "imagen-3.0-generate-002",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/google/imagen-3.0-generate-002/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "imagen-3-0-generate-002",
-      "name": "Imagen 3.0",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "imagen-4.0-fast-generate-001",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/google/imagen-4.0-fast-generate-001/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "imagen-4-0-fast-generate-001",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "imagen-4.0-generate-001",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/google/imagen-4.0-generate-001/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "imagen-4-0-generate-001",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "imagen-4.0-ultra-generate-001",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/google/imagen-4.0-ultra-generate-001/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "imagen-4-0-ultra-generate-001",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "irag-1.0",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/qianfan/irag-1.0/predictions"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "irag-1-0",
-      "name": "Baidu iRAG 1.0",
-      "outputModalities": ["image"],
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "qwen-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "768x1024", "1024x768", "512x1024", "1024x576", "576x1024"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/qianfan/qwen-image/predictions"
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image",
-      "providerId": "aihubmix"
-    },
-    {
-      "apiModelId": "qwen-image-edit",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "768x1024", "1024x768", "512x1024", "1024x576", "576x1024"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/models/qianfan/qwen-image-edit/predictions"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "qwen-image-edit",
-      "providerId": "aihubmix"
-    },
-    {
       "apiModelId": "global.anthropic.claude-fable-5",
       "modelId": "claude-fable-5",
       "pricing": {
@@ -4471,269 +4108,6 @@
           }
         }
       }
-    },
-    {
-      "apiModelId": "qwen-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1328x1328",
-                "options": ["1664x928", "1472x1140", "1328x1328", "1140x1472", "928x1664"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/text2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "qwen-image-3.0",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/multimodal-generation/generation",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/multimodal-generation/generation",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image-3-0",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "qwen-image-3.0-pro",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/multimodal-generation/generation",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/multimodal-generation/generation",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image-3-0-pro",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "qwen-image-edit",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/multimodal-generation/generation",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image-edit",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "qwen-mt-image",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "requirePrompt": false,
-            "supports": {
-              "sourceLang": {
-                "default": "auto",
-                "options": ["auto", "zh", "en", "ja", "ko", "fr", "es", "ru", "de"],
-                "type": "enum"
-              },
-              "targetLang": {
-                "default": "en",
-                "options": ["en", "zh", "ja", "ko", "fr", "es", "ru", "de"],
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/image2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "inputModalities": ["image"],
-      "modelId": "qwen-mt-image",
-      "name": "Qwen MT Image",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba",
-      "providerId": "dashscope"
     },
     {
       "endpointTypes": ["openai-chat-completions", "openai-responses"],
@@ -8008,499 +7382,6 @@
       "providerId": "dashscope"
     },
     {
-      "apiModelId": "wan2.5-i2i-preview",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1280x1280",
-                "options": ["1280x1280", "1024x1024", "1664x928", "928x1664"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/image2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "wan2-5-i2i-preview",
-      "name": "Wan 2.5 i2i Preview",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wan2.6-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "enableInterleave": {
-                "default": true,
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "1K",
-                "options": ["1K", "2K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/image-generation/generation"
-            }
-          }
-        }
-      },
-      "modelId": "wan2-6-image",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wan2.7-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "2K",
-                "options": ["1K", "2K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "thinkingMode": {
-                "default": true,
-                "type": "switch"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/image-generation/generation"
-            }
-          }
-        }
-      },
-      "modelId": "wan2-7-image",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wan2.7-image-pro",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "2K",
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "thinkingMode": {
-                "default": true,
-                "type": "switch"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/image-generation/generation"
-            }
-          }
-        }
-      },
-      "modelId": "wan2-7-image-pro",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wanx-v1",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "refMode": {
-                "default": "repaint",
-                "options": ["repaint", "refonly"],
-                "type": "enum"
-              },
-              "refStrength": {
-                "default": 0.5,
-                "max": 1,
-                "min": 0,
-                "step": 0.05,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "720x1280", "1280x720", "768x1152"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "style": {
-                "default": "<auto>",
-                "options": [
-                  "<auto>",
-                  "<photography>",
-                  "<portrait>",
-                  "<3d cartoon>",
-                  "<anime>",
-                  "<oil painting>",
-                  "<watercolor>",
-                  "<sketch>",
-                  "<chinese painting>",
-                  "<flat illustration>"
-                ],
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/text2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "wanx-v1",
-      "name": "Wanx v1",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wanx2.0-t2i-turbo",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "1280x720", "720x1280", "1440x720", "720x1440"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/text2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "wanx2-0-t2i-turbo",
-      "name": "Wanx 2.0 T2I Turbo",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wanx2.1-imageedit",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "bottomScale": {
-                "default": 1,
-                "max": 2,
-                "min": 1,
-                "step": 0.05,
-                "type": "range"
-              },
-              "function": {
-                "default": "stylization_all",
-                "options": [
-                  "stylization_all",
-                  "stylization_local",
-                  "description_edit",
-                  "description_edit_with_mask",
-                  "remove_watermark",
-                  "expand",
-                  "super_resolution",
-                  "colorization",
-                  "doodle",
-                  "control_cartoon_feature"
-                ],
-                "type": "enum"
-              },
-              "isSketch": {
-                "default": false,
-                "type": "switch"
-              },
-              "leftScale": {
-                "default": 1,
-                "max": 2,
-                "min": 1,
-                "step": 0.05,
-                "type": "range"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "rightScale": {
-                "default": 1,
-                "max": 2,
-                "min": 1,
-                "step": 0.05,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "strength": {
-                "default": 0.5,
-                "max": 1,
-                "min": 0,
-                "step": 0.05,
-                "type": "range"
-              },
-              "topScale": {
-                "default": 1,
-                "max": 2,
-                "min": 1,
-                "step": 0.05,
-                "type": "range"
-              },
-              "upscaleFactor": {
-                "default": 2,
-                "max": 4,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/image2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "wanx2-1-imageedit",
-      "name": "Wanx 2.1 Image Edit",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wanx2.1-t2i-plus",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "1280x720", "720x1280", "1440x720", "720x1440"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/text2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "wanx2-1-t2i-plus",
-      "name": "Wanx 2.1 T2I Plus",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba",
-      "providerId": "dashscope"
-    },
-    {
-      "apiModelId": "wanx2.1-t2i-turbo",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "1280x720", "720x1280", "1440x720", "720x1440"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/api/v1/services/aigc/text2image/image-synthesis"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "wanx2-1-t2i-turbo",
-      "name": "Wanx 2.1 T2I Turbo",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba",
-      "providerId": "dashscope"
-    },
-    {
       "endpointTypes": ["openai-chat-completions"],
       "modelId": "deepseek-chat",
       "providerId": "deepseek"
@@ -8903,589 +7784,6 @@
           }
         }
       }
-    },
-    {
-      "apiModelId": "dall-e-3",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["standard", "hd"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "1792x1024", "1024x1792"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "style": {
-                "options": ["vivid", "natural"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "modelId": "dall-e-3",
-      "providerId": "dmxapi"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "2304x1728",
-                  "1728x2304",
-                  "2560x1440",
-                  "1440x2560",
-                  "2496x1664",
-                  "1664x2496",
-                  "3024x1296"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "2304x1728",
-                  "1728x2304",
-                  "2560x1440",
-                  "1440x2560",
-                  "2496x1664",
-                  "1664x2496",
-                  "3024x1296"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "merge": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "2304x1728",
-                  "1728x2304",
-                  "2560x1440",
-                  "1440x2560",
-                  "2496x1664",
-                  "1664x2496",
-                  "3024x1296"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "modelId": "doubao-seedream-4-0",
-      "providerId": "dmxapi"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "2304x1728",
-                  "1728x2304",
-                  "2560x1440",
-                  "1440x2560",
-                  "2496x1664",
-                  "1664x2496",
-                  "3024x1296"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "2304x1728",
-                  "1728x2304",
-                  "2560x1440",
-                  "1440x2560",
-                  "2496x1664",
-                  "1664x2496",
-                  "3024x1296"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "merge": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "2304x1728",
-                  "1728x2304",
-                  "2560x1440",
-                  "1440x2560",
-                  "2496x1664",
-                  "1664x2496",
-                  "3024x1296"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "modelId": "doubao-seedream-4-5",
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "doubao-seedream-5.0-lite",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": true,
-                "type": "switch"
-              },
-              "maxImages": {
-                "default": 1,
-                "max": 15,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "sequentialImageGeneration": {
-                "default": "disabled",
-                "options": ["auto", "disabled"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "2K",
-                "options": ["2K", "3K", "2048x2048"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/responses",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "doubao-seedream-5-0-lite",
-      "name": "Doubao Seedream 5.0 Lite",
-      "outputModalities": ["image"],
-      "ownedBy": "bytedance",
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "gemini-2.5-flash-image",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "1x1",
-                "options": ["1x1"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "1x1",
-                "options": ["1x1"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "merge": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "1x1",
-                "options": ["1x1"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "modelId": "gemini-2-5-flash-image",
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "gemini-3.1-flash-image-preview",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "9:16", "16:9", "3:4", "4:3", "2:3", "3:2"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageResolution": {
-                "default": "1K",
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1beta/models",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "gemini-3-1-flash-image-preview",
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "gpt-image-1.5",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "moderation": {
-                "options": ["auto", "low"],
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg", "webp"],
-                "type": "enum"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["auto", "1024x1024", "1536x1024", "1024x1536"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "modelId": "gpt-image-1-5",
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "musesteamer-air-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "1152x864", "864x1152", "1664x928", "928x1664"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "musesteamer-air-image",
-      "name": "MuseSteamer Air Image",
-      "outputModalities": ["image"],
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "nano-banana",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "16:9", "9:16", "4:3", "3:4", "1x1"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "16:9", "9:16", "4:3", "3:4", "1x1"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              }
-            }
-          },
-          "merge": {
-            "supports": {
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "16:9", "9:16", "4:3", "3:4", "1x1"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "nano-banana",
-      "name": "Nano Banana",
-      "outputModalities": ["image"],
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "nano-banana-2",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "16:9", "9:16", "4:3", "3:4"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              }
-            }
-          },
-          "merge": {
-            "supports": {
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "16:9", "9:16", "4:3", "3:4"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "nano-banana-2",
-      "name": "Nano Banana 2",
-      "outputModalities": ["image"],
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "qwen-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "1328x1328",
-                "options": ["1664x928", "1472x1140", "1328x1328", "1140x1472", "928x1664"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/images/generations",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image",
-      "providerId": "dmxapi"
-    },
-    {
-      "apiModelId": "wan2.6-t2i",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1280x1280",
-                "options": ["1280x1280", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v1/responses",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "wan2-6-t2i",
-      "providerId": "dmxapi"
     },
     {
       "endpointTypes": ["openai-chat-completions"],
@@ -10640,15 +8938,15 @@
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 0.028
+          "perMillionTokens": 0.007
         },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.14
+          "perMillionTokens": 0.22
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 0.28
+          "perMillionTokens": 0.66
         }
       },
       "providerId": "fireworks",
@@ -11664,6 +9962,29 @@
       "providerId": "gateway"
     },
     {
+      "apiModelId": "anthropic/claude-fable-5.1",
+      "modelId": "claude-fable-5-1",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.25
+        },
+        "cacheWrite": {
+          "currency": "USD",
+          "perMillionTokens": 12.5
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 10
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 50
+        }
+      },
+      "providerId": "gateway"
+    },
+    {
       "apiModelId": "anthropic/claude-haiku-4.5",
       "modelId": "claude-haiku-4-5",
       "pricing": {
@@ -12003,25 +10324,6 @@
         "output": {
           "currency": "USD",
           "perMillionTokens": 5.4
-        }
-      },
-      "providerId": "gateway"
-    },
-    {
-      "apiModelId": "deepseek/deepseek-v3",
-      "modelId": "deepseek-v3",
-      "pricing": {
-        "cacheRead": {
-          "currency": "USD",
-          "perMillionTokens": 0.135
-        },
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 0.27
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 1.12
         }
       },
       "providerId": "gateway"
@@ -14362,6 +12664,25 @@
       "providerId": "gateway"
     },
     {
+      "apiModelId": "xiaomi/mimo-v2.5-pro-ultraspeed",
+      "modelId": "mimo-v2-5-pro-ultraspeed",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.0108
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 1.305
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 2.61
+        }
+      },
+      "providerId": "gateway"
+    },
+    {
       "apiModelId": "minimax/minimax-m2",
       "modelId": "minimax-m2",
       "pricing": {
@@ -15383,6 +13704,25 @@
       "providerId": "gateway"
     },
     {
+      "apiModelId": "alibaba/qwen3.8-flash-next",
+      "modelId": "qwen3-8-flash-next",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.01
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.12
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0.4
+        }
+      },
+      "providerId": "gateway"
+    },
+    {
       "apiModelId": "alibaba/qwen3.8-max",
       "modelId": "qwen3-8-max",
       "pricing": {
@@ -16052,6 +14392,21 @@
         "output": {
           "currency": "USD",
           "perMillionTokens": 3
+        }
+      },
+      "providerId": "groq"
+    },
+    {
+      "apiModelId": "qwen/qwen3.8-27b",
+      "modelId": "qwen3-8-27b",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.8
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 4
         }
       },
       "providerId": "groq"
@@ -17417,361 +15772,9 @@
       }
     },
     {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16", "21:9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["custom"],
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16", "21:9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["custom"],
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "image-01",
-      "providerId": "minimax"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "image-01-live",
-      "providerId": "minimax"
-    },
-    {
       "endpointTypes": ["openai-chat-completions", "anthropic-messages"],
       "modelId": "minimax-m3",
       "providerId": "minimax"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16", "21:9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["custom"],
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16", "21:9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["custom"],
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "image-01",
-      "providerId": "minimax-global"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/image_generation",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "image-01-live",
-      "providerId": "minimax-global"
     },
     {
       "endpointTypes": ["openai-chat-completions", "anthropic-messages"],
@@ -20040,68 +18043,6 @@
       "providerId": "nvidia"
     },
     {
-      "apiModelId": "x/flux2-klein",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["512x512", "768x768", "1024x1024"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "x/flux2-klein",
-      "name": "FLUX.2 Klein",
-      "outputModalities": ["image"],
-      "providerId": "ollama"
-    },
-    {
-      "apiModelId": "x/z-image-turbo",
-      "capabilities": {
-        "force": ["image-generation"]
-      },
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numInferenceSteps": {
-                "default": 9,
-                "max": 20,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["512x512", "768x768", "1024x1024"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "x/z-image-turbo",
-      "name": "Z-Image Turbo",
-      "outputModalities": ["image"],
-      "providerId": "ollama"
-    },
-    {
       "apiModelId": "gpt-5.3-codex-spark",
       "endpointTypes": ["openai-responses"],
       "modelId": "gpt-5-3-codex-spark",
@@ -21613,12 +19554,50 @@
       }
     },
     {
+      "apiModelId": "anthropic/claude-fable-5.1",
+      "modelId": "claude-fable-5-1",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.25
+        },
+        "cacheWrite": {
+          "currency": "USD",
+          "perMillionTokens": 12.5
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 10
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 50
+        }
+      },
+      "providerId": "openrouter",
+      "reasoningContracts": {
+        "openai-chat-completions": {
+          "support": {
+            "controls": [
+              {
+                "default": "high",
+                "kind": "effort",
+                "values": ["max", "xhigh", "high", "medium", "low"]
+              }
+            ],
+            "defaultEffort": "high",
+            "supportedEfforts": ["max", "xhigh", "high", "medium", "low"]
+          }
+        }
+      }
+    },
+    {
       "apiModelId": "~anthropic/claude-fable-latest",
       "modelId": "claude-fable-latest",
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 1
+          "perMillionTokens": 0.25
         },
         "cacheWrite": {
           "currency": "USD",
@@ -21910,48 +19889,6 @@
       }
     },
     {
-      "apiModelId": "anthropic/claude-opus-4.7-fast",
-      "modelId": "claude-opus-4-7-fast",
-      "pricing": {
-        "cacheRead": {
-          "currency": "USD",
-          "perMillionTokens": 3
-        },
-        "cacheWrite": {
-          "currency": "USD",
-          "perMillionTokens": 37.5
-        },
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 30
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 150
-        }
-      },
-      "providerId": "openrouter",
-      "reasoningContracts": {
-        "openai-chat-completions": {
-          "support": {
-            "controls": [
-              {
-                "default": "high",
-                "kind": "effort",
-                "values": ["max", "xhigh", "high", "medium", "low"]
-              },
-              {
-                "default": false,
-                "kind": "toggle"
-              }
-            ],
-            "defaultEffort": "high",
-            "supportedEfforts": ["max", "xhigh", "high", "medium", "low", "none"]
-          }
-        }
-      }
-    },
-    {
       "apiModelId": "anthropic/claude-opus-4.8",
       "modelId": "claude-opus-4-8",
       "pricing": {
@@ -21994,48 +19931,6 @@
       }
     },
     {
-      "apiModelId": "anthropic/claude-opus-4.8-fast",
-      "modelId": "claude-opus-4-8-fast",
-      "pricing": {
-        "cacheRead": {
-          "currency": "USD",
-          "perMillionTokens": 1
-        },
-        "cacheWrite": {
-          "currency": "USD",
-          "perMillionTokens": 12.5
-        },
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 10
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 50
-        }
-      },
-      "providerId": "openrouter",
-      "reasoningContracts": {
-        "openai-chat-completions": {
-          "support": {
-            "controls": [
-              {
-                "default": "high",
-                "kind": "effort",
-                "values": ["max", "xhigh", "high", "medium", "low"]
-              },
-              {
-                "default": false,
-                "kind": "toggle"
-              }
-            ],
-            "defaultEffort": "high",
-            "supportedEfforts": ["max", "xhigh", "high", "medium", "low", "none"]
-          }
-        }
-      }
-    },
-    {
       "apiModelId": "anthropic/claude-opus-5",
       "modelId": "claude-opus-5",
       "pricing": {
@@ -22054,48 +19949,6 @@
         "output": {
           "currency": "USD",
           "perMillionTokens": 25
-        }
-      },
-      "providerId": "openrouter",
-      "reasoningContracts": {
-        "openai-chat-completions": {
-          "support": {
-            "controls": [
-              {
-                "default": "high",
-                "kind": "effort",
-                "values": ["max", "xhigh", "high", "medium", "low"]
-              },
-              {
-                "default": true,
-                "kind": "toggle"
-              }
-            ],
-            "defaultEffort": "high",
-            "supportedEfforts": ["max", "xhigh", "high", "medium", "low", "none"]
-          }
-        }
-      }
-    },
-    {
-      "apiModelId": "anthropic/claude-opus-5-fast",
-      "modelId": "claude-opus-5-fast",
-      "pricing": {
-        "cacheRead": {
-          "currency": "USD",
-          "perMillionTokens": 1
-        },
-        "cacheWrite": {
-          "currency": "USD",
-          "perMillionTokens": 12.5
-        },
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 10
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 50
         }
       },
       "providerId": "openrouter",
@@ -22491,15 +20344,15 @@
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 0.55
+          "perMillionTokens": 0.13
         },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.55
+          "perMillionTokens": 0.25
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 1.65
+          "perMillionTokens": 0.95
         }
       },
       "providerId": "openrouter",
@@ -22724,15 +20577,15 @@
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 0.014
+          "perMillionTokens": 0.007
         },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.44
+          "perMillionTokens": 0.22
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 1.32
+          "perMillionTokens": 0.66
         }
       },
       "providerId": "openrouter",
@@ -22762,15 +20615,15 @@
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 0.044
+          "perMillionTokens": 0.03718
         },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 1.32
+          "perMillionTokens": 1.1154
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 3.96
+          "perMillionTokens": 3.3462
         }
       },
       "providerId": "openrouter",
@@ -22884,238 +20737,6 @@
       }
     },
     {
-      "apiModelId": "black-forest-labs/flux.2-flex",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 8,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "flux-2-flex",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "black-forest-labs/flux.2-klein-4b",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 4,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "flux-2-klein-4b",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "black-forest-labs/flux.2-max",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 8,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "flux-2-max",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "black-forest-labs/flux.2-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 8,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "flux-2-pro",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
       "apiModelId": "openrouter/free",
       "modelId": "free",
       "name": "Free Models Router",
@@ -23202,46 +20823,7 @@
     },
     {
       "apiModelId": "google/gemini-2.5-flash-image",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 3,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gemini-2-5-flash-image",
-      "outputModalities": ["image", "text"],
       "pricing": {
         "cacheRead": {
           "currency": "USD",
@@ -23389,84 +20971,7 @@
     },
     {
       "apiModelId": "google/gemini-3.1-flash-image",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:4",
-                  "1:8",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "8:1",
-                  "9:16",
-                  "16:9",
-                  "21:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["512", "1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:4",
-                  "1:8",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "8:1",
-                  "9:16",
-                  "16:9",
-                  "21:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["512", "1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gemini-3-1-flash-image",
-      "outputModalities": ["image", "text"],
       "pricing": {
         "input": {
           "currency": "USD",
@@ -23500,84 +21005,7 @@
     },
     {
       "apiModelId": "google/gemini-3.1-flash-image-preview",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:4",
-                  "1:8",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "8:1",
-                  "9:16",
-                  "16:9",
-                  "21:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["512", "1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:4",
-                  "1:8",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "8:1",
-                  "9:16",
-                  "16:9",
-                  "21:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["512", "1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gemini-3-1-flash-image-preview",
-      "outputModalities": ["image", "text"],
       "pricing": {
         "input": {
           "currency": "USD",
@@ -23653,84 +21081,7 @@
     },
     {
       "apiModelId": "google/gemini-3.1-flash-lite-image",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:4",
-                  "1:8",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "8:1",
-                  "9:16",
-                  "16:9",
-                  "21:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:4",
-                  "1:8",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "8:1",
-                  "9:16",
-                  "16:9",
-                  "21:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gemini-3-1-flash-lite-image",
-      "outputModalities": ["image", "text"],
       "pricing": {
         "input": {
           "currency": "USD",
@@ -24075,54 +21426,7 @@
     },
     {
       "apiModelId": "google/gemini-3-pro-image",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gemini-3-pro-image",
-      "outputModalities": ["image", "text"],
       "pricing": {
         "cacheRead": {
           "currency": "USD",
@@ -24152,54 +21456,7 @@
     },
     {
       "apiModelId": "google/gemini-3-pro-image-preview",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gemini-3-pro-image-preview",
-      "outputModalities": ["image", "text"],
       "pricing": {
         "cacheRead": {
           "currency": "USD",
@@ -24877,20 +22134,54 @@
       }
     },
     {
+      "apiModelId": "~z-ai/glm-flash-latest",
+      "modelId": "glm-flash-latest",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.015
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.075
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0.25
+        }
+      },
+      "providerId": "openrouter",
+      "reasoningContracts": {
+        "openai-chat-completions": {
+          "support": {
+            "controls": [
+              {
+                "default": "max",
+                "kind": "effort",
+                "values": ["max", "high", "low"]
+              }
+            ],
+            "defaultEffort": "max",
+            "supportedEfforts": ["max", "high", "low"]
+          }
+        }
+      }
+    },
+    {
       "apiModelId": "~z-ai/glm-latest",
       "modelId": "glm-latest",
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 0.247
+          "perMillionTokens": 0.1
         },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 1.1875
+          "perMillionTokens": 1.15
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 4.18
+          "perMillionTokens": 3.5
         }
       },
       "providerId": "openrouter",
@@ -25469,64 +22760,7 @@
     },
     {
       "apiModelId": "openai/gpt-5.4-image-2",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 16,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gpt-5-4-image-2",
-      "name": "OpenAI: GPT-5.4 Image 2",
-      "outputModalities": ["image", "text"],
-      "ownedBy": "openrouter",
       "pricing": {
         "cacheRead": {
           "currency": "USD",
@@ -25990,64 +23224,7 @@
     },
     {
       "apiModelId": "openai/gpt-5-image",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 16,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gpt-5-image",
-      "name": "OpenAI: GPT-5 Image",
-      "outputModalities": ["image", "text"],
-      "ownedBy": "openrouter",
       "pricing": {
         "cacheRead": {
           "currency": "USD",
@@ -26073,64 +23250,7 @@
     },
     {
       "apiModelId": "openai/gpt-5-image-mini",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 16,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
       "modelId": "gpt-5-image-mini",
-      "name": "OpenAI: GPT-5 Image Mini",
-      "outputModalities": ["image", "text"],
-      "ownedBy": "openrouter",
       "pricing": {
         "cacheRead": {
           "currency": "USD",
@@ -26299,186 +23419,6 @@
           "perMillionTokens": 30
         }
       },
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "openai/gpt-image-1",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 16,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "gpt-image-1",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "openai/gpt-image-1-mini",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 16,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "gpt-image-1-mini",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "openai/gpt-image-2",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 16,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "gpt-image-2",
-      "outputModalities": ["image"],
       "providerId": "openrouter"
     },
     {
@@ -26688,6 +23628,45 @@
       "providerId": "openrouter"
     },
     {
+      "apiModelId": "ibm-granite/granite-4.2-8b",
+      "modelId": "granite-4-2-8b",
+      "name": "Granite 4.2 8B",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.05
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.1
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0.15
+        }
+      },
+      "providerId": "openrouter",
+      "reasoningContracts": {
+        "openai-chat-completions": {
+          "support": {
+            "controls": [
+              {
+                "default": "high",
+                "kind": "effort",
+                "values": ["high", "low", "none"]
+              },
+              {
+                "default": true,
+                "kind": "toggle"
+              }
+            ],
+            "defaultEffort": "high",
+            "supportedEfforts": ["high", "low", "none"]
+          }
+        }
+      }
+    },
+    {
       "apiModelId": "x-ai/grok-4.20",
       "modelId": "grok-4-20",
       "pricing": {
@@ -26884,178 +23863,6 @@
           }
         }
       }
-    },
-    {
-      "apiModelId": "x-ai/grok-imagine-image-2.0",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 3,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "3:4",
-                  "4:3",
-                  "9:16",
-                  "16:9",
-                  "2:3",
-                  "3:2",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "1:2",
-                  "2:1",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["low", "medium"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "3:4",
-                  "4:3",
-                  "9:16",
-                  "16:9",
-                  "2:3",
-                  "3:2",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "1:2",
-                  "2:1",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["low", "medium"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "grok-imagine-image-2-0",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "x-ai/grok-imagine-image-quality",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 3,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "3:4",
-                  "4:3",
-                  "9:16",
-                  "16:9",
-                  "2:3",
-                  "3:2",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "1:2",
-                  "2:1",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "3:4",
-                  "4:3",
-                  "9:16",
-                  "16:9",
-                  "2:3",
-                  "3:2",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "1:2",
-                  "2:1",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "grok-imagine-image-quality",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
     },
     {
       "apiModelId": "~x-ai/grok-latest",
@@ -27350,6 +24157,10 @@
                 "default": "high",
                 "kind": "effort",
                 "values": ["high", "low", "none"]
+              },
+              {
+                "default": true,
+                "kind": "toggle"
               }
             ],
             "defaultEffort": "high",
@@ -27429,25 +24240,6 @@
           }
         }
       }
-    },
-    {
-      "apiModelId": "kwaipilot/kat-coder-air-v2.5",
-      "modelId": "kat-coder-air-v2-5",
-      "pricing": {
-        "cacheRead": {
-          "currency": "USD",
-          "perMillionTokens": 0.03
-        },
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 0.15
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 0.6
-        }
-      },
-      "providerId": "openrouter"
     },
     {
       "apiModelId": "kwaipilot/kat-coder-pro-v2",
@@ -27676,150 +24468,6 @@
       }
     },
     {
-      "apiModelId": "krea/krea-2-large",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:2", "16:9", "4:5", "2:3", "9:16"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:2", "16:9", "4:5", "2:3", "9:16"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "krea-2-large",
-      "name": "Krea: Krea 2 Large",
-      "outputModalities": ["image"],
-      "ownedBy": "krea",
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "krea/krea-2-medium",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:2", "16:9", "4:5", "2:3", "9:16"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:2", "16:9", "4:5", "2:3", "9:16"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "krea-2-medium",
-      "name": "Krea: Krea 2 Medium",
-      "outputModalities": ["image"],
-      "ownedBy": "krea",
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "krea/krea-2-medium-turbo",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:2", "16:9", "4:5", "2:3", "9:16"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:2", "16:9", "4:5", "2:3", "9:16"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "krea-2-medium-turbo",
-      "name": "Krea: Krea 2 Medium Turbo",
-      "outputModalities": ["image"],
-      "ownedBy": "krea",
-      "providerId": "openrouter"
-    },
-    {
       "apiModelId": "sao10k/l3.1-euryale-70b",
       "modelId": "l3-1-euryale-70b",
       "name": "Llama 3.1 Euryale 70B v2.2",
@@ -28003,7 +24651,8 @@
                 "default": true,
                 "kind": "toggle"
               }
-            ]
+            ],
+            "supportedEfforts": ["none", "auto"]
           }
         }
       }
@@ -28110,17 +24759,13 @@
       "apiModelId": "meta-llama/llama-4-scout",
       "modelId": "llama-4-scout",
       "pricing": {
-        "cacheRead": {
-          "currency": "USD",
-          "perMillionTokens": 0.055
-        },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.11
+          "perMillionTokens": 0.1
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 0.34
+          "perMillionTokens": 0.3
         }
       },
       "providerId": "openrouter"
@@ -28209,101 +24854,13 @@
       "pricing": {
         "input": {
           "currency": "USD",
-          "perMillionTokens": 3
+          "perMillionTokens": 2.5
         },
         "output": {
           "currency": "USD",
           "perMillionTokens": 5
         }
       },
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "microsoft/mai-image-2.5",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "mai-image-2-5",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "microsoft/mai-image-2.5-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "mai-image-2-5-pro",
-      "outputModalities": ["image"],
       "providerId": "openrouter"
     },
     {
@@ -28321,6 +24878,44 @@
         "output": {
           "currency": "USD",
           "perMillionTokens": 0.75
+        }
+      },
+      "providerId": "openrouter",
+      "reasoningContracts": {
+        "openai-chat-completions": {
+          "support": {
+            "controls": [
+              {
+                "default": "medium",
+                "kind": "effort",
+                "values": ["high", "medium", "low", "none"]
+              },
+              {
+                "default": true,
+                "kind": "toggle"
+              }
+            ],
+            "defaultEffort": "medium",
+            "supportedEfforts": ["high", "medium", "low", "none"]
+          }
+        }
+      }
+    },
+    {
+      "apiModelId": "inception/mercury-2.5-preview",
+      "modelId": "mercury-2-5-preview",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.004
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.04
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0.15
         }
       },
       "providerId": "openrouter",
@@ -28946,26 +25541,6 @@
       }
     },
     {
-      "apiModelId": "meta/muse-image",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {}
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "muse-image",
-      "name": "Meta: Muse Image",
-      "outputModalities": ["image"],
-      "ownedBy": "meta",
-      "providerId": "openrouter"
-    },
-    {
       "apiModelId": "meta/muse-spark-1.1",
       "modelId": "muse-spark-1-1",
       "pricing": {
@@ -29241,15 +25816,15 @@
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 0.1
+          "perMillionTokens": 0.1875
         },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.5
+          "perMillionTokens": 0.625
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 2.2
+          "perMillionTokens": 3.125
         }
       },
       "providerId": "openrouter",
@@ -29740,178 +26315,6 @@
           "perMillionTokens": 1
         }
       },
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "qwen/qwen-image-3",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 4,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "1:4",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "1:4",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "qwen-image-3",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "qwen/qwen-image-3-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 4,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "1:4",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "1:4",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:1",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "qwen-image-3-pro",
-      "outputModalities": ["image"],
       "providerId": "openrouter"
     },
     {
@@ -30573,7 +26976,7 @@
       "pricing": {
         "cacheRead": {
           "currency": "USD",
-          "perMillionTokens": 0.25
+          "perMillionTokens": 0.2
         },
         "input": {
           "currency": "USD",
@@ -30909,9 +27312,13 @@
       "apiModelId": "qwen/qwen3-next-80b-a3b-instruct",
       "modelId": "qwen3-next-80b-a3b-instruct",
       "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.07
+        },
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.09
+          "perMillionTokens": 0.1
         },
         "output": {
           "currency": "USD",
@@ -31051,714 +27458,6 @@
       "providerId": "openrouter"
     },
     {
-      "apiModelId": "recraft/recraft-v3",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v3",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4.1",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-1",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4.1-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-1-pro",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4.1-pro-vector",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-1-pro-vector",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4.1-utility",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-1-utility",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4.1-utility-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-1-utility-pro",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4.1-vector",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-1-vector",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-pro",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4-pro-vector",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-pro-vector",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4-styles",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 10,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-styles",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4-styles-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 10,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-styles-pro",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4-styles-pro-vector",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 10,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-styles-pro-vector",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4-styles-vector",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 10,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "2:1", "1:2", "3:2", "2:3", "4:3", "3:4", "5:4", "4:5", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-styles-vector",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "recraft/recraft-v4-vector",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 1,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 6,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["svg"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "recraft-v4-vector",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
       "apiModelId": "rekaai/reka-edge",
       "modelId": "reka-edge",
       "pricing": {
@@ -31853,246 +27552,6 @@
           "perMillionTokens": 0.65
         }
       },
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "sourceful/riverflow-v2.5-fast",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 4,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["jpeg"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["jpeg"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "riverflow-v2-5-fast",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "sourceful/riverflow-v2.5-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 10,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg", "webp"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "options": ["png", "jpeg", "webp"],
-                "type": "enum"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "riverflow-v2-5-pro",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "sourceful/riverflow-v2-fast",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 4,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "riverflow-v2-fast",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "sourceful/riverflow-v2-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 10,
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["1:1", "4:3", "3:4", "3:2", "2:3", "16:9", "9:16", "21:9", "auto"],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "riverflow-v2-pro",
-      "outputModalities": ["image"],
       "providerId": "openrouter"
     },
     {
@@ -32318,294 +27777,6 @@
           }
         }
       }
-    },
-    {
-      "apiModelId": "bytedance-seed/seedream-4.5",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "9:21",
-                  "21:9",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "9:21",
-                  "21:9",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 10,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K", "4K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
-      "modelId": "seedream-4-5",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "bytedance-seed/seedream-5-0-lite",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "9:21",
-                  "21:9",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 4,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["2K", "4K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "9:21",
-                  "21:9",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 4,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["2K", "4K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "seedream-5-0-lite",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
-    },
-    {
-      "apiModelId": "bytedance-seed/seedream-5-0-pro",
-      "capabilities": {
-        "add": ["image-generation"]
-      },
-      "endpointTypes": ["openai-image-generation"],
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "maxInputImages": 14,
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "9:21",
-                  "21:9",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "2:1",
-                  "2:3",
-                  "3:2",
-                  "3:4",
-                  "4:3",
-                  "4:5",
-                  "5:4",
-                  "9:16",
-                  "16:9",
-                  "9:19.5",
-                  "19.5:9",
-                  "9:20",
-                  "20:9",
-                  "9:21",
-                  "21:9",
-                  "auto"
-                ],
-                "type": "enum"
-              },
-              "numImages": {
-                "max": 1,
-                "min": 1,
-                "step": 1,
-                "type": "range"
-              },
-              "resolution": {
-                "options": ["1K", "2K"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "modelId": "seedream-5-0-pro",
-      "outputModalities": ["image"],
-      "providerId": "openrouter"
     },
     {
       "apiModelId": "thedrummer/skyfall-36b-v2",
@@ -32924,7 +28095,7 @@
       "pricing": {
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.5
+          "perMillionTokens": 0.4
         },
         "output": {
           "currency": "USD",
@@ -33641,128 +28812,6 @@
       "providerId": "ppio"
     },
     {
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "1280x1280",
-                "options": ["1280x1280", "1568x1056", "1056x1568", "1472x1088", "1088x1472", "1728x960", "960x1728"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/glm-image"
-            }
-          }
-        }
-      },
-      "modelId": "glm-image",
-      "providerId": "ppio"
-    },
-    {
-      "apiModelId": "hunyuan-image-3",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["1024x1024", "1024x1536", "1536x1024", "1536x1536", "768x1024", "1024x768"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/hunyuan-image-3"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "hunyuan-image-3",
-      "name": "Hunyuan Image 3",
-      "outputModalities": ["image"],
-      "providerId": "ppio"
-    },
-    {
-      "apiModelId": "jimeng-txt2img-v3.0",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "promptEnhancement": {
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1328x1328",
-                "options": ["1328x1328", "1472x1104", "1584x1056", "1664x936", "2016x864", "2048x2048"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/jimeng-txt2img-v3.0"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "jimeng-txt2img-v3-0",
-      "name": "Jimeng Text-to-Image v3.0",
-      "outputModalities": ["image"],
-      "providerId": "ppio"
-    },
-    {
-      "apiModelId": "jimeng-txt2img-v3.1",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "promptEnhancement": {
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1328x1328",
-                "options": ["1328x1328", "1472x1104", "1584x1056", "1664x936", "2016x864", "2048x2048"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/jimeng-txt2img-v3.1"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "jimeng-txt2img-v3-1",
-      "name": "Jimeng Text-to-Image v3.1",
-      "outputModalities": ["image"],
-      "providerId": "ppio"
-    },
-    {
       "apiModelId": "moonshotai/kimi-k2-thinking",
       "modelId": "kimi-k2",
       "modelVariants": ["thinking"],
@@ -33920,55 +28969,6 @@
           "perMillionTokens": 12
         }
       },
-      "providerId": "ppio"
-    },
-    {
-      "apiModelId": "qwen-image-txt2img",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "options": ["1024x1024", "1024x1536", "1536x1024", "1536x1536", "768x1024", "1024x768"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/qwen-image-txt2img"
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image",
-      "providerId": "ppio"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "outputFormat": {
-                "options": ["jpeg", "png", "webp"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/qwen-image-edit-2509"
-            }
-          }
-        }
-      },
-      "modelId": "qwen-image-edit",
       "providerId": "ppio"
     },
     {
@@ -34327,186 +29327,6 @@
           "perMillionTokens": 2
         }
       },
-      "providerId": "ppio"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": ["1K", "2K", "4K", "2048x2048", "2304x1728", "1728x2304", "2560x1440", "1440x2560"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/seedream-4.0",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": ["1K", "2K", "4K", "2048x2048", "2304x1728", "1728x2304", "2560x1440", "1440x2560"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/seedream-4.0",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "seedream-4-0",
-      "providerId": "ppio"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": ["2K", "4K", "2048x2048", "2304x1728", "1728x2304", "2560x1440", "1440x2560"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/seedream-4.5",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": ["2K", "4K", "2048x2048", "2304x1728", "1728x2304", "2560x1440", "1440x2560"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/seedream-4.5",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "seedream-4-5",
-      "providerId": "ppio"
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": ["2K", "3K", "2048x2048", "2304x1728", "1728x2304", "2560x1440", "1440x2560"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/seedream-5.0-lite",
-              "isSync": true
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": ["2K", "3K", "2048x2048", "2304x1728", "1728x2304", "2560x1440", "1440x2560"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/seedream-5.0-lite",
-              "isSync": true
-            }
-          }
-        }
-      },
-      "modelId": "seedream-5-0-lite",
-      "providerId": "ppio"
-    },
-    {
-      "apiModelId": "z-image-turbo",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["1024x1024", "1024x1536", "1536x1024", "1536x1536", "768x1024", "1024x768"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/z-image-turbo"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "z-image-turbo",
-      "name": "Z-Image Turbo",
-      "outputModalities": ["image"],
-      "providerId": "ppio"
-    },
-    {
-      "apiModelId": "z-image-turbo-lora",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["1024x1024", "1024x1536", "1536x1024", "1536x1536", "768x1024", "1024x768"],
-                "render": "chips",
-                "type": "enum"
-              }
-            },
-            "vendorTransport": {
-              "endpoint": "/v3/async/z-image-turbo-lora"
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "modelId": "z-image-turbo-lora",
-      "name": "Z-Image Turbo LoRA",
-      "outputModalities": ["image"],
       "providerId": "ppio"
     },
     {
@@ -37397,6 +32217,29 @@
       "providerId": "vertexai"
     },
     {
+      "apiModelId": "claude-fable-5-1@default",
+      "modelId": "claude-fable-5-1",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.25
+        },
+        "cacheWrite": {
+          "currency": "USD",
+          "perMillionTokens": 12.5
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 10
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 50
+        }
+      },
+      "providerId": "vertexai"
+    },
+    {
       "apiModelId": "claude-haiku-4-5@20251001",
       "modelId": "claude-haiku-4-5",
       "pricing": {
@@ -38311,43 +33154,6 @@
       "providerId": "voyageai"
     },
     {
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["standard", "hd"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "768x1344", "864x1152", "1344x768", "1152x864", "1440x720", "720x1440"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "modelId": "cogview-4",
-      "providerId": "zhipu"
-    },
-    {
       "apiModelId": "glm-5.2",
       "modelId": "glm-5-2",
       "providerId": "zhipu",
@@ -38508,44 +33314,7 @@
           }
         }
       }
-    },
-    {
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 1024,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["standard", "hd"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1280x1280",
-                "options": ["1280x1280", "1568x1056", "1056x1568", "1472x1088", "1088x1472", "1728x960", "960x1728"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "modelId": "glm-image",
-      "providerId": "zhipu"
     }
   ],
-  "version": "e480b304ca4cc435"
+  "version": "3bf1d8c2aec85d3f"
 }

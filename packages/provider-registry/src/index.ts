@@ -5,42 +5,24 @@
 
 // Enums — const objects (SCREAMING_CASE)
 export {
-  CANONICAL_PARAM_KEY,
   CURRENCY,
   ENDPOINT_TYPE,
   MODALITY,
   MODEL_CAPABILITY,
   objectValues,
   REASONING_EFFORT,
-  REASONING_EFFORT_ORDER,
-  SERVER_TOOL,
-  SERVER_TOOL_MODEL_SCOPE
+  REASONING_EFFORT_ORDER
 } from './schemas/enums'
 
 // Runtime schemas (zod) — needed by shared types that compose them
-export type { ImageParamCatalogEntry, ParamValue, ParamValues } from './schemas/imageParamCatalog'
-export {
-  IMAGE_PARAM_CATALOG,
-  IMAGE_PARAM_CATALOG_KEYS,
-  imageParamsSchema,
-  normalizeImageParamNumber,
-  paramCatalogEntry,
-  parseImageParamValue,
-  wireName
-} from './schemas/imageParamCatalog'
-export { ImageGenerationModeSchema, ImageGenerationSupportSchema } from './schemas/model'
-export { buildParamsSchema } from './utils/buildParamsSchema'
 
 // Enum types (PascalCase, derived from const objects)
 export type {
-  CanonicalParamKey,
   Currency,
   EndpointType,
   Modality,
   ModelCapability,
-  ReasoningEffort,
-  ServerTool,
-  ServerToolModelScope
+  ReasoningEffort
 } from './schemas/enums'
 
 // Schema-inferred types (replaces proto types)
@@ -51,9 +33,6 @@ export {
   selectFormatWire
 } from './reasoningProfiles'
 export type {
-  ImageGenerationMode,
-  ImageGenerationSupport,
-  ImageModeDef,
   ModelConfig,
   ModelPricing,
   ModelConfig as ProtoModelConfig,
@@ -61,8 +40,7 @@ export type {
   ReasoningSupport as ProtoReasoningSupport,
   ReasoningControl,
   ReasoningSupport,
-  ReasoningWireDialect,
-  SupportSpec
+  ReasoningWireDialect
 } from './schemas/model'
 export { ReasoningControlSchema } from './schemas/model'
 export type {
@@ -73,7 +51,6 @@ export type {
   ProviderReasoningFormat,
   ReasoningFormatType,
   RegistryEndpointConfig,
-  ServerToolConfig,
   ServiceTierDelivery,
   ServiceTierOptions,
   ServiceTierRequestControl,
@@ -82,7 +59,6 @@ export type {
 export {
   FastModeTransportSchema,
   REASONING_FORMAT_TYPES,
-  ServerToolConfigSchema,
   ServiceTierDeliverySchema,
   ServiceTierOptionsSchema,
   ServiceTierRequestControlSchema,
@@ -142,5 +118,3 @@ export {
   inferReasoningMembership,
   inferReasoningOwnedBy
 } from './patterns/reasoning-heuristics'
-export { isWebSearchEffortUnsupported, supportsServerToolFunctionMixing } from './patterns/serverToolConstraints'
-export { isServerToolModelEligible } from './patterns/serverToolModelEligibility'

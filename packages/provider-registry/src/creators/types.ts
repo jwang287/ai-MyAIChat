@@ -10,8 +10,7 @@ import type { ModelConfig, ReasoningFamilyRule } from '../schemas/model'
 /**
  * A model a creator declares by hand. It is a Partial `ModelConfig` — `ownedBy` comes from the creator and
  * `metadata` is set by the generator, so only `id` is required. Reuses the schema type; nothing is
- * re-declared. Use it to ADD models the API/sources miss (new releases, AIGC, `imageGeneration`
- * widget specs models.dev never has) or to override any field.
+ * re-declared. Use it to add models the API/sources miss or to override any field.
  */
 export type CreatorModel = Partial<Omit<ModelConfig, 'ownedBy' | 'metadata'>> & {
   id: string
@@ -33,19 +32,6 @@ export interface Creator {
   families?: string[]
   /** Fallback: claim every canonical id matching these prefixes. */
   idPrefixes?: string[]
-  /**
-   * Canonical id-prefixes of THIS creator's models whose provider-native tools
-   * coexist with function declarations in one request (e.g. Gemini 3+). Absent
-   * models default to conflict-prone — the safe direction for unknown SKUs.
-   * Compiled into `server-tool-constraints.gen.ts`.
-   */
-  serverToolFunctionMixing?: string[]
-  /**
-   * Reasoning efforts the provider-native web-search tool rejects, declared as
-   * id patterns over THIS creator's models (generation-only regex, expanded to
-   * exact ids — mirrors the effort-vocabulary declarations above).
-   */
-  webSearchUnsupportedEfforts?: Array<{ pattern: string; efforts: string[] }>
   /**
    * Curated reasoning knowledge as DATA (no runtime regex module): the single
    * rule table for THIS creator's id patterns. PROFILE rules (default) assert

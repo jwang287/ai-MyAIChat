@@ -12,7 +12,7 @@
  */
 import * as z from 'zod'
 
-import type { ImageGenerationSupport, ModelConfig, ReasoningSupport, SupportSpec } from '../src/schemas/model'
+import type { ModelConfig, ReasoningSupport } from '../src/schemas/model'
 import type { ProviderModelOverride } from '../src/schemas/provider-models'
 import { deriveLegacyReasoningFields } from '../src/utils/reasoningControls'
 
@@ -23,7 +23,6 @@ export const CAP_ORDER = [
   'function-call',
   'reasoning',
   'image-recognition',
-  'image-generation',
   'audio-recognition',
   'audio-generation',
   'video-recognition',
@@ -103,7 +102,6 @@ export function parseMdEntry(raw: unknown): CherryMeta | null {
   if (inp.includes('image')) caps.add('image-recognition')
   if (inp.includes('audio')) caps.add('audio-recognition')
   if (inp.includes('video')) caps.add('video-recognition')
-  if (out.includes('image')) caps.add('image-generation')
   if (out.includes('audio')) caps.add('audio-generation')
   if (out.includes('video')) caps.add('video-generation')
 
@@ -244,7 +242,6 @@ export function parseOrEntry(raw: unknown): CherryMeta | null {
   if (inp.includes('audio')) caps.add('audio-recognition')
   if (inp.includes('video')) caps.add('video-recognition')
   if (inp.includes('file')) caps.add('file-input')
-  if (out.includes('image')) caps.add('image-generation')
   if (out.includes('audio')) caps.add('audio-generation')
 
   return dropUndef({
@@ -257,84 +254,6 @@ export function parseOrEntry(raw: unknown): CherryMeta | null {
       ? { input: usd(+m.pricing.prompt * 1e6)!, output: usd(+(m.pricing.completion || 0) * 1e6)! }
       : undefined
   }) as CherryMeta
-}
-
-const OR_IMAGE_PARAM_KEYS = {
-  aspect_ratio: 'aspectRatio',
-  background: 'background',
-  n: 'numImages',
-  output_compression: 'outputCompression',
-  output_format: 'outputFormat',
-  quality: 'quality',
-  resolution: 'resolution',
-  seed: 'seed'
-} as const
-
-const OrParamDescriptor = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('enum'), values: z.array(z.string()).min(1) }).loose(),
-  z.object({ type: z.literal('range'), min: z.number(), max: z.number() }).loose(),
-  z.object({ type: z.literal('boolean') }).loose()
-])
-
-type OrParamDescriptor = z.infer<typeof OrParamDescriptor>
-
-function toSupportSpec(key: keyof typeof OR_IMAGE_PARAM_KEYS, descriptor: OrParamDescriptor): SupportSpec {
-  if (descriptor.type === 'enum') return { type: 'enum', options: descriptor.values }
-  if (descriptor.type === 'range') return { type: 'range', min: descriptor.min, max: descriptor.max, step: 1 }
-  // OpenRouter uses a boolean descriptor to mean that an otherwise scalar parameter is supported
-  // (currently `seed`), not that the request value itself is boolean. A text field preserves the
-  // unbounded integer input; imageParamsSchema performs the integer coercion at the IPC boundary.
-  return key === 'seed' ? { type: 'text' } : { type: 'switch' }
-}
-
-/** Convert `/images/models` parameter descriptors into OpenRouter-specific painting controls. */
-export function parseOrImageGeneration(raw: unknown): ImageGenerationSupport | null {
-  const p = OrEntry.safeParse(raw)
-  if (!p.success || Array.isArray(p.data.supported_parameters) || !p.data.supported_parameters) return null
-
-  const supports: NonNullable<ImageGenerationSupport['modes']['generate']>['supports'] = {}
-  for (const [wireKey, canonicalKey] of Object.entries(OR_IMAGE_PARAM_KEYS)) {
-    const parsed = OrParamDescriptor.safeParse(p.data.supported_parameters[wireKey])
-    if (parsed.success) supports[canonicalKey] = toSupportSpec(wireKey as keyof typeof OR_IMAGE_PARAM_KEYS, parsed.data)
-  }
-  // OpenRouter rejects output_compression unless output_format is explicitly jpeg/webp. Some
-  // OpenAI image entries currently advertise compression without advertising output_format; exposing
-  // that orphaned slider makes its default `0` produce an invalid request, so omit the unusable knob.
-  const outputFormat = supports.outputFormat
-  if (
-    supports.outputCompression &&
-    (outputFormat?.type !== 'enum' || !outputFormat.options.some((value) => value === 'jpeg' || value === 'webp'))
-  ) {
-    delete supports.outputCompression
-  }
-  // Transparent output requires an alpha-capable format. If a model explicitly limits output to
-  // non-alpha formats, do not expose an option that OpenRouter will reject when both are selected.
-  const background = supports.background
-  if (
-    background?.type === 'enum' &&
-    outputFormat?.type === 'enum' &&
-    !outputFormat.options.some((value) => value === 'png' || value === 'webp')
-  ) {
-    const options = background.options.filter((value) => value !== 'transparent')
-    if (options.length) supports.background = { ...background, options }
-    else delete supports.background
-  }
-
-  const inputReferences = OrParamDescriptor.safeParse(p.data.supported_parameters.input_references)
-  const maxInputImages =
-    inputReferences.success &&
-    inputReferences.data.type === 'range' &&
-    typeof inputReferences.data.max === 'number' &&
-    inputReferences.data.max > 0
-      ? inputReferences.data.max
-      : undefined
-
-  return {
-    modes: {
-      generate: { supports },
-      ...(maxInputImages !== undefined ? { edit: { supports, maxInputImages } } : {})
-    }
-  }
 }
 
 // ── merge across sources (the fix for the minimax-m3 video gap) ───────────────

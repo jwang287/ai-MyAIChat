@@ -14,21 +14,17 @@ import baai from './baai'
 import baichuan from './baichuan'
 import baidu from './baidu'
 import bailing from './bailing'
-import black_forest_labs from './black-forest-labs'
-import bria from './bria'
 import bytedance from './bytedance'
 import cogito from './cogito'
 import cohere from './cohere'
 import deepseek from './deepseek'
 import elevenlabs from './elevenlabs'
 import google from './google'
-import ideogram from './ideogram'
 import inception from './inception'
 import intern from './intern'
 import jina from './jina'
 import kling from './kling'
 import liquidai from './liquidai'
-import luma from './luma'
 import meituan from './meituan'
 import meta from './meta'
 import microsoft from './microsoft'
@@ -46,7 +42,6 @@ import runway from './runway'
 import sensetime from './sensetime'
 import sentence_transformers from './sentence-transformers'
 import sourceful from './sourceful'
-import stability from './stability'
 import stepfun from './stepfun'
 import streamlake from './streamlake'
 import suno from './suno'
@@ -74,21 +69,17 @@ export const CREATORS: Creator[] = [
   baichuan,
   baidu,
   bailing,
-  black_forest_labs,
-  bria,
   bytedance,
   cogito,
   cohere,
   deepseek,
   elevenlabs,
   google,
-  ideogram,
   inception,
   intern,
   jina,
   kling,
   liquidai,
-  luma,
   meituan,
   meta,
   microsoft,
@@ -105,7 +96,6 @@ export const CREATORS: Creator[] = [
   runway,
   sensetime,
   sentence_transformers,
-  stability,
   stepfun,
   streamlake,
   sourceful,

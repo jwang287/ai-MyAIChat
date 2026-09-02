@@ -47,19 +47,10 @@ export default defineProvider({
       },
       modelsApiUrls: {
         default: 'https://openrouter.ai/api/v1/models',
-        embedding: 'https://openrouter.ai/api/v1/embeddings/models',
-        image: 'https://openrouter.ai/api/v1/images/models'
+        embedding: 'https://openrouter.ai/api/v1/embeddings/models'
       }
-    },
-    'openai-image-generation': {
-      adapterFamily: 'openrouter',
-      baseUrl: 'https://openrouter.ai/api/v1/'
     }
   },
-  serverTools: [
-    { id: 'web-search', modelScope: 'all-chat-models' },
-    { id: 'url-context', modelScope: 'all-chat-models' }
-  ],
   metadata: {
     website: {
       apiKey: 'https://openrouter.ai/settings/keys',
@@ -69,15 +60,9 @@ export default defineProvider({
     }
   },
   modelsDevProvider: 'openrouter',
-  standaloneModelIds: ['gpt-5-4-image-2'],
   overrides: [
     // OpenRouter owns this moving router alias; DeepSeek does not publish it as
     // a model. Actual usage cost is authoritative, so omit a static alias price.
-    { modelId: 'deepseek-v4-flash-latest', name: 'DeepSeek V4 Flash Latest', pricing: undefined },
-    {
-      modelId: 'gpt-5-4-image-2',
-      name: 'OpenAI: GPT-5.4 Image 2',
-      ownedBy: 'openrouter'
-    }
+    { modelId: 'deepseek-v4-flash-latest', name: 'DeepSeek V4 Flash Latest', pricing: undefined }
   ]
 })

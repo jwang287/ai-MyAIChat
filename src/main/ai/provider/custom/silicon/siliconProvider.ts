@@ -1,9 +1,7 @@
 import { OpenAICompatibleChatLanguageModel, OpenAICompatibleEmbeddingModel } from '@ai-sdk/openai-compatible'
-import type { EmbeddingModelV3, ImageModelV3, LanguageModelV3, ProviderV3 } from '@ai-sdk/provider'
+import type { EmbeddingModelV3, LanguageModelV3, ProviderV3 } from '@ai-sdk/provider'
 import type { FetchFunction } from '@ai-sdk/provider-utils'
 import { loadApiKey, withoutTrailingSlash } from '@ai-sdk/provider-utils'
-
-import { SiliconImageModel } from './SiliconImageModel'
 
 export const SILICON_PROVIDER_NAME = 'silicon' as const
 
@@ -21,7 +19,6 @@ export interface SiliconProvider extends ProviderV3 {
   chatModel(modelId: string): LanguageModelV3
   embeddingModel(modelId: string): EmbeddingModelV3
   textEmbeddingModel(modelId: string): EmbeddingModelV3
-  imageModel(modelId: string): ImageModelV3
 }
 
 export function createSiliconProvider(settings: SiliconProviderSettings = {}): SiliconProvider {
@@ -59,13 +56,6 @@ export function createSiliconProvider(settings: SiliconProviderSettings = {}): S
   provider.chatModel = createChatModel
   provider.embeddingModel = createEmbeddingModel
   provider.textEmbeddingModel = createEmbeddingModel
-  provider.imageModel = (modelId: string) =>
-    new SiliconImageModel(modelId, {
-      provider: `${SILICON_PROVIDER_NAME}.image`,
-      url,
-      headers,
-      fetch: customFetch
-    })
 
-  return provider as SiliconProvider
+  return provider as unknown as SiliconProvider
 }

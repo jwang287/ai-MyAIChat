@@ -27,20 +27,6 @@ export default defineCreator({
       capabilities: ['video-generation'],
       inputModalities: ['text', 'image'],
       outputModalities: ['video']
-    },
-    {
-      id: 'viduq2',
-      name: 'Vidu Q2',
-      capabilities: ['image-generation'],
-      inputModalities: ['text'],
-      outputModalities: ['image']
-    },
-    {
-      id: 'viduq1',
-      name: 'Vidu Q1',
-      capabilities: ['image-generation'],
-      inputModalities: ['text'],
-      outputModalities: ['image']
     }
   ]
 })

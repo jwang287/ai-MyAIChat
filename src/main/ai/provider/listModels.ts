@@ -455,8 +455,6 @@ const ENDPOINT_TYPE_ALIASES: Record<string, EndpointType> = {
   anthropic: ENDPOINT_TYPE.ANTHROPIC_MESSAGES,
   embeddings: ENDPOINT_TYPE.OPENAI_EMBEDDINGS,
   gemini: ENDPOINT_TYPE.GOOGLE_GENERATE_CONTENT,
-  'image-edit': ENDPOINT_TYPE.OPENAI_IMAGE_EDIT,
-  'image-generation': ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION,
   'jina-rerank': ENDPOINT_TYPE.JINA_RERANK,
   openai: ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS,
   'openai-response': ENDPOINT_TYPE.OPENAI_RESPONSES,
@@ -525,7 +523,7 @@ const openRouterFetcher: ModelFetcher = {
   fetch: async (provider, signal, options) => {
     const headers = defaultHeaders(provider)
     const modelsApiUrls = provider.endpointConfigs?.[ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS]?.modelsApiUrls
-    const [modelsResponse, embedModelsResponse, imageModelsResponse] = await Promise.all([
+    const [modelsResponse, embedModelsResponse] = await Promise.all([
       getFromApi({
         url: modelsApiUrls?.default ?? 'https://openrouter.ai/api/v1/models',
         headers,
@@ -542,34 +540,11 @@ const openRouterFetcher: ModelFetcher = {
           providerId: provider.id,
           endpoint: 'openrouter-embedding-models'
         })
-      ),
-      getFromApi({
-        url: modelsApiUrls?.image ?? 'https://openrouter.ai/api/v1/images/models',
-        headers,
-        responseSchema: OpenAIModelsResponseSchema,
-        abortSignal: signal
-      }).catch((error) =>
-        recoverOptionalModelListFailure<OpenAIModelResponseItem>(error, {
-          providerId: provider.id,
-          endpoint: 'openrouter-image-models'
-        })
       )
     ])
-    const imageModelsById = new Map(imageModelsResponse.data.map((model) => [model.id, model]))
-    const all = [...modelsResponse.data, ...embedModelsResponse.data, ...imageModelsResponse.data]
-    return dedup(all, (m) => m.id).map((m) => {
-      const imageModel = imageModelsById.get(m.id)
-      return toModel(m.id, provider, {
-        name: imageModel?.name ?? m.name,
-        ownedBy: m.owned_by,
-        ...(imageModel
-          ? {
-              capabilities: [MODEL_CAPABILITY.IMAGE_GENERATION],
-              endpointTypes: [ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION]
-            }
-          : {})
-      })
-    })
+    return dedup([...modelsResponse.data, ...embedModelsResponse.data], (m) => m.id).map((m) =>
+      toModel(m.id, provider, { ownedBy: m.owned_by })
+    )
   }
 }
 

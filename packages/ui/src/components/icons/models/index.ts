@@ -3,8 +3,8 @@
  * Each icon supports: <Icon /> (auto light/dark), <Icon variant="light" />, <Icon variant="dark" />, <Icon.Avatar />, Icon.colorPrimary
  * Do not edit manually
  *
- * Generated at: 2026-08-10T12:29:43.500Z
- * Total icons: 168
+ * Generated at: 2026-09-02T12:28:36.548Z
+ * Total icons: 166
  */
 export { AceIcon as Ace } from './ace'
 export { AdobeIcon as Adobe } from './adobe'
@@ -31,7 +31,6 @@ export { ClaudeIcon as Claude } from './claude'
 export { CodegeexIcon as Codegeex } from './codegeex'
 export { CogviewIcon as Cogview } from './cogview'
 export { CohereIcon as Cohere } from './cohere'
-export { DalleIcon as Dalle } from './dalle'
 export { DbrxIcon as Dbrx } from './dbrx'
 export { DeepcogitoIcon as Deepcogito } from './deepcogito'
 export { DeepmindIcon as Deepmind } from './deepmind'
@@ -41,7 +40,6 @@ export { DoubaoIcon as Doubao } from './doubao'
 export { EssentialaiIcon as Essentialai } from './essentialai'
 export { FireworksIcon as Fireworks } from './fireworks'
 export { FishaudioIcon as Fishaudio } from './fishaudio'
-export { FluxIcon as Flux } from './flux'
 export { GeminiIcon as Gemini } from './gemini'
 export { GemmaIcon as Gemma } from './gemma'
 export { GlmIcon as Glm } from './glm'

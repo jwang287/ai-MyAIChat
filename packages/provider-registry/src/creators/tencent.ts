@@ -73,56 +73,9 @@ export default defineCreator({
     { id: 'hy-role', name: 'Hunyuan Role', contextWindow: 32768, maxInputTokens: 28672, maxOutputTokens: 4096 },
     { id: 'hy-mt2-pro', name: 'Hunyuan MT2 Pro', contextWindow: 8192, maxOutputTokens: 4096 },
     { id: 'hy-mt2-plus', name: 'Hunyuan MT2 Plus', contextWindow: 8192, maxOutputTokens: 4096 },
-    { id: 'hy-mt2-lite', name: 'Hunyuan MT2 Lite', contextWindow: 8192, maxOutputTokens: 4096 },
+    { id: 'hy-mt2-lite', name: 'Hunyuan MT2 Lite', contextWindow: 8192, maxOutputTokens: 4096 }
     // HY-Image painting models (cloud.tencent.com/document/product/1823/130080). v3.0 is text→image AND
     // image→image (async submit/query; `images` array of urls); lite is text→image only (sync). The
     // exact size/aspectRatio enum lives in the sub-API (1668/120721, /124632) — options below approximate it.
-    {
-      id: 'hy-image-v3-0',
-      name: 'Hunyuan Image 3.0',
-      capabilities: ['image-generation'],
-      inputModalities: ['text', 'image'],
-      outputModalities: ['image'],
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              aspectRatio: {
-                type: 'enum',
-                options: ['1:1', '4:3', '3:4', '16:9', '9:16'],
-                default: '1:1',
-                render: 'chips'
-              },
-              negativePrompt: { type: 'text', multiline: true },
-              addWatermark: { type: 'switch' },
-              seed: { type: 'text' }
-            }
-          }
-        }
-      }
-    },
-    {
-      id: 'hy-image-lite',
-      name: 'Hunyuan Image Lite',
-      capabilities: ['image-generation'],
-      inputModalities: ['text'],
-      outputModalities: ['image'],
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              aspectRatio: {
-                type: 'enum',
-                options: ['1:1', '4:3', '3:4', '16:9', '9:16'],
-                default: '1:1',
-                render: 'chips'
-              },
-              addWatermark: { type: 'switch' },
-              seed: { type: 'text' }
-            }
-          }
-        }
-      }
-    }
   ]
 })

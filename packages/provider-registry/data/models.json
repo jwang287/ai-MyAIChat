@@ -371,33 +371,13 @@
       }
     },
     {
-      "capabilities": ["image-generation"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "qwen",
       "id": "qwen-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "1664x928",
-                "options": ["1664x928", "1472x1140", "1328x1328", "1140x1472", "928x1664"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
+      "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "Qwen Image",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "alibaba",
       "pricing": {
         "input": {
@@ -411,169 +391,13 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "qwen-image-3",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Qwen: Qwen Image 3",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "family": "qwen",
-      "id": "qwen-image-3-0",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Qwen Image 3.0",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "family": "qwen",
-      "id": "qwen-image-3-0-pro",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 6,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "auto",
-                "options": ["auto", "1328x1328", "1664x928", "928x1664", "1472x1140", "1140x1472"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Qwen Image 3.0 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "qwen-image-3-pro",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Qwen: Qwen Image 3 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "qwen",
       "id": "qwen-image-edit",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "outputFormat": {
-                "options": ["jpeg", "png", "webp"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "Qwen Image Edit",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "alibaba",
       "pricing": {
         "input": {
@@ -2418,6 +2242,51 @@
       }
     },
     {
+      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
+      "contextWindow": 1048576,
+      "family": "qwen",
+      "id": "qwen3-8-flash-next",
+      "inputModalities": ["text", "image"],
+      "maxOutputTokens": 1048576,
+      "metadata": {},
+      "name": "Qwen 3.8 Flash Next",
+      "openWeights": true,
+      "outputModalities": ["text"],
+      "ownedBy": "alibaba",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.01
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.12
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0.4
+        }
+      },
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": ["low", "medium", "xhigh"]
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": ["low", "medium", "xhigh"],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    {
       "capabilities": ["reasoning", "function-call"],
       "contextWindow": 1000000,
       "family": "qwen",
@@ -3390,145 +3259,6 @@
       }
     },
     {
-      "capabilities": ["image-generation"],
-      "id": "wan2-6-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "1K",
-                "options": ["1K", "2K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "wan2.6-image",
-      "ownedBy": "alibaba"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "wan2-6-t2i",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "1K",
-                "options": ["1K", "2K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "promptExtend": {
-                "default": true,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "wan2-6-t2i",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "wan2-7-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "1K",
-                "options": ["1K", "2K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "thinkingMode": {
-                "default": true,
-                "type": "switch"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "wan2.7-image",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "wan2-7-image-pro",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "2K",
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "thinkingMode": {
-                "default": true,
-                "type": "switch"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "wan2.7-image-pro",
-      "outputModalities": ["image"],
-      "ownedBy": "alibaba"
-    },
-    {
       "capabilities": ["function-call", "reasoning", "image-recognition", "video-recognition", "file-input"],
       "contextWindow": 1000000,
       "family": "nova",
@@ -3801,6 +3531,46 @@
         "cacheRead": {
           "currency": "USD",
           "perMillionTokens": 1
+        },
+        "cacheWrite": {
+          "currency": "USD",
+          "perMillionTokens": 12.5
+        },
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 10
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 50
+        }
+      },
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": ["low", "medium", "high", "xhigh", "max"]
+          }
+        ],
+        "supportedEfforts": ["low", "medium", "high", "xhigh", "max"],
+        "wireDialect": "effort"
+      }
+    },
+    {
+      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
+      "contextWindow": 1000000,
+      "family": "claude-fable",
+      "id": "claude-fable-5-1",
+      "inputModalities": ["text", "image"],
+      "maxOutputTokens": 128000,
+      "metadata": {},
+      "name": "Claude Fable 5.1",
+      "outputModalities": ["text"],
+      "ownedBy": "anthropic",
+      "pricing": {
+        "cacheRead": {
+          "currency": "USD",
+          "perMillionTokens": 0.25
         },
         "cacheWrite": {
           "currency": "USD",
@@ -4241,48 +4011,6 @@
     {
       "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 1000000,
-      "id": "claude-opus-4-7-fast",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Anthropic: Claude Opus 4.7 (Fast)",
-      "outputModalities": ["text"],
-      "ownedBy": "anthropic",
-      "pricing": {
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 30
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 150
-        }
-      },
-      "reasoning": {
-        "controls": [
-          {
-            "kind": "effort",
-            "values": ["low", "medium", "high", "max"]
-          },
-          {
-            "kind": "budget",
-            "max": 128000,
-            "min": 1024
-          },
-          {
-            "kind": "toggle"
-          }
-        ],
-        "supportedEfforts": ["low", "medium", "high", "max", "none"],
-        "thinkingTokenLimits": {
-          "max": 128000,
-          "min": 1024
-        },
-        "wireDialect": "effort"
-      }
-    },
-    {
-      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
-      "contextWindow": 1000000,
       "family": "claude-opus",
       "id": "claude-opus-4-8",
       "inputModalities": ["text", "image"],
@@ -4324,7 +4052,7 @@
       }
     },
     {
-      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
+      "capabilities": ["function-call", "reasoning", "image-recognition", "file-input"],
       "contextWindow": 1000000,
       "family": "claude-opus",
       "id": "claude-opus-4-8-fast",
@@ -4407,7 +4135,7 @@
       }
     },
     {
-      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
+      "capabilities": ["function-call", "reasoning", "image-recognition", "file-input"],
       "contextWindow": 1000000,
       "family": "claude-opus",
       "id": "claude-opus-5-fast",
@@ -4704,7 +4432,7 @@
       }
     },
     {
-      "capabilities": ["function-call", "reasoning", "structured-output"],
+      "capabilities": ["function-call", "reasoning"],
       "contextWindow": 262144,
       "family": "trinity",
       "id": "trinity-large",
@@ -5201,454 +4929,6 @@
           "perMillionTokens": 2.29
         }
       }
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "flux-1-1-pro-ultra",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX1.1 Pro Ultra",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 4096,
-      "family": "flux",
-      "id": "flux-1-dev",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1-dev",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs",
-      "pricing": {
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        }
-      }
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
-      "contextWindow": 40960,
-      "id": "flux-1-kontext-dev",
-      "inputModalities": ["text", "image"],
-      "maxOutputTokens": 40960,
-      "metadata": {},
-      "name": "FLUX.1-Kontext-dev",
-      "openWeights": true,
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs",
-      "pricing": {
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        }
-      }
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 77,
-      "id": "flux-1-schnell",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1-schnell",
-      "openWeights": true,
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs",
-      "pricing": {
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        }
-      }
-    },
-    {
-      "capabilities": ["image-generation"],
-      "family": "flux",
-      "id": "flux-2-flex",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": [
-                  "ASPECT_1_1",
-                  "ASPECT_4_3",
-                  "ASPECT_3_4",
-                  "ASPECT_16_9",
-                  "ASPECT_9_16",
-                  "ASPECT_21_9",
-                  "ASPECT_9_21"
-                ],
-                "render": "chips",
-                "type": "enum"
-              },
-              "safetyTolerance": {
-                "default": 2,
-                "max": 6,
-                "min": 0,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Flux 2 Flex",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "contextWindow": 40960,
-      "family": "flux",
-      "id": "flux-2-klein-4b",
-      "inputModalities": ["image", "text"],
-      "maxOutputTokens": 40960,
-      "metadata": {},
-      "name": "FLUX.2 Klein 4B",
-      "openWeights": true,
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs",
-      "pricing": {
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 0
-        }
-      }
-    },
-    {
-      "capabilities": ["image-generation"],
-      "family": "flux",
-      "id": "flux-2-klein-9b",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.2 [klein] 9B",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "contextWindow": 67300,
-      "family": "flux",
-      "id": "flux-2-max",
-      "inputModalities": ["text", "image"],
-      "maxOutputTokens": 67300,
-      "metadata": {},
-      "name": "FLUX.2 [max]",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 67300,
-      "family": "flux",
-      "id": "flux-2-pro",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": [
-                  "ASPECT_1_1",
-                  "ASPECT_4_3",
-                  "ASPECT_3_4",
-                  "ASPECT_16_9",
-                  "ASPECT_9_16",
-                  "ASPECT_21_9",
-                  "ASPECT_9_21"
-                ],
-                "render": "chips",
-                "type": "enum"
-              },
-              "safetyTolerance": {
-                "default": 2,
-                "max": 6,
-                "min": 0,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "maxOutputTokens": 67300,
-      "metadata": {},
-      "name": "Flux 2 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["video-generation"],
-      "family": "flux",
-      "id": "flux-3-video",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Flux 3",
-      "outputModalities": ["video"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "flux-dev",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1 Dev",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 512,
-      "family": "flux",
-      "id": "flux-fast-schnell",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Flux Schnell",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "flux-fill-pro",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "FLUX.1 Fill Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "flux-kontext-dev",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "FLUX.1 Kontext Dev",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 512,
-      "family": "flux",
-      "id": "flux-kontext-max",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": [
-                  "ASPECT_1_1",
-                  "ASPECT_4_3",
-                  "ASPECT_3_4",
-                  "ASPECT_16_9",
-                  "ASPECT_9_16",
-                  "ASPECT_21_9",
-                  "ASPECT_9_21"
-                ],
-                "render": "chips",
-                "type": "enum"
-              },
-              "safetyTolerance": {
-                "default": 2,
-                "max": 6,
-                "min": 0,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1 Kontext Max",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 512,
-      "family": "flux",
-      "id": "flux-kontext-pro",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": [
-                  "ASPECT_1_1",
-                  "ASPECT_4_3",
-                  "ASPECT_3_4",
-                  "ASPECT_16_9",
-                  "ASPECT_9_16",
-                  "ASPECT_21_9",
-                  "ASPECT_9_21"
-                ],
-                "render": "chips",
-                "type": "enum"
-              },
-              "safetyTolerance": {
-                "default": 2,
-                "max": 6,
-                "min": 0,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1 Kontext Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "flux-pro",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 512,
-      "family": "flux",
-      "id": "flux-pro-1-0-fill",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1 Fill [pro]",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 512,
-      "family": "flux",
-      "id": "flux-pro-1-1",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX1.1 [pro]",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "contextWindow": 512,
-      "family": "flux",
-      "id": "flux-pro-1-1-ultra",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX1.1 [pro] Ultra",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "flux-schnell",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "FLUX.1 Schnell",
-      "outputModalities": ["image"],
-      "ownedBy": "black-forest-labs"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "eraser",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Bria Eraser",
-      "outputModalities": ["image"],
-      "ownedBy": "bria"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "expand-image",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Bria Expand Image",
-      "outputModalities": ["image"],
-      "ownedBy": "bria"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "fibo",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Bria FIBO",
-      "outputModalities": ["image"],
-      "ownedBy": "bria"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "fibo-edit",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Bria FIBO Edit",
-      "outputModalities": ["image"],
-      "ownedBy": "bria"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "generate-background",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Bria Generate Background",
-      "outputModalities": ["image"],
-      "ownedBy": "bria"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "genfill",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Bria GenFill",
-      "outputModalities": ["image"],
-      "ownedBy": "bria"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "image-3-2",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Bria Image 3.2",
-      "outputModalities": ["image"],
-      "ownedBy": "bria"
     },
     {
       "capabilities": ["function-call"],
@@ -6278,175 +5558,6 @@
       "ownedBy": "bytedance"
     },
     {
-      "capabilities": ["image-generation"],
-      "id": "doubao-seededit-3-0-i2i",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Doubao SeedEdit 3.0 I2I",
-      "outputModalities": ["image"],
-      "ownedBy": "bytedance"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "doubao-seedream-3-0-t2i",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Doubao Seedream 3.0 T2I",
-      "outputModalities": ["image"],
-      "ownedBy": "bytedance"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "doubao-seedream-4-0",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "maxInputImages": 14,
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "2K",
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "maxImages": {
-                "default": 15,
-                "max": 15,
-                "min": 1,
-                "type": "range"
-              },
-              "sequentialImageGeneration": {
-                "default": "disabled",
-                "options": ["disabled", "auto"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Doubao Seedream 4 0",
-      "outputModalities": ["image"],
-      "ownedBy": "bytedance"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "doubao-seedream-4-5",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "maxInputImages": 14,
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "2K",
-                "options": ["2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "maxImages": {
-                "default": 15,
-                "max": 15,
-                "min": 1,
-                "type": "range"
-              },
-              "sequentialImageGeneration": {
-                "default": "disabled",
-                "options": ["disabled", "auto"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Doubao Seedream 4 5",
-      "outputModalities": ["image"],
-      "ownedBy": "bytedance"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "doubao-seedream-5-0-lite",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "maxInputImages": 14,
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "2K",
-                "options": ["2K", "3K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "maxImages": {
-                "default": 15,
-                "max": 15,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "jpeg",
-                "options": ["jpeg", "png"],
-                "type": "enum"
-              },
-              "sequentialImageGeneration": {
-                "default": "disabled",
-                "options": ["disabled", "auto"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Doubao Seedream 5.0 Lite",
-      "outputModalities": ["image"],
-      "ownedBy": "bytedance"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "doubao-seedream-5-0-pro",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "maxInputImages": 10,
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "imageResolution": {
-                "default": "2K",
-                "options": ["1K", "2K"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "outputFormat": {
-                "default": "jpeg",
-                "options": ["jpeg", "png"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Doubao Seedream 5.0 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "bytedance"
-    },
-    {
       "capabilities": ["function-call", "reasoning", "image-recognition", "video-recognition", "structured-output"],
       "contextWindow": 262144,
       "family": "seed",
@@ -6611,43 +5722,43 @@
       "ownedBy": "bytedance"
     },
     {
-      "capabilities": ["image-generation"],
+      "capabilities": [],
       "family": "seed",
       "id": "seedream-4-0",
       "inputModalities": ["text"],
       "metadata": {},
       "name": "Seedream 4.0",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "bytedance"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "seed",
       "id": "seedream-4-5",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Seedream 4.5",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "bytedance"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "seed",
       "id": "seedream-5-0-lite",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Seedream 5.0 Lite",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "bytedance"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "seed",
       "id": "seedream-5-0-pro",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Seedream 5.0 Pro",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "bytedance"
     },
     {
@@ -7225,11 +6336,11 @@
       "pricing": {
         "input": {
           "currency": "USD",
-          "perMillionTokens": 0.55
+          "perMillionTokens": 0.25
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 1.6500000000000001
+          "perMillionTokens": 0.95
         }
       },
       "reasoning": {
@@ -7404,14 +6515,9 @@
       "maxOutputTokens": 163840,
       "metadata": {},
       "name": "DeepSeek V3",
-      "openWeights": true,
       "outputModalities": ["text"],
       "ownedBy": "deepseek",
       "pricing": {
-        "cacheRead": {
-          "currency": "USD",
-          "perMillionTokens": 0.135
-        },
         "input": {
           "currency": "USD",
           "perMillionTokens": 0.287
@@ -7767,7 +6873,6 @@
         "function-call",
         "reasoning",
         "image-recognition",
-        "image-generation",
         "audio-recognition",
         "video-recognition",
         "file-input"
@@ -7779,7 +6884,7 @@
       "maxOutputTokens": 65536,
       "metadata": {},
       "name": "Deep Research Max Preview (Apr-21-2026)",
-      "outputModalities": ["text", "image"],
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "cacheRead": {
@@ -7801,7 +6906,6 @@
         "function-call",
         "reasoning",
         "image-recognition",
-        "image-generation",
         "audio-recognition",
         "video-recognition",
         "file-input"
@@ -7813,7 +6917,7 @@
       "maxOutputTokens": 65536,
       "metadata": {},
       "name": "Deep Research Preview (Apr-21-2026)",
-      "outputModalities": ["text", "image"],
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "cacheRead": {
@@ -7905,32 +7009,14 @@
       }
     },
     {
-      "capabilities": ["reasoning", "image-recognition", "image-generation", "file-input"],
+      "capabilities": ["reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 32768,
       "family": "gemini-flash",
       "id": "gemini-2-5-flash-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageResolution": {
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image"],
       "metadata": {},
-      "name": "gemini-2.5-flash-image",
-      "outputModalities": ["text", "image"],
+      "name": "Nano Banana",
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "cacheRead": {
@@ -7946,52 +7032,6 @@
           "perMillionTokens": 30
         }
       },
-      "reasoning": {
-        "controls": [
-          {
-            "kind": "budget",
-            "max": 24576,
-            "min": 0
-          },
-          {
-            "kind": "toggle"
-          }
-        ],
-        "supportedEfforts": ["none", "auto"],
-        "thinkingTokenLimits": {
-          "max": 24576,
-          "min": 0
-        },
-        "wireDialect": "budget"
-      }
-    },
-    {
-      "capabilities": ["reasoning", "image-recognition", "image-generation", "file-input"],
-      "family": "gemini-flash",
-      "id": "gemini-2-5-flash-image-preview",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageResolution": {
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Nano Banana Preview (Gemini 2.5 Flash Image Preview)",
-      "outputModalities": ["text", "image"],
-      "ownedBy": "google",
       "reasoning": {
         "controls": [
           {
@@ -8281,58 +7321,15 @@
       }
     },
     {
-      "capabilities": [
-        "reasoning",
-        "image-recognition",
-        "image-generation",
-        "video-recognition",
-        "structured-output",
-        "file-input"
-      ],
+      "capabilities": ["reasoning", "image-recognition", "video-recognition", "structured-output", "file-input"],
       "contextWindow": 131072,
       "family": "gemini-flash",
       "id": "gemini-3-1-flash-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "auto",
-                "options": [
-                  "auto",
-                  "ASPECT_1_1",
-                  "ASPECT_1_4",
-                  "ASPECT_1_8",
-                  "ASPECT_2_3",
-                  "ASPECT_3_2",
-                  "ASPECT_3_4",
-                  "ASPECT_4_1",
-                  "ASPECT_4_3",
-                  "ASPECT_4_5",
-                  "ASPECT_5_4",
-                  "ASPECT_8_1",
-                  "ASPECT_9_16",
-                  "ASPECT_16_9",
-                  "ASPECT_21_9"
-                ],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageResolution": {
-                "default": "auto",
-                "options": ["auto", "1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image", "video"],
       "maxOutputTokens": 65536,
       "metadata": {},
       "name": "Nano Banana 2",
-      "outputModalities": ["text", "image"],
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "cacheRead": {
@@ -8369,33 +7366,15 @@
       }
     },
     {
-      "capabilities": ["reasoning", "image-recognition", "image-generation", "file-input"],
+      "capabilities": ["reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 131072,
       "family": "gemini-flash",
       "id": "gemini-3-1-flash-image-preview",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageResolution": {
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image"],
       "maxOutputTokens": 65536,
       "metadata": {},
-      "name": "Google: Nano Banana 2 (Gemini 3.1 Flash Image Preview)",
-      "outputModalities": ["text", "image"],
+      "name": "Nano Banana 2",
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "cacheRead": {
@@ -8485,14 +7464,7 @@
       }
     },
     {
-      "capabilities": [
-        "function-call",
-        "reasoning",
-        "image-recognition",
-        "image-generation",
-        "structured-output",
-        "file-input"
-      ],
+      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 65536,
       "family": "gemini-flash-lite",
       "id": "gemini-3-1-flash-lite-image",
@@ -8500,7 +7472,7 @@
       "maxOutputTokens": 65536,
       "metadata": {},
       "name": "Nano Banana 2 Lite",
-      "outputModalities": ["text", "image"],
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "cacheRead": {
@@ -9145,40 +8117,15 @@
       }
     },
     {
-      "capabilities": [
-        "function-call",
-        "reasoning",
-        "image-recognition",
-        "image-generation",
-        "structured-output",
-        "file-input"
-      ],
+      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 131072,
-      "family": "gemini",
+      "family": "gemini-pro",
       "id": "gemini-3-pro-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageResolution": {
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["image", "text"],
+      "inputModalities": ["text", "image"],
       "maxOutputTokens": 32768,
       "metadata": {},
-      "name": "Nano Banana Pro (Gemini 3 Pro Image)",
-      "outputModalities": ["text", "image"],
+      "name": "Nano Banana Pro",
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "cacheRead": {
@@ -9215,33 +8162,15 @@
       }
     },
     {
-      "capabilities": ["reasoning", "image-recognition", "image-generation", "file-input"],
+      "capabilities": ["reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 131072,
       "family": "gemini-pro",
       "id": "gemini-3-pro-image-preview",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageResolution": {
-                "options": ["1K", "2K", "4K"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image"],
       "maxOutputTokens": 32768,
       "metadata": {},
-      "name": "gemini-3-pro-image-preview",
-      "outputModalities": ["text", "image"],
+      "name": "Nano Banana Pro",
+      "outputModalities": ["text"],
       "ownedBy": "google",
       "pricing": {
         "input": {
@@ -9507,45 +8436,6 @@
       }
     },
     {
-      "capabilities": [
-        "function-call",
-        "reasoning",
-        "image-recognition",
-        "audio-recognition",
-        "video-recognition",
-        "structured-output",
-        "file-input"
-      ],
-      "contextWindow": 131072,
-      "family": "gemini",
-      "id": "gemini-robotics-er-1-6-preview",
-      "inputModalities": ["text", "image", "video", "audio"],
-      "maxOutputTokens": 65536,
-      "metadata": {},
-      "name": "Gemini Robotics-ER 1.6 Preview",
-      "outputModalities": ["text"],
-      "ownedBy": "google",
-      "pricing": {
-        "input": {
-          "currency": "USD",
-          "perMillionTokens": 1
-        },
-        "output": {
-          "currency": "USD",
-          "perMillionTokens": 5
-        }
-      },
-      "reasoning": {
-        "controls": [
-          {
-            "kind": "toggle"
-          }
-        ],
-        "supportedEfforts": ["none", "auto"],
-        "wireDialect": "budget"
-      }
-    },
-    {
       "capabilities": ["structured-output"],
       "contextWindow": 8192,
       "id": "gemma-2-27b-it",
@@ -9781,444 +8671,6 @@
       }
     },
     {
-      "capabilities": ["function-call", "image-generation", "file-input"],
-      "family": "imagen",
-      "id": "imagen-3",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen-3",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["function-call", "image-generation", "file-input"],
-      "family": "imagen",
-      "id": "imagen-3-fast",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen-3-Fast",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["function-call", "file-input", "image-generation"],
-      "family": "imagen",
-      "id": "imagen-4",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen-4",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "imagen-4-0",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Imagen 4 0",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "family": "imagen",
-      "id": "imagen-4-0-fast-generate-001",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen 4 Fast",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "imagen-4-0-fast-generate-preview-06-06",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Imagen 4 0 Fast Generate Preview 06 06",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "family": "imagen",
-      "id": "imagen-4-0-generate-001",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen 4",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "imagen-4-0-generate-preview-06-06",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 4,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["ALLOW_ALL", "ALLOW_ADULT", "DONT_ALLOW"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen 4.0 Preview",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "family": "imagen",
-      "id": "imagen-4-0-ultra",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen 4 0 Ultra",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "family": "imagen",
-      "id": "imagen-4-0-ultra-generate-001",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen 4 Ultra",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "imagen-4-0-ultra-generate-preview-06-06",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "personGeneration": {
-                "options": ["ALLOW_ALL", "ALLOW_ADULT", "DONT_ALLOW"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen 4.0 Ultra Preview",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["function-call", "file-input", "image-generation"],
-      "family": "imagen",
-      "id": "imagen-4-fast",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen-4-Fast",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
-      "capabilities": ["function-call", "file-input", "image-generation"],
-      "family": "imagen",
-      "id": "imagen-4-ultra",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "default": "ASPECT_1_1",
-                "options": ["ASPECT_1_1", "ASPECT_3_4", "ASPECT_4_3", "ASPECT_9_16", "ASPECT_16_9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "personGeneration": {
-                "options": ["DONT_ALLOW", "ALLOW_ADULT", "ALLOW_ALL"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Imagen-4-Ultra",
-      "outputModalities": ["image"],
-      "ownedBy": "google"
-    },
-    {
       "capabilities": ["image-recognition", "audio-generation", "structured-output", "file-input"],
       "contextWindow": 1048576,
       "family": "lyria",
@@ -10320,270 +8772,6 @@
       "ownedBy": "google"
     },
     {
-      "capabilities": ["image-generation"],
-      "id": "ideogram-v2",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Ideogram v2",
-      "outputModalities": ["image"],
-      "ownedBy": "ideogram"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "ideogram-v2a",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Ideogram v2a",
-      "outputModalities": ["image"],
-      "ownedBy": "ideogram"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "ideogram-v2a-turbo",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Ideogram v2a Turbo",
-      "outputModalities": ["image"],
-      "ownedBy": "ideogram"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "ideogram-v3",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "1:3",
-                  "2:3",
-                  "3:4",
-                  "4:5",
-                  "9:16",
-                  "10:16",
-                  "2:1",
-                  "3:1",
-                  "3:2",
-                  "4:3",
-                  "5:4",
-                  "16:9",
-                  "16:10"
-                ],
-                "render": "chips",
-                "type": "enum"
-              },
-              "magicPromptOption": {
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "max": 8,
-                "min": 1,
-                "type": "range"
-              },
-              "renderingSpeed": {
-                "default": "DEFAULT",
-                "options": ["FLASH", "TURBO", "DEFAULT", "QUALITY"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "styleType": {
-                "options": ["AUTO", "GENERAL", "REALISTIC", "DESIGN", "FICTION"],
-                "type": "enum"
-              }
-            }
-          },
-          "remix": {
-            "supports": {
-              "aspectRatio": {
-                "options": [
-                  "1:1",
-                  "1:2",
-                  "1:3",
-                  "2:3",
-                  "3:4",
-                  "4:5",
-                  "9:16",
-                  "10:16",
-                  "2:1",
-                  "3:1",
-                  "3:2",
-                  "4:3",
-                  "5:4",
-                  "16:9",
-                  "16:10"
-                ],
-                "render": "chips",
-                "type": "enum"
-              },
-              "imageWeight": {
-                "max": 100,
-                "min": 1,
-                "type": "range"
-              },
-              "magicPromptOption": {
-                "type": "switch"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "max": 8,
-                "min": 1,
-                "type": "range"
-              },
-              "renderingSpeed": {
-                "default": "DEFAULT",
-                "options": ["FLASH", "TURBO", "DEFAULT", "QUALITY"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "styleType": {
-                "options": ["AUTO", "GENERAL", "REALISTIC", "DESIGN", "FICTION"],
-                "type": "enum"
-              }
-            }
-          },
-          "upscale": {
-            "supports": {
-              "detail": {
-                "max": 100,
-                "min": 1,
-                "type": "range"
-              },
-              "magicPromptOption": {
-                "type": "switch"
-              },
-              "numImages": {
-                "max": 8,
-                "min": 1,
-                "type": "range"
-              },
-              "resemblance": {
-                "max": 100,
-                "min": 1,
-                "type": "range"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Ideogram v3",
-      "outputModalities": ["image"],
-      "ownedBy": "ideogram"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "ideogram-v4",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "renderingSpeed": {
-                "default": "DEFAULT",
-                "options": ["FLASH", "TURBO", "DEFAULT", "QUALITY"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "1440x2880",
-                  "2880x1440",
-                  "1664x2496",
-                  "2496x1664",
-                  "1792x2240",
-                  "2240x1792",
-                  "1440x2560",
-                  "2560x1440",
-                  "1600x2560",
-                  "2560x1600",
-                  "1728x2304",
-                  "2304x1728",
-                  "1296x3168",
-                  "3168x1296",
-                  "1152x2944",
-                  "2944x1152",
-                  "1248x3328",
-                  "3328x1248",
-                  "1280x3072",
-                  "3072x1280",
-                  "1024x3072",
-                  "3072x1024"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "remix": {
-            "supports": {
-              "imageWeight": {
-                "max": 100,
-                "min": 1,
-                "type": "range"
-              },
-              "renderingSpeed": {
-                "default": "DEFAULT",
-                "options": ["FLASH", "TURBO", "DEFAULT", "QUALITY"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "2048x2048",
-                "options": [
-                  "2048x2048",
-                  "1440x2880",
-                  "2880x1440",
-                  "1664x2496",
-                  "2496x1664",
-                  "1792x2240",
-                  "2240x1792",
-                  "1440x2560",
-                  "2560x1440",
-                  "1600x2560",
-                  "2560x1600",
-                  "1728x2304",
-                  "2304x1728",
-                  "1296x3168",
-                  "3168x1296",
-                  "1152x2944",
-                  "2944x1152",
-                  "1248x3328",
-                  "3328x1248",
-                  "1280x3072",
-                  "3072x1280",
-                  "1024x3072",
-                  "3072x1024"
-                ],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Ideogram v4",
-      "outputModalities": ["image"],
-      "ownedBy": "ideogram"
-    },
-    {
       "capabilities": ["function-call", "reasoning", "structured-output"],
       "contextWindow": 128000,
       "family": "mercury",
@@ -10616,6 +8804,26 @@
           }
         ],
         "supportedEfforts": ["low", "medium", "high"]
+      }
+    },
+    {
+      "capabilities": ["function-call", "reasoning", "structured-output"],
+      "contextWindow": 260000,
+      "id": "mercury-2-5-preview",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "Inception: Mercury 2.5 Preview",
+      "outputModalities": ["text"],
+      "ownedBy": "inception",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.04
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0.15
+        }
       }
     },
     {
@@ -11052,59 +9260,6 @@
       "ownedBy": "kling"
     },
     {
-      "capabilities": ["image-generation"],
-      "family": "Kolors",
-      "id": "kolors",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "guidanceScale": {
-                "default": 4.5,
-                "max": 20,
-                "min": 1,
-                "step": 0.1,
-                "type": "range"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 4,
-                "min": 1,
-                "type": "range"
-              },
-              "numInferenceSteps": {
-                "default": 25,
-                "max": 50,
-                "min": 1,
-                "type": "range"
-              },
-              "promptEnhancement": {
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "1280x960", "960x1280", "768x1024", "1024x768"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Kolors",
-      "outputModalities": ["image"],
-      "ownedBy": "kling"
-    },
-    {
       "capabilities": ["function-call", "reasoning", "structured-output"],
       "contextWindow": 65536,
       "id": "lfm-2-5-2-6b",
@@ -11123,24 +9278,6 @@
           "perMillionTokens": 0
         }
       }
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "photon",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Luma Photon",
-      "outputModalities": ["image"],
-      "ownedBy": "luma"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "photon-flash",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Luma Photon Flash",
-      "outputModalities": ["image"],
-      "ownedBy": "luma"
     },
     {
       "capabilities": ["function-call", "reasoning"],
@@ -11780,24 +9917,6 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "mai-image-2-5",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Microsoft: MAI-Image-2.5",
-      "outputModalities": ["image"],
-      "ownedBy": "microsoft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "mai-image-2-5-pro",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Microsoft: MAI-Image-2.5 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "microsoft"
-    },
-    {
       "capabilities": ["structured-output"],
       "contextWindow": 16384,
       "id": "phi-4",
@@ -11860,176 +9979,6 @@
           "perMillionTokens": 0
         }
       }
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "image-01",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16", "21:9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["custom"],
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16", "21:9"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "options": ["custom"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "image-01",
-      "outputModalities": ["image"],
-      "ownedBy": "minimax"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "image-01-live",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "default": false,
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "options": ["1:1", "16:9", "4:3", "3:2", "2:3", "3:4", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 9,
-                "min": 1,
-                "type": "range"
-              },
-              "outputFormat": {
-                "default": "url",
-                "options": ["url", "base64"],
-                "type": "enum"
-              },
-              "promptEnhancement": {
-                "default": false,
-                "type": "switch"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "image-01-live",
-      "outputModalities": ["image"],
-      "ownedBy": "minimax"
     },
     {
       "capabilities": ["image-recognition"],
@@ -14350,6 +12299,93 @@
     },
     {
       "capabilities": [],
+      "contextWindow": 4096,
+      "family": "flux",
+      "id": "flux-1-dev",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX.1-dev",
+      "outputModalities": [],
+      "ownedBy": "nvidia",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        }
+      }
+    },
+    {
+      "capabilities": ["image-recognition", "file-input"],
+      "contextWindow": 40960,
+      "id": "flux-1-kontext-dev",
+      "inputModalities": ["text", "image"],
+      "maxOutputTokens": 40960,
+      "metadata": {},
+      "name": "FLUX.1-Kontext-dev",
+      "openWeights": true,
+      "outputModalities": [],
+      "ownedBy": "nvidia",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        }
+      }
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 77,
+      "id": "flux-1-schnell",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX.1-schnell",
+      "openWeights": true,
+      "outputModalities": [],
+      "ownedBy": "nvidia",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        }
+      }
+    },
+    {
+      "capabilities": ["image-recognition"],
+      "contextWindow": 40960,
+      "family": "flux",
+      "id": "flux-2-klein-4b",
+      "inputModalities": ["image", "text"],
+      "maxOutputTokens": 40960,
+      "metadata": {},
+      "name": "FLUX.2 Klein 4B",
+      "openWeights": true,
+      "outputModalities": [],
+      "ownedBy": "nvidia",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0
+        }
+      }
+    },
+    {
+      "capabilities": [],
       "contextWindow": 128000,
       "id": "gliner-pii",
       "inputModalities": ["text"],
@@ -15362,74 +13398,13 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "gpt-image",
       "id": "chatgpt-image-latest",
       "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "chatgpt-image-latest",
-      "outputModalities": ["text", "image"],
-      "ownedBy": "openai"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "dall-e-2",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["256x256", "512x512", "1024x1024"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Dall E 2",
-      "outputModalities": ["image"],
-      "ownedBy": "openai"
-    },
-    {
-      "capabilities": ["function-call", "image-generation", "file-input"],
-      "family": "dall-e",
-      "id": "dall-e-3",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "quality": {
-                "options": ["standard", "hd"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "1792x1024", "1024x1792"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "style": {
-                "options": ["vivid", "natural"],
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "DALL-E-3",
-      "outputModalities": ["image"],
+      "outputModalities": ["text"],
       "ownedBy": "openai"
     },
     {
@@ -16195,6 +14170,35 @@
       }
     },
     {
+      "capabilities": ["reasoning", "image-recognition", "structured-output", "file-input"],
+      "contextWindow": 272000,
+      "id": "gpt-5-4-image-2",
+      "inputModalities": ["image", "text"],
+      "metadata": {},
+      "name": "OpenAI: GPT-5.4 Image 2",
+      "outputModalities": ["text"],
+      "ownedBy": "openai",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 8
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 15
+        }
+      },
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": ["none", "low", "medium", "high", "xhigh"]
+          }
+        ],
+        "supportedEfforts": ["none", "low", "medium", "high", "xhigh"]
+      }
+    },
+    {
       "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 400000,
       "family": "gpt-mini",
@@ -16648,6 +14652,64 @@
       }
     },
     {
+      "capabilities": ["reasoning", "image-recognition", "structured-output", "file-input"],
+      "contextWindow": 400000,
+      "id": "gpt-5-image",
+      "inputModalities": ["image", "text"],
+      "metadata": {},
+      "name": "OpenAI: GPT-5 Image",
+      "outputModalities": ["text"],
+      "ownedBy": "openai",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 10
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 10
+        }
+      },
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": ["minimal", "low", "medium", "high"]
+          }
+        ],
+        "supportedEfforts": ["minimal", "low", "medium", "high"]
+      }
+    },
+    {
+      "capabilities": ["reasoning", "image-recognition", "structured-output", "file-input"],
+      "contextWindow": 400000,
+      "id": "gpt-5-image-mini",
+      "inputModalities": ["image", "text"],
+      "metadata": {},
+      "name": "OpenAI: GPT-5 Image Mini",
+      "outputModalities": ["text"],
+      "ownedBy": "openai",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 2.5
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 2
+        }
+      },
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": ["minimal", "low", "medium", "high"]
+          }
+        ],
+        "supportedEfforts": ["minimal", "low", "medium", "high"]
+      }
+    },
+    {
       "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output", "file-input"],
       "contextWindow": 400000,
       "family": "gpt-mini",
@@ -16809,73 +14871,13 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "gpt-image",
       "id": "gpt-image-1",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "moderation": {
-                "options": ["auto", "low"],
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["auto", "1024x1024", "1536x1024", "1024x1536"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "moderation": {
-                "options": ["auto", "low"],
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["auto", "1024x1024", "1536x1024", "1024x1536"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image"],
       "metadata": {},
-      "name": "GPT-Image-1",
-      "outputModalities": ["image"],
+      "name": "gpt-image-1",
+      "outputModalities": [],
       "ownedBy": "openai",
       "pricing": {
         "cacheRead": {
@@ -16893,13 +14895,13 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "gpt-image",
       "id": "gpt-image-1-5",
       "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "gpt-image-1.5",
-      "outputModalities": ["text", "image"],
+      "outputModalities": ["text"],
       "ownedBy": "openai",
       "pricing": {
         "cacheRead": {
@@ -16917,73 +14919,13 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "gpt-image",
       "id": "gpt-image-1-mini",
-      "imageGeneration": {
-        "modes": {
-          "edit": {
-            "supports": {
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "moderation": {
-                "options": ["auto", "low"],
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["auto", "1024x1024", "1536x1024", "1024x1536"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          },
-          "generate": {
-            "supports": {
-              "background": {
-                "options": ["auto", "transparent", "opaque"],
-                "type": "enum"
-              },
-              "moderation": {
-                "options": ["auto", "low"],
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["auto", "1024x1024", "1536x1024", "1024x1536"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image"],
       "metadata": {},
-      "name": "GPT-Image-1-Mini",
-      "outputModalities": ["text", "image"],
+      "name": "gpt-image-1-mini",
+      "outputModalities": ["text"],
       "ownedBy": "openai",
       "pricing": {
         "cacheRead": {
@@ -17001,41 +14943,13 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "gpt-image",
       "id": "gpt-image-2",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "background": {
-                "options": ["auto", "opaque"],
-                "type": "enum"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 10,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["auto", "low", "medium", "high"],
-                "type": "enum"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["auto", "1024x1024", "1536x1024", "1024x1536"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
       "inputModalities": ["text", "image"],
       "metadata": {},
-      "name": "GPT-Image-2",
-      "outputModalities": ["image"],
+      "name": "gpt-image-2",
+      "outputModalities": [],
       "ownedBy": "openai",
       "pricing": {
         "cacheRead": {
@@ -17786,157 +15700,85 @@
       }
     },
     {
-      "capabilities": ["image-generation"],
+      "capabilities": [],
       "contextWindow": 512,
       "family": "recraft",
       "id": "recraft-v2",
       "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V2",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "contextWindow": 512,
       "family": "recraft",
       "id": "recraft-v3",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V3",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "recraft",
       "id": "recraft-v4",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V4",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "recraft",
       "id": "recraft-v4-1",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V4.1",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "recraft",
       "id": "recraft-v4-1-pro",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V4.1 Pro",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-1-pro-vector",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4.1 Pro Vector",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "recraft",
       "id": "recraft-v4-1-utility",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V4.1 Utility",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "recraft",
       "id": "recraft-v4-1-utility-pro",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V4.1 Utility Pro",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-1-vector",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4.1 Vector",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
+      "capabilities": [],
       "family": "recraft",
       "id": "recraft-v4-pro",
-      "inputModalities": ["text", "image"],
+      "inputModalities": ["text"],
       "metadata": {},
       "name": "Recraft V4 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-pro-vector",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4 Pro Vector",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-styles",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4 Styles",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-styles-pro",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4 Styles Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-styles-pro-vector",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4 Styles Pro Vector",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-styles-vector",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4 Styles Vector",
-      "outputModalities": ["image"],
-      "ownedBy": "recraft"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "recraft-v4-vector",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Recraft: Recraft V4 Vector",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "recraft"
     },
     {
@@ -18005,96 +15847,6 @@
       "name": "Runway Gen-4 Turbo",
       "outputModalities": ["video"],
       "ownedBy": "runway"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "riverflow-v2-5-fast",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Sourceful: Riverflow V2.5 Fast",
-      "outputModalities": ["image"],
-      "ownedBy": "sourceful"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "riverflow-v2-5-pro",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Sourceful: Riverflow V2.5 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "sourceful"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "riverflow-v2-fast",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Sourceful: Riverflow V2 Fast",
-      "outputModalities": ["image"],
-      "ownedBy": "sourceful"
-    },
-    {
-      "capabilities": ["image-recognition", "image-generation"],
-      "id": "riverflow-v2-pro",
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Sourceful: Riverflow V2 Pro",
-      "outputModalities": ["image"],
-      "ownedBy": "sourceful"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "stable-diffusion-3",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Stable Diffusion 3",
-      "outputModalities": ["image"],
-      "ownedBy": "stability"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "stable-diffusion-3-5-large",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Stable Diffusion 3.5 Large",
-      "outputModalities": ["image"],
-      "ownedBy": "stability"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "stable-diffusion-3-5-large-turbo",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Stable Diffusion 3.5 Large Turbo",
-      "outputModalities": ["image"],
-      "ownedBy": "stability"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "stable-diffusion-v1-4",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Stable Diffusion v1.4",
-      "outputModalities": ["image"],
-      "ownedBy": "stability"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "stable-diffusion-v1-5",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Stable Diffusion v1.5",
-      "outputModalities": ["image"],
-      "ownedBy": "stability"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "stable-diffusion-xl-base-1-0",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Stable Diffusion XL Base 1.0",
-      "outputModalities": ["image"],
-      "ownedBy": "stability"
     },
     {
       "capabilities": ["function-call"],
@@ -18254,7 +16006,7 @@
       "ownedBy": "stepfun"
     },
     {
-      "capabilities": ["function-call", "reasoning", "image-recognition", "structured-output"],
+      "capabilities": ["function-call", "reasoning", "image-recognition"],
       "contextWindow": 256000,
       "family": "kat-coder",
       "id": "kat-coder-air-v2-5",
@@ -18463,68 +16215,6 @@
       "id": "hunyuan-turbos",
       "metadata": {},
       "name": "Hunyuan TurboS",
-      "ownedBy": "tencent"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "hy-image-lite",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Hunyuan Image Lite",
-      "outputModalities": ["image"],
-      "ownedBy": "tencent"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "hy-image-v3-0",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "aspectRatio": {
-                "default": "1:1",
-                "options": ["1:1", "4:3", "3:4", "16:9", "9:16"],
-                "render": "chips",
-                "type": "enum"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "seed": {
-                "type": "text"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text", "image"],
-      "metadata": {},
-      "name": "Hunyuan Image 3.0",
-      "outputModalities": ["image"],
       "ownedBy": "tencent"
     },
     {
@@ -18928,7 +16618,7 @@
       }
     },
     {
-      "capabilities": ["image-generation"],
+      "capabilities": [],
       "contextWindow": 131072,
       "family": "o",
       "id": "arrow-1-1",
@@ -18936,7 +16626,127 @@
       "maxOutputTokens": 131072,
       "metadata": {},
       "name": "Arrow 1.1",
-      "outputModalities": ["image"],
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "family": "flux",
+      "id": "flux-2-flex",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX.2 [flex]",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "family": "flux",
+      "id": "flux-2-klein-9b",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX.2 [klein] 9B",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 67300,
+      "family": "flux",
+      "id": "flux-2-max",
+      "inputModalities": ["text"],
+      "maxOutputTokens": 67300,
+      "metadata": {},
+      "name": "FLUX.2 [max]",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 67300,
+      "family": "flux",
+      "id": "flux-2-pro",
+      "inputModalities": ["text"],
+      "maxOutputTokens": 67300,
+      "metadata": {},
+      "name": "FLUX.2 [pro]",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": ["video-generation"],
+      "family": "flux",
+      "id": "flux-3-video",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "Flux 3",
+      "outputModalities": ["video"],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 512,
+      "family": "flux",
+      "id": "flux-fast-schnell",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "Flux Schnell",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 512,
+      "family": "flux",
+      "id": "flux-kontext-max",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX.1 Kontext Max",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 512,
+      "family": "flux",
+      "id": "flux-kontext-pro",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX.1 Kontext Pro",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 512,
+      "family": "flux",
+      "id": "flux-pro-1-0-fill",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX.1 Fill [pro]",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 512,
+      "family": "flux",
+      "id": "flux-pro-1-1",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX1.1 [pro]",
+      "outputModalities": [],
+      "ownedBy": "vercel"
+    },
+    {
+      "capabilities": [],
+      "contextWindow": 512,
+      "family": "flux",
+      "id": "flux-pro-1-1-ultra",
+      "inputModalities": ["text"],
+      "metadata": {},
+      "name": "FLUX1.1 [pro] Ultra",
+      "outputModalities": [],
       "ownedBy": "vercel"
     },
     {
@@ -19075,13 +16885,13 @@
       }
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "family": "muse",
       "id": "muse-image-1-0",
       "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "Muse Image 1.0",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "vercel"
     },
     {
@@ -19460,24 +17270,6 @@
       "name": "Whisper",
       "outputModalities": ["text"],
       "ownedBy": "vercel"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "viduq1",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Vidu Q1",
-      "outputModalities": ["image"],
-      "ownedBy": "vidu"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "viduq2",
-      "inputModalities": ["text"],
-      "metadata": {},
-      "name": "Vidu Q2",
-      "outputModalities": ["image"],
-      "ownedBy": "vidu"
     },
     {
       "capabilities": ["video-generation"],
@@ -20299,36 +18091,36 @@
       "ownedBy": "xai"
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "contextWindow": 8000,
       "family": "grok",
       "id": "grok-imagine-image",
       "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "Grok Imagine Image",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "xai"
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "contextWindow": 8000,
       "family": "grok",
       "id": "grok-imagine-image-2-0",
       "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "Grok Imagine Image 2.0",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "xai"
     },
     {
-      "capabilities": ["image-recognition", "image-generation", "file-input"],
+      "capabilities": ["image-recognition", "file-input"],
       "contextWindow": 8000,
       "family": "grok",
       "id": "grok-imagine-image-quality",
       "inputModalities": ["text", "image"],
       "metadata": {},
       "name": "Grok Imagine Image Quality",
-      "outputModalities": ["image"],
+      "outputModalities": [],
       "ownedBy": "xai"
     },
     {
@@ -20673,50 +18465,6 @@
       "metadata": {},
       "name": "BCE Reranker Base v1",
       "ownedBy": "youdao"
-    },
-    {
-      "capabilities": ["image-generation"],
-      "id": "cogview-4",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "customSize": {
-                "maxSide": 2048,
-                "minSide": 512,
-                "pairedEnumKey": "size",
-                "type": "size"
-              },
-              "negativePrompt": {
-                "multiline": true,
-                "type": "text"
-              },
-              "numImages": {
-                "default": 1,
-                "max": 1,
-                "min": 1,
-                "type": "range"
-              },
-              "quality": {
-                "options": ["standard", "hd"],
-                "type": "enum"
-              },
-              "seed": {
-                "type": "text"
-              },
-              "size": {
-                "default": "1024x1024",
-                "options": ["1024x1024", "768x1344", "864x1152", "1344x768", "1152x864", "1440x720", "720x1440"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "metadata": {},
-      "name": "cogview-4",
-      "ownedBy": "zhipu"
     },
     {
       "capabilities": ["embedding"],
@@ -21582,30 +19330,24 @@
       }
     },
     {
-      "capabilities": ["image-generation"],
-      "id": "glm-image",
-      "imageGeneration": {
-        "modes": {
-          "generate": {
-            "supports": {
-              "addWatermark": {
-                "type": "switch"
-              },
-              "size": {
-                "default": "1280x1280",
-                "options": ["1280x1280", "1568x1056", "1056x1568", "1472x1088", "1088x1472", "1728x960", "960x1728"],
-                "render": "chips",
-                "type": "enum"
-              }
-            }
-          }
-        }
-      },
-      "inputModalities": ["text"],
+      "capabilities": ["function-call", "reasoning", "image-recognition", "video-recognition", "structured-output"],
+      "contextWindow": 1310720,
+      "id": "glm-flash-latest",
+      "inputModalities": ["text", "image", "video"],
       "metadata": {},
-      "name": "glm-image",
-      "outputModalities": ["image"],
-      "ownedBy": "zhipu"
+      "name": "Z.ai: GLM Flash Latest",
+      "outputModalities": ["text"],
+      "ownedBy": "zhipu",
+      "pricing": {
+        "input": {
+          "currency": "USD",
+          "perMillionTokens": 0.075
+        },
+        "output": {
+          "currency": "USD",
+          "perMillionTokens": 0.25
+        }
+      }
     },
     {
       "capabilities": ["function-call", "reasoning", "structured-output"],
@@ -21619,11 +19361,11 @@
       "pricing": {
         "input": {
           "currency": "USD",
-          "perMillionTokens": 1.1875
+          "perMillionTokens": 1.15
         },
         "output": {
           "currency": "USD",
-          "perMillionTokens": 4.18
+          "perMillionTokens": 3.5
         }
       }
     },
@@ -21660,5 +19402,5 @@
       "ownedBy": "zhipu"
     }
   ],
-  "version": "2f0039fd6893970f"
+  "version": "f7cdba4ad6b0ef77"
 }

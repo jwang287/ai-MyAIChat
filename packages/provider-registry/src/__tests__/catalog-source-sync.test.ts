@@ -6,7 +6,7 @@
  * the committed JSON reflects them. Coverage is full-payload where the generator output is fully
  * source-derived — the entire provider object (buildProviders strips gen-only fields + templates
  * `description`) and the entire override row (`{ providerId, ...ov }`) — so stale `defaultChatEndpoint`,
- * endpoint dialects, billing facts, `metadata`, override `pricing`/`imageGeneration`, etc. are caught. Creator models stay at
+ * endpoint dialects, billing facts, `metadata`, and override `pricing` are caught. Creator models stay at
  * presence/`ownedBy`/`name`: their other fields (capabilities, modalities, limits) are unioned with
  * upstream-inferred metadata, so a full compare would be non-deterministic. Upstream-enriched fields
  * (pricing on md-derived rows, inferred metadata) remain out of scope. Runs in the network-free
@@ -18,14 +18,9 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { canonOf, prefixHit, splitOverrideWireId } from '../../scripts/canonicalize'
+import { canonOf, splitOverrideWireId } from '../../scripts/canonicalize'
 import { CREATORS } from '../creators'
 import { REASONING_FAMILY_RULES } from '../patterns/reasoning-families.gen'
-import {
-  SERVER_TOOL_FUNCTION_MIXING_MODEL_IDS,
-  WEB_SEARCH_UNSUPPORTED_EFFORTS
-} from '../patterns/server-tool-constraints.gen'
-import { PROVIDER_SERVER_TOOL_MODEL_IDS } from '../patterns/server-tool-models.gen'
 import { PROVIDERS } from '../providers'
 import { ReasoningFamilyRuleSchema } from '../schemas/model'
 
@@ -58,15 +53,6 @@ const GEN_ONLY_PROVIDER_FIELDS = ['modelsDevProvider', 'fetchModels', 'standalon
 const expectedProviderPayload = (p: Record<string, unknown>) => {
   const conn = { ...p }
   for (const k of GEN_ONLY_PROVIDER_FIELDS) delete conn[k]
-  if (Array.isArray(conn.serverTools)) {
-    conn.serverTools = conn.serverTools.map((tool) => {
-      const config = { ...(tool as Record<string, unknown>) }
-      delete config.modelIdPrefixes
-      delete config.modelIds
-      delete config.imageModelIds
-      return config
-    })
-  }
   return { ...conn, description: `${String(p.name)} - AI model provider` }
 }
 
@@ -111,7 +97,7 @@ describe('catalog ↔ source sync (regenerate guard)', () => {
     // The generator emits `{ providerId, ...ov }` per override and dedups on the full identity (providerId
     // + modelId + apiModelId + sorted modelVariants). Pair each source override with its committed row by
     // identity, then compare the WHOLE payload — so a dropped variant (missing row) AND a stale field
-    // (pricing/imageGeneration/disabled/… not regenerated) both fail.
+    // (pricing/disabled/… not regenerated) both fail.
     const rowByIdentity = new Map(overrides.map((o) => [overrideIdentity(o), o]))
     const problems: string[] = []
     for (const p of PROVIDERS)
@@ -164,56 +150,6 @@ describe('catalog ↔ source sync (regenerate guard)', () => {
     // `pnpm generate` — or a hand edit of the .gen file — both fail here.
     const expected = CREATORS.flatMap((c) => c.reasoningFamilies ?? [])
     expect(REASONING_FAMILY_RULES.map(stable)).toEqual(expected.map(stable))
-  })
-
-  it('server-tool-models.gen.ts reflects the provider model selectors', () => {
-    const problems: string[] = []
-    const declaredKeys = new Set<string>()
-
-    for (const provider of PROVIDERS) {
-      for (const tool of provider.serverTools ?? []) {
-        if (tool.modelScope !== 'model-dependent') continue
-        const key = `${provider.id}/${tool.id}`
-        declaredKeys.add(key)
-        const generated = PROVIDER_SERVER_TOOL_MODEL_IDS[provider.id]?.[tool.id] ?? []
-        const exactIds = new Set(tool.modelIds ?? [])
-        const prefixes = tool.modelIdPrefixes ?? []
-
-        if (generated.length === 0) problems.push(`${key}: no generated models`)
-        for (const id of exactIds) {
-          if (!generated.includes(id)) problems.push(`${key}: exact model ${id} was not generated`)
-        }
-        for (const id of generated) {
-          if (!exactIds.has(id) && !prefixes.some((prefix) => prefixHit(id, prefix))) {
-            problems.push(`${key}: stale generated model ${id}`)
-          }
-        }
-      }
-    }
-
-    for (const [providerId, tools] of Object.entries(PROVIDER_SERVER_TOOL_MODEL_IDS)) {
-      for (const toolId of Object.keys(tools)) {
-        const key = `${providerId}/${toolId}`
-        if (!declaredKeys.has(key)) problems.push(`${key}: generated without a provider declaration`)
-      }
-    }
-
-    expect(problems).toEqual([])
-  })
-
-  it('server-tool-constraints.gen.ts reflects the creator constraint declarations', () => {
-    // The gen file stores ids expanded against the upstream model universe, so a
-    // full mirror compare would be flaky (unlike reasoning-families). This checks
-    // the deterministic half: a declaration must produce entries, and every
-    // declared pattern/prefix must have hit at least one committed id.
-    const declaresMixing = CREATORS.some((c) => (c.serverToolFunctionMixing ?? []).length > 0)
-    expect(SERVER_TOOL_FUNCTION_MIXING_MODEL_IDS.length > 0).toBe(declaresMixing)
-
-    const declaredEfforts = new Set(
-      CREATORS.flatMap((c) => c.webSearchUnsupportedEfforts ?? []).flatMap((r) => r.efforts)
-    )
-    const generatedEfforts = new Set(Object.values(WEB_SEARCH_UNSUPPORTED_EFFORTS).flat())
-    expect([...generatedEfforts].sort()).toEqual([...declaredEfforts].sort())
   })
 
   it('every creator reasoningFamilies rule is schema-valid', () => {

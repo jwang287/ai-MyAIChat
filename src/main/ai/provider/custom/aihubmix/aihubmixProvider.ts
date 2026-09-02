@@ -12,14 +12,12 @@ import { AnthropicMessagesLanguageModel } from '@ai-sdk/anthropic/internal'
 import { GoogleGenerativeAILanguageModel } from '@ai-sdk/google/internal'
 import { OpenAIChatLanguageModel, OpenAIResponsesLanguageModel, OpenAISpeechModel } from '@ai-sdk/openai/internal'
 import { OpenAICompatibleChatLanguageModel, OpenAICompatibleEmbeddingModel } from '@ai-sdk/openai-compatible'
-import type { EmbeddingModelV3, ImageModelV3, LanguageModelV3, ProviderV3, RerankingModelV3 } from '@ai-sdk/provider'
+import type { EmbeddingModelV3, LanguageModelV3, ProviderV3, RerankingModelV3 } from '@ai-sdk/provider'
 import type { FetchFunction } from '@ai-sdk/provider-utils'
 import { loadApiKey, withoutTrailingSlash } from '@ai-sdk/provider-utils'
 import { OpenAICompatibleRerankingModel } from '@cherrystudio/ai-sdk-provider'
 import { resolveAihubmixChatFamily } from '@shared/data/presets/gatewayChatRouting'
 import { ENDPOINT_TYPE, type EndpointType } from '@shared/data/types/model'
-
-import { createAihubmixImageModel } from './aihubmixImageModel'
 
 export const AIHUBMIX_PROVIDER_NAME = 'aihubmix' as const
 const APP_CODE_HEADER = { 'APP-Code': 'MLTG2087' }
@@ -36,7 +34,6 @@ export interface AihubmixProvider extends ProviderV3 {
   (modelId: string): LanguageModelV3
   languageModel(modelId: string): LanguageModelV3
   embeddingModel(modelId: string): EmbeddingModelV3
-  imageModel(modelId: string): ImageModelV3
   rerankingModel(modelId: string): RerankingModelV3
 }
 
@@ -149,9 +146,6 @@ export function createAihubmix(options: AihubmixProviderSettings = {}): Aihubmix
       fetch: customFetch
     })
 
-  provider.imageModel = (modelId: string) =>
-    createAihubmixImageModel(modelId, { baseURL: chatBaseURL, resolveApiKey, headers: authHeaders, fetch: customFetch })
-
   provider.speechModel = (modelId: string) =>
     new OpenAISpeechModel(modelId, {
       provider: `${AIHUBMIX_PROVIDER_NAME}.speech`,
@@ -168,5 +162,5 @@ export function createAihubmix(options: AihubmixProviderSettings = {}): Aihubmix
       fetch: customFetch
     })
 
-  return provider as AihubmixProvider
+  return provider as unknown as AihubmixProvider
 }

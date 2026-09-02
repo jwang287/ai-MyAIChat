@@ -10,7 +10,6 @@ export default defineProvider({
       baseUrl: 'https://api.perplexity.ai/'
     }
   },
-  serverTools: [{ id: 'web-search', modelScope: 'model-dependent', modelIdPrefixes: ['sonar'] }],
   metadata: {
     website: {
       apiKey: 'https://www.perplexity.ai/settings/api',

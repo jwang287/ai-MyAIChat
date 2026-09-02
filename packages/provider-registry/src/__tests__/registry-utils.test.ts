@@ -259,7 +259,6 @@ describe('inferAdapterFamily', () => {
   it('falls back to openai-compatible for endpoints with no specific default', () => {
     // openai-chat-completions is intentionally generic — many vendors speak it
     expect(inferAdapterFamily(ENDPOINT_TYPE.OPENAI_CHAT_COMPLETIONS)).toBe('openai-compatible')
-    expect(inferAdapterFamily(ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION)).toBe('openai-compatible')
   })
 
   it('accepts both RegistryEndpointConfig and RuntimeEndpointConfig shapes', () => {
@@ -279,8 +278,6 @@ describe('endpointImpliedCapability', () => {
     expect(endpointImpliedCapability(ENDPOINT_TYPE.OPENAI_AUDIO_TRANSCRIPTION)).toBe(MODEL_CAPABILITY.AUDIO_TRANSCRIPT)
     expect(endpointImpliedCapability(ENDPOINT_TYPE.OPENAI_AUDIO_TRANSLATION)).toBe(MODEL_CAPABILITY.AUDIO_TRANSCRIPT)
     expect(endpointImpliedCapability(ENDPOINT_TYPE.OPENAI_EMBEDDINGS)).toBe(MODEL_CAPABILITY.EMBEDDING)
-    expect(endpointImpliedCapability(ENDPOINT_TYPE.OPENAI_IMAGE_GENERATION)).toBe(MODEL_CAPABILITY.IMAGE_GENERATION)
-    expect(endpointImpliedCapability(ENDPOINT_TYPE.OPENAI_IMAGE_EDIT)).toBe(MODEL_CAPABILITY.IMAGE_GENERATION)
     expect(endpointImpliedCapability(ENDPOINT_TYPE.OPENAI_TEXT_TO_SPEECH)).toBe(MODEL_CAPABILITY.AUDIO_GENERATION)
     expect(endpointImpliedCapability(ENDPOINT_TYPE.OPENAI_VIDEO_GENERATION)).toBe(MODEL_CAPABILITY.VIDEO_GENERATION)
   })

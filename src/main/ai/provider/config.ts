@@ -24,7 +24,6 @@ import {
   isWithTrailingSharp,
   withoutTrailingApiVersion
 } from '@shared/utils/api'
-import { isGenerateImageModel } from '@shared/utils/model'
 import {
   isAzureOpenAIProvider,
   isGeminiProvider,
@@ -40,18 +39,15 @@ import type { ProviderConfig } from '../types'
 import { type AppProviderId, appProviderIds, type AppProviderSettingsMap } from '../types'
 import { customFetch } from '../utils/customFetch'
 import { getBaseUrl, getExtraHeaders, routeToEndpoint } from '../utils/provider'
-import { normalizeArkResponsesResponse, stripArkUnsupportedIncludes } from './ark'
+import { normalizeArkResponsesResponse } from './ark'
 import { generateSignature } from './cherryai'
 import { buildCodexRequestHeaders, coerceCodexRequestBody } from './codex'
 import { COPILOT_DEFAULT_HEADERS } from './constants'
 import type { ServingAuthMethod, ServingCredentialReceipt } from './credential'
-import { appendDashScopeWebExtractor } from './custom/dashscope/dashscopeWebExtractor'
-import { dmxapiUsesCustomTransport } from './custom/dmxapi/dmxapiImageRouting'
 import { resolveAiSdkProviderId, type ResolvedEndpoint, resolveEffectiveEndpoint } from './endpoint'
 import { buildGrokCliRequestHeaders, rewriteGrokCliResponsesBody } from './grokCli'
 import { transformLmStudioRequestBody } from './lmstudio'
 import { isVertexMaasModelId, normalizeVertexCredentials } from './vertex'
-import { transformZhipuRequestBody } from './zhipuWebSearch'
 
 interface BaseConfig {
   baseURL: string
@@ -117,15 +113,6 @@ function formatBaseURL(baseURL: string, provider: Provider, endpointType?: Endpo
 
   return formatApiHost(baseURL, appendApiVersion)
 }
-
-/** Presets whose IMAGE models route to the extension provider's own transport (see the builder). */
-const IMAGE_EXTENSION_PRESETS = [
-  SystemProviderIds.modelscope,
-  SystemProviderIds.ppio,
-  SystemProviderIds.silicon,
-  SystemProviderIds.doubao,
-  SystemProviderIds.dmxapi
-] as const
 
 // ── SDK Config Building ──
 
@@ -195,7 +182,6 @@ export async function resolveProviderAiSdkConfig(
 
   const formattedBaseUrl = formatBaseURL(baseUrl, provider, endpointType)
   const { baseURL, endpoint } = routeToEndpoint(formattedBaseUrl)
-  const imageExtensionPreset = IMAGE_EXTENSION_PRESETS.find((preset) => matchesPreset(provider, preset))
 
   const ctx: BuilderContext = {
     actualProvider: provider,
@@ -241,17 +227,6 @@ export async function resolveProviderAiSdkConfig(
       match: (p, id) => matchesPreset(p, SystemProviderIds.dashscope) && id === 'openai-compatible',
       build: withSelectedApiKey(buildDashScopeConfig)
     },
-    // Zhipu chat is OpenAI-compatible, but BigModel's built-in web search rides the
-    // tools array, which providerOptions cannot reach — the body transform moves the
-    // web_search marker into `tools` (see zhipuWebSearch.ts).
-    {
-      match: (p, id) => id === 'openai-compatible' && matchesPreset(p, 'zhipu'),
-      build: withSelectedApiKey((ctx) => {
-        const config = buildOpenAICompatibleConfig(ctx)
-        config.providerSettings.transformRequestBody = transformZhipuRequestBody
-        return config
-      })
-    },
     // LM Studio's OpenAI-compatible endpoint expects bare base64 for images when
     // a message contains multiple image blocks. Keep single-image requests on
     // the unchanged OpenAI data-URI format (lmstudio.ts).
@@ -263,9 +238,6 @@ export async function resolveProviderAiSdkConfig(
         return config
       })
     },
-    // Moonshot chat routes to its extension so the `$web_search` echo-tool factory
-    // resolves under providerId 'moonshot'; the provider's transformRequestBody
-    // rewrites the declaration to Kimi's builtin_function shape (moonshotProvider.ts).
     {
       match: (p, id) => id === 'openai-compatible' && matchesPreset(p, 'moonshot'),
       build: withSelectedApiKey((ctx) => ({
@@ -278,10 +250,8 @@ export async function resolveProviderAiSdkConfig(
         }
       }))
     },
-    // Doubao's built-in search rides the OpenAI Responses adapter, which auto-adds
-    // `include: web_search_call.action.sources` alongside the web_search tool. Ark accepts the
-    // tool but 400s on that include, so strip it on the way out (ark.ts). Ark data reporting
-    // (X-Fornax-Trace) rides along in developer mode, mirroring applyHttpTrace's gate.
+    // Ark data reporting (X-Fornax-Trace) rides along in developer mode, mirroring
+    // applyHttpTrace's gate.
     {
       match: (p, id) => id === 'openai' && matchesPreset(p, SystemProviderIds.doubao),
       build: withSelectedApiKey((ctx) => {
@@ -294,65 +264,19 @@ export async function resolveProviderAiSdkConfig(
           settings.headers = { ...settings.headers, 'X-Fornax-Trace': 'true' }
         }
         settings.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-          const response = await customFetch(input, { ...init, body: stripArkUnsupportedIncludes(init?.body) })
+          const response = await customFetch(input, init)
           return normalizeArkResponsesResponse(input, response)
         }
         return config
       })
     },
-    // DashScope's web_extractor (help.aliyun.com/zh/model-studio/web-extractor) is a Responses tool that
-    // must accompany web_search and needs thinking mode. @ai-sdk/openai drops any tool id it does not
-    // know, so it is appended to the serialized body (dashscopeWebExtractor.ts) rather than via a factory.
     {
       match: (p, id) => id === 'openai' && matchesPreset(p, SystemProviderIds.dashscope),
-      build: withSelectedApiKey((ctx) => {
-        const config = buildGenericProviderConfig(ctx)
-        config.providerSettings.fetch = (input: RequestInfo | URL, init?: RequestInit) =>
-          customFetch(input, { ...init, body: appendDashScopeWebExtractor(init?.body) })
-        return config
-      })
+      build: withSelectedApiKey(buildGenericProviderConfig)
     },
     // Subset Responses servers (HuggingFace router today) speak the spec-neutral dialect: the
     // minimal body only, no OpenAI-only extras they would reject.
     { match: (_, id) => id === 'open-responses', build: withSelectedApiKey(buildOpenResponsesConfig) },
-    // modelscope / ppio / doubao / dmxapi: chat & embedding are OpenAI-compatible, but IMAGE
-    // generation needs the bespoke transport inside the extension provider
-    // (createXProvider().imageModel()) — a submit/poll loop for most, Ark's own
-    // `/images/generations` protocol for doubao. Override the resolved `openai-compatible` id
-    // to the extension id for image models only — chat/embedding fall through to the generic
-    // openai-compatible builder (which keeps `includeUsage`). Matched by PRESET, not by a bare
-    // `provider.id` — a user-added instance of the same host carries a UUID id, and keying on
-    // the id left it on the generic image model (multipart `/images/edits`, 404 on Ark #18537).
-    // Routing here is also what makes the vendor params land under the `providerOptions` key
-    // the image model reads: the delivery adapter keys the body by this `providerId`, which the
-    // generic branch would leave as `openai-compatible` while the model looked under its own id.
-    {
-      match: (_, id) =>
-        id === 'openai-compatible' &&
-        isGenerateImageModel(model) &&
-        imageExtensionPreset !== undefined &&
-        (imageExtensionPreset !== SystemProviderIds.dmxapi || dmxapiUsesCustomTransport(model.apiModelId ?? model.id)),
-      build: withSelectedApiKey((ctx) => ({
-        // Non-null by the match above.
-        providerId: imageExtensionPreset!,
-        endpoint: ctx.endpoint,
-        providerSettings: {
-          ...ctx.baseConfig,
-          headers: { ...defaultAppHeaders(), ...getExtraHeaders(ctx.actualProvider) }
-        }
-      }))
-    },
-    {
-      match: (p, id) => id === 'openai-compatible' && isGenerateImageModel(model) && matchesPreset(p, 'minimax'),
-      build: withSelectedApiKey((ctx) => ({
-        providerId: 'minimax',
-        endpoint: ctx.endpoint,
-        providerSettings: {
-          ...ctx.baseConfig,
-          headers: { ...defaultAppHeaders(), ...getExtraHeaders(ctx.actualProvider) }
-        }
-      }))
-    },
     { match: (_, id) => id === 'bedrock', build: buildBedrockConfig },
     // `google-vertex-anthropic` (Vertex on an anthropic-messages endpoint) must route here
     // too — `buildVertexConfig` branches on `isAnthropic`. Otherwise it falls through to the
@@ -908,6 +832,7 @@ function buildNewApiConfig(ctx: BuilderContext): ProviderConfig<'newapi'> {
   }
 
   const baseURL = formatNewApiBaseURL(rawBaseURL, endpointType)
+  const mappedEndpointType = mapCherryinEndpointType(endpointType)
 
   return {
     providerId: 'newapi',
@@ -915,7 +840,7 @@ function buildNewApiConfig(ctx: BuilderContext): ProviderConfig<'newapi'> {
     providerSettings: {
       ...ctx.baseConfig,
       baseURL,
-      endpointType: mapCherryinEndpointType(endpointType),
+      endpointType: mappedEndpointType === 'image-generation' ? undefined : mappedEndpointType,
       headers: { ...defaultAppHeaders(), ...getExtraHeaders(ctx.actualProvider) }
     }
   }

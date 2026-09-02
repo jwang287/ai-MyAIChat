@@ -1,8 +1,4 @@
-import type { ImageModeDef } from '../schemas/model'
 import { openaiCompatible } from './types'
-
-/** PPIO exposes the Seedream line with one identical definition for both edit and generate. */
-const editAndGenerate = (mode: ImageModeDef) => ({ edit: mode, generate: mode })
 
 export default openaiCompatible({
   id: 'ppio',
@@ -120,25 +116,7 @@ export default openaiCompatible({
       modelId: 'glm-5',
       pricing: { input: { currency: 'CNY', perMillionTokens: 6 }, output: { currency: 'CNY', perMillionTokens: 22 } }
     },
-    {
-      modelId: 'glm-image',
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              addWatermark: { type: 'switch' },
-              size: {
-                default: '1280x1280',
-                options: ['1280x1280', '1568x1056', '1056x1568', '1472x1088', '1088x1472', '1728x960', '960x1728'],
-                render: 'chips',
-                type: 'enum'
-              }
-            },
-            vendorTransport: { endpoint: '/v3/async/glm-image' }
-          }
-        }
-      }
-    },
+
     {
       apiModelId: 'moonshotai/kimi-k2-thinking',
       modelId: 'kimi-k2',
@@ -196,21 +174,7 @@ export default openaiCompatible({
       modelVariants: ['72b'],
       pricing: { input: { currency: 'CNY', perMillionTokens: 4 }, output: { currency: 'CNY', perMillionTokens: 12 } }
     },
-    {
-      imageGeneration: {
-        modes: {
-          edit: {
-            supports: {
-              addWatermark: { type: 'switch' },
-              outputFormat: { options: ['jpeg', 'png', 'webp'], type: 'enum' },
-              seed: { type: 'text' }
-            },
-            vendorTransport: { endpoint: '/v3/async/qwen-image-edit-2509' }
-          }
-        }
-      },
-      modelId: 'qwen-image-edit'
-    },
+
     {
       apiModelId: 'qwen/qwen2.5-7b-instruct',
       limits: { contextWindow: 32000, maxOutputTokens: 32000 },
@@ -360,193 +324,6 @@ export default openaiCompatible({
       modelId: 'qwen3-vl-8b-instruct',
       modelVariants: ['8b'],
       pricing: { input: { currency: 'CNY', perMillionTokens: 0.5 }, output: { currency: 'CNY', perMillionTokens: 2 } }
-    },
-    {
-      imageGeneration: {
-        modes: editAndGenerate({
-          supports: {
-            addWatermark: { type: 'switch' },
-            size: {
-              default: '2048x2048',
-              options: ['1K', '2K', '4K', '2048x2048', '2304x1728', '1728x2304', '2560x1440', '1440x2560'],
-              render: 'chips',
-              type: 'enum'
-            }
-          },
-          vendorTransport: { endpoint: '/v3/seedream-4.0', isSync: true }
-        })
-      },
-      modelId: 'seedream-4-0'
-    },
-    {
-      imageGeneration: {
-        modes: editAndGenerate({
-          supports: {
-            addWatermark: { type: 'switch' },
-            size: {
-              default: '2048x2048',
-              options: ['2K', '4K', '2048x2048', '2304x1728', '1728x2304', '2560x1440', '1440x2560'],
-              render: 'chips',
-              type: 'enum'
-            }
-          },
-          vendorTransport: { endpoint: '/v3/seedream-4.5', isSync: true }
-        })
-      },
-      modelId: 'seedream-4-5'
-    },
-    {
-      imageGeneration: {
-        modes: editAndGenerate({
-          supports: {
-            addWatermark: { type: 'switch' },
-            size: {
-              default: '2048x2048',
-              options: ['2K', '3K', '2048x2048', '2304x1728', '1728x2304', '2560x1440', '1440x2560'],
-              render: 'chips',
-              type: 'enum'
-            }
-          },
-          vendorTransport: { endpoint: '/v3/seedream-5.0-lite', isSync: true }
-        })
-      },
-      modelId: 'seedream-5-0-lite'
-    },
-    {
-      modelId: 'jimeng-txt2img-v3-1',
-      apiModelId: 'jimeng-txt2img-v3.1',
-      name: 'Jimeng Text-to-Image v3.1',
-      inputModalities: ['text'],
-      outputModalities: ['image'],
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              addWatermark: { type: 'switch' },
-              promptEnhancement: { type: 'switch' },
-              seed: { type: 'text' },
-              size: {
-                default: '1328x1328',
-                options: ['1328x1328', '1472x1104', '1584x1056', '1664x936', '2016x864', '2048x2048'],
-                render: 'chips',
-                type: 'enum'
-              }
-            },
-            vendorTransport: { endpoint: '/v3/async/jimeng-txt2img-v3.1' }
-          }
-        }
-      }
-    },
-    {
-      modelId: 'jimeng-txt2img-v3-0',
-      apiModelId: 'jimeng-txt2img-v3.0',
-      name: 'Jimeng Text-to-Image v3.0',
-      inputModalities: ['text'],
-      outputModalities: ['image'],
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              addWatermark: { type: 'switch' },
-              promptEnhancement: { type: 'switch' },
-              seed: { type: 'text' },
-              size: {
-                default: '1328x1328',
-                options: ['1328x1328', '1472x1104', '1584x1056', '1664x936', '2016x864', '2048x2048'],
-                render: 'chips',
-                type: 'enum'
-              }
-            },
-            vendorTransport: { endpoint: '/v3/async/jimeng-txt2img-v3.0' }
-          }
-        }
-      }
-    },
-    {
-      modelId: 'hunyuan-image-3',
-      apiModelId: 'hunyuan-image-3',
-      name: 'Hunyuan Image 3',
-      inputModalities: ['text'],
-      outputModalities: ['image'],
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              addWatermark: { type: 'switch' },
-              seed: { type: 'text' },
-              size: {
-                options: ['1024x1024', '1024x1536', '1536x1024', '1536x1536', '768x1024', '1024x768'],
-                render: 'chips',
-                type: 'enum'
-              }
-            },
-            vendorTransport: { endpoint: '/v3/async/hunyuan-image-3' }
-          }
-        }
-      }
-    },
-    {
-      modelId: 'qwen-image',
-      apiModelId: 'qwen-image-txt2img',
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              addWatermark: { type: 'switch' },
-              size: {
-                options: ['1024x1024', '1024x1536', '1536x1024', '1536x1536', '768x1024', '1024x768'],
-                render: 'chips',
-                type: 'enum'
-              }
-            },
-            vendorTransport: { endpoint: '/v3/async/qwen-image-txt2img' }
-          }
-        }
-      }
-    },
-    {
-      modelId: 'z-image-turbo',
-      apiModelId: 'z-image-turbo',
-      name: 'Z-Image Turbo',
-      inputModalities: ['text'],
-      outputModalities: ['image'],
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              seed: { type: 'text' },
-              size: {
-                options: ['1024x1024', '1024x1536', '1536x1024', '1536x1536', '768x1024', '1024x768'],
-                render: 'chips',
-                type: 'enum'
-              }
-            },
-            vendorTransport: { endpoint: '/v3/async/z-image-turbo' }
-          }
-        }
-      }
-    },
-    {
-      modelId: 'z-image-turbo-lora',
-      apiModelId: 'z-image-turbo-lora',
-      name: 'Z-Image Turbo LoRA',
-      inputModalities: ['text'],
-      outputModalities: ['image'],
-      imageGeneration: {
-        modes: {
-          generate: {
-            supports: {
-              seed: { type: 'text' },
-              size: {
-                options: ['1024x1024', '1024x1536', '1536x1024', '1536x1536', '768x1024', '1024x768'],
-                render: 'chips',
-                type: 'enum'
-              }
-            },
-            vendorTransport: { endpoint: '/v3/async/z-image-turbo-lora' }
-          }
-        }
-      }
     }
   ]
 })
