@@ -289,6 +289,7 @@ export default function Sidebar({ ref }: { ref?: Ref<HTMLDivElement | null> }) {
     active: { activeItem },
     title: sidebarUser.name,
     logo: sidebarLogo,
+    pinLabel: t('navbar.show_sidebar'),
     onHeaderClick: sidebarUser.onClick,
     actions: (footerLayout: SidebarVisibleLayout) => (
       <SidebarShellActions layout={footerLayout} onSettingsClick={handleOpenSettingsTab} />

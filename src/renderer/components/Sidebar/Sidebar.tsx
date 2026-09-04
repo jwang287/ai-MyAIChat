@@ -4,10 +4,10 @@ import { MenuItem } from '@cherrystudio/ui'
 import useMacTransparentWindow from '@renderer/hooks/useMacTransparentWindow'
 import { isMac } from '@renderer/utils/platform'
 import { cn } from '@renderer/utils/style'
-import { Search } from 'lucide-react'
+import { PanelLeftOpen, Search } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import { getSidebarDisplayWidth, getSidebarLayout } from './constants'
+import { getSidebarDisplayWidth, getSidebarLayout, SIDEBAR_FULL_THRESHOLD } from './constants'
 import { DefaultLogo } from './primitives'
 import { SidebarFooter, type SidebarFooterActions } from './SidebarFooter'
 import { SidebarList } from './SidebarList'
@@ -34,6 +34,7 @@ export interface SidebarProps {
   onHeaderClick?: () => void
   onEntriesReorder?: (event: { oldIndex: number; newIndex: number }) => void
   onDismiss?: () => void
+  pinLabel?: string
 }
 
 export function Sidebar({
@@ -54,7 +55,8 @@ export function Sidebar({
   onExtensionsClick,
   onHeaderClick,
   onEntriesReorder,
-  onDismiss
+  onDismiss,
+  pinLabel
 }: SidebarProps) {
   const isMacTransparentWindow = useMacTransparentWindow()
   const { sidebarRef, startResizing } = useSidebarResize(width, setWidth, onResizePreview)
@@ -182,7 +184,18 @@ export function Sidebar({
             clearHoverDismiss()
           }}>
           <div className={cn('flex h-11 shrink-0 items-center px-2', windowDragClassName)}>
-            {renderHeaderIdentity('default', true)}
+            <div className="min-w-0 flex-1">{renderHeaderIdentity('default', true)}</div>
+            {pinLabel && (
+              <SidebarTooltip content={pinLabel}>
+                <button
+                  type="button"
+                  aria-label={pinLabel}
+                  onClick={() => setWidth(SIDEBAR_FULL_THRESHOLD)}
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors [-webkit-app-region:no-drag] hover:bg-accent hover:text-foreground">
+                  <PanelLeftOpen size={16} strokeWidth={1.6} />
+                </button>
+              </SidebarTooltip>
+            )}
           </div>
 
           {showSearch && (
