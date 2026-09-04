@@ -61,7 +61,6 @@ export function Sidebar({
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [contextMenuOpen, setContextMenuOpen] = useState(false)
   const contextMenuOpenRef = useRef(false)
-  const footerOverlayOpenRef = useRef(false)
   const floatingPointerInsideRef = useRef(false)
   const layout = getSidebarLayout(width)
   const showFooter = Boolean(extensionsLabel || user || onExtensionsClick || actions)
@@ -140,23 +139,7 @@ export function Sidebar({
         return
       }
 
-      if (isFloating && !floatingPointerInsideRef.current && !footerOverlayOpenRef.current) {
-        scheduleHoverDismiss()
-      }
-    },
-    [clearHoverDismiss, isFloating, scheduleHoverDismiss]
-  )
-
-  const handleFooterOverlayOpenChange = useCallback(
-    (open: boolean) => {
-      footerOverlayOpenRef.current = open
-
-      if (open) {
-        clearHoverDismiss()
-        return
-      }
-
-      if (isFloating && !floatingPointerInsideRef.current && !contextMenuOpenRef.current) {
+      if (isFloating && !floatingPointerInsideRef.current) {
         scheduleHoverDismiss()
       }
     },
@@ -173,8 +156,7 @@ export function Sidebar({
     user,
     actions,
     extensionsLabel,
-    onExtensionsClick,
-    onOverlayOpenChange: handleFooterOverlayOpenChange
+    onExtensionsClick
   }
   const windowDragClassName = contextMenuOpen ? '[-webkit-app-region:no-drag]' : '[-webkit-app-region:drag]'
 
@@ -191,7 +173,7 @@ export function Sidebar({
           onClick={(event) => event.stopPropagation()}
           onMouseLeave={() => {
             floatingPointerInsideRef.current = false
-            if (!contextMenuOpenRef.current && !footerOverlayOpenRef.current) {
+            if (!contextMenuOpenRef.current) {
               scheduleHoverDismiss()
             }
           }}
